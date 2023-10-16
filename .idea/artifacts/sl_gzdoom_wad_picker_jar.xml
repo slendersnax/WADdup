@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="sl-gzdoom-wad-picker:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/sl_gzdoom_wad_picker_jar</output-path>
+    <root id="archive" name="sl-gzdoom-wad-picker.jar">
+      <element id="module-output" name="sl-gzdoom-wad-picker" />
+    </root>
+  </artifact>
+</component>
