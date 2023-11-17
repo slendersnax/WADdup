@@ -21,12 +21,14 @@ public class WADPanel extends JPanel {
         constr.weightx = 1;
         constr.gridx = 0;
 
-        constr.anchor = GridBagConstraints.FIRST_LINE_START;
+        constr.gridy = GridBagConstraints.RELATIVE; // places all items one below the other
+        constr.anchor = GridBagConstraints.NORTH;
     }
 
     public void addWad(String wadName, String wadPath, JFrame parentFrame) {
         WADComponent newWad = new WADComponent(wadName, wadPath);
         wadList.add(newWad);
+
         add(newWad, constr);
 
         parentFrame.revalidate();
