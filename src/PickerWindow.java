@@ -97,7 +97,6 @@ public class PickerWindow {
 
                     try {
                         process = pb.start();
-                        //System.exit(0);
                     } catch (IOException exc) {
                         exc.printStackTrace();
                     }
