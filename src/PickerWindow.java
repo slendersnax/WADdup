@@ -2,7 +2,6 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JButton;
 import javax.swing.JLabel;
-import javax.swing.JScrollPane;
 import javax.swing.JFileChooser;
 import javax.swing.SwingConstants;
 import javax.swing.Action;
@@ -25,7 +24,6 @@ public class PickerWindow {
     WADPanel wadContainer;
     JButton btn_iwadPicker, btn_pwadPicker, btn_play;
     JLabel name_iwad;
-    JScrollPane pwadScroller;
 
     JFileChooser fileChooser;
     String basePath, iwadPath;
@@ -116,13 +114,10 @@ public class PickerWindow {
         btn_play = new JButton("Play");
         name_iwad = new JLabel("[IWAD]");
         fileChooser = new JFileChooser(new File(basePath));
-        pwadScroller = new JScrollPane(wadContainer);
 
         // viewing in details mode by default
         Action details = fileChooser.getActionMap().get("viewTypeDetails");
         details.actionPerformed(null);
-
-        pwadScroller.getVerticalScrollBar().setUnitIncrement(16);
 
         name_iwad.setHorizontalAlignment(SwingConstants.CENTER);
         name_iwad.setVerticalAlignment(SwingConstants.CENTER);
@@ -132,7 +127,7 @@ public class PickerWindow {
         btnContainer.add(btn_play);
 
         Pane.add(name_iwad, BorderLayout.PAGE_START);
-        Pane.add(pwadScroller, BorderLayout.CENTER);
+        Pane.add(wadContainer, BorderLayout.CENTER);
         Pane.add(btnContainer, BorderLayout.PAGE_END);
     }
 }

@@ -10,18 +10,17 @@ import java.awt.Dimension;
 
 public class WADComponent extends JPanel {
     JLabel wadTitle;
-    public JButton btn_remove, btn_moveup, btn_movedown;
+    public JButton btn_select;
     public String sWADPath;
 
     public WADComponent(String sWadTitle, String _sWADPath) {
         wadTitle = new JLabel(sWadTitle);
-        btn_remove = new JButton("remove");
-        btn_moveup = new JButton("up");
-        btn_movedown = new JButton("down");
+        btn_select = new JButton("select");
+
         sWADPath = _sWADPath;
 
         setLayout(new BoxLayout(this, BoxLayout.LINE_AXIS));
-        setBorder(BorderFactory.createEmptyBorder(5, 0, 0, 0));
+        setBorder(BorderFactory.createEmptyBorder(2, 2, 2, 2));
 
         add(Box.createRigidArea(new Dimension(5, 0)));
         add(wadTitle);
@@ -29,11 +28,11 @@ public class WADComponent extends JPanel {
         // use this to put the buttons all the way to the right
         add(Box.createHorizontalGlue());
 
-        add(btn_moveup);
+        add(btn_select);
         add(Box.createRigidArea(new Dimension(5, 0)));
-        add(btn_movedown);
-        add(Box.createRigidArea(new Dimension(5, 0)));
-        add(btn_remove);
-        add(Box.createRigidArea(new Dimension(5, 0)));
+    }
+
+    public void resetBorder() {
+        setBorder(BorderFactory.createEmptyBorder(2, 2, 2, 2));
     }
 }
