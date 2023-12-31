@@ -7,7 +7,7 @@ It was made using IntelliJ Idea (Community Edition), so I would recommend using 
 
 When running it from the command line you can pass the path to your Doom WAD directory as an argument. This will set the starting directory for the file browser for that sesssion, otherwise it will open in your home directory. As of a few commits ago the `jar` file is included in the repo and so an example command would be:
 ```
-java -jar ~/.jars/sl-gzdoom-wad-picker.jar ~/Documents/WADS
+java -jar sl-gzdoom-wad-picker.jar ~/Documents/WADS
 ```
 
 Tested on Arch Linux with Java 17 and 21.
