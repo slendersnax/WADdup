@@ -14,7 +14,7 @@ Tested on Arch Linux with Java 17 and 21.
 
 ### screenshot(s)
 
-![screenshot 1](screenshots/sl_gzdoom_launcher_1.png)
+![screenshot 1](screenshots/sl_gzdoom_launcher_1.png?)
 
 ### features and reasons
 
