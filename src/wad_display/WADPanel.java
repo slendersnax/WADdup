@@ -1,7 +1,15 @@
 package wad_display;
 
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+import javax.swing.JButton;
+import javax.swing.JScrollPane;
+import javax.swing.BoxLayout;
+import javax.swing.Box;
+import javax.swing.BorderFactory;
+import java.awt.Dimension;
+import java.awt.Component;
+import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
@@ -10,7 +18,7 @@ import java.util.Collections;
 public class WADPanel extends JPanel {
     public ArrayList<WADComponent> wadList;
     private JPanel panelWadContainer, panelBtnContainer;
-    private JButton btn_remove, btn_moveup, btn_movedown;
+    private JButton btn_remove, btn_moveup, btn_movedown, btn_saveconfig, btn_loadconfig;
     private JScrollPane pwadScroller;
     private int nSelectedIndex;
 
@@ -43,6 +51,7 @@ public class WADPanel extends JPanel {
         btn_moveup.setAlignmentX(Component.CENTER_ALIGNMENT);
         btn_movedown.setAlignmentX(Component.CENTER_ALIGNMENT);
 
+        add(Box.createRigidArea(new Dimension(5, 0)));
         add(pwadScroller);
         add(Box.createHorizontalGlue());
         add(panelBtnContainer);
@@ -51,7 +60,7 @@ public class WADPanel extends JPanel {
             public void actionPerformed(ActionEvent e) {
                 if (nSelectedIndex != -1) {
                     WADComponent toRemove = wadList.get(nSelectedIndex);
-                    Component parentComp = toRemove.getParent();
+
                     panelWadContainer.remove(toRemove);
                     wadList.remove(nSelectedIndex);
 
@@ -107,8 +116,10 @@ public class WADPanel extends JPanel {
 
         newWad.btn_select.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
+                // deselecting old button if it exists
                 if (nSelectedIndex != -1) {
                     wadList.get(nSelectedIndex).resetBorder();
+                    wadList.get(nSelectedIndex).btn_select.setText("select");
                 }
 
                 int newIndex = wadList.indexOf(newWad);
@@ -116,10 +127,12 @@ public class WADPanel extends JPanel {
                 if (nSelectedIndex != newIndex) {
                     newWad.setBorder(BorderFactory.createLineBorder(new Color(0, 125, 167), 2));
                     nSelectedIndex = wadList.indexOf(newWad);
+                    wadList.get(nSelectedIndex).btn_select.setText("deselect");
                 }
                 // deselecting the item
                 else {
                     newWad.resetBorder();
+                    newWad.btn_select.setText("select");
                     nSelectedIndex = -1;
                 }
 
