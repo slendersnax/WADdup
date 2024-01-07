@@ -3,6 +3,7 @@ package wad_display;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JButton;
+import javax.swing.JLabel;
 import javax.swing.JScrollPane;
 import javax.swing.BoxLayout;
 import javax.swing.Box;
@@ -19,43 +20,119 @@ public class WADPanel extends JPanel {
     public ArrayList<WADComponent> wadList;
     private JPanel panelWadContainer, panelBtnContainer;
     private JButton btn_remove, btn_moveup, btn_movedown, btn_saveconfig, btn_loadconfig;
+    private JLabel move_header, config_header;
     private JScrollPane pwadScroller;
+    private Dimension standardBtnDim, standardFillerDim;
     private int nSelectedIndex;
 
     public WADPanel() {
         wadList = new ArrayList<WADComponent>();
         panelWadContainer = new JPanel();
         panelBtnContainer = new JPanel();
+
         btn_remove = new JButton("remove");
-        btn_moveup = new JButton("up");
-        btn_movedown = new JButton("down");
+        btn_moveup = new JButton("move up");
+        btn_movedown = new JButton("move down");
+        btn_saveconfig = new JButton("save");
+        btn_loadconfig = new JButton("load");
+
+        move_header = new JLabel("WAD ops");
+        config_header = new JLabel("config ops");
+
         pwadScroller = new JScrollPane(panelWadContainer);
+
+        standardBtnDim = new Dimension(110, 28);
+        standardFillerDim = new Dimension(0, 5);
         nSelectedIndex = -1;
 
+        addComponents();
+        addBtnActions();
+    }
+
+    public void addWad(String wadName, String wadPath, JFrame parentFrame) {
+        WADComponent newWad = new WADComponent(wadName, wadPath);
+        wadList.add(newWad);
+
+        panelWadContainer.add(newWad);
+
+        parentFrame.revalidate();
+        parentFrame.repaint();
+
+        newWad.btn_select.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                // deselecting old button if it exists
+                if (nSelectedIndex != -1) {
+                    wadList.get(nSelectedIndex).resetBorder();
+                    wadList.get(nSelectedIndex).btn_select.setText("select");
+                }
+
+                int newIndex = wadList.indexOf(newWad);
+
+                if (nSelectedIndex != newIndex) {
+                    newWad.setBorder(BorderFactory.createLineBorder(new Color(0, 125, 167), 2));
+                    nSelectedIndex = wadList.indexOf(newWad);
+                    wadList.get(nSelectedIndex).btn_select.setText("deselect");
+                }
+                // deselecting the item
+                else {
+                    newWad.resetBorder();
+                    newWad.btn_select.setText("select");
+                    nSelectedIndex = -1;
+                }
+
+                parentFrame.revalidate();
+                parentFrame.repaint();
+            }
+        });
+    }
+
+    public void addComponents() {
         setLayout(new BoxLayout(this, BoxLayout.LINE_AXIS));
         panelWadContainer.setLayout(new BoxLayout(panelWadContainer, BoxLayout.PAGE_AXIS));
         panelBtnContainer.setLayout(new BoxLayout(panelBtnContainer, BoxLayout.Y_AXIS));
 
-        pwadScroller.setPreferredSize(new Dimension(500, 320));
+        pwadScroller.setPreferredSize(new Dimension(480, 320));
         pwadScroller.getVerticalScrollBar().setUnitIncrement(16);
 
-        panelBtnContainer.add(Box.createHorizontalGlue());
+        panelBtnContainer.add(Box.createVerticalGlue());
+        panelBtnContainer.add(move_header);
+        panelBtnContainer.add(Box.createRigidArea(standardFillerDim));
         panelBtnContainer.add(btn_moveup);
-        panelBtnContainer.add(Box.createRigidArea(new Dimension(0, 5)));
+        panelBtnContainer.add(Box.createRigidArea(standardFillerDim));
         panelBtnContainer.add(btn_movedown);
-        panelBtnContainer.add(Box.createRigidArea(new Dimension(0, 5)));
+        panelBtnContainer.add(Box.createRigidArea(standardFillerDim));
         panelBtnContainer.add(btn_remove);
-        panelBtnContainer.add(Box.createHorizontalGlue());
+        panelBtnContainer.add(Box.createRigidArea(new Dimension(0, 10)));
+        panelBtnContainer.add(config_header);
+        panelBtnContainer.add(Box.createRigidArea(standardFillerDim));
+        panelBtnContainer.add(btn_saveconfig);
+        panelBtnContainer.add(Box.createRigidArea(standardFillerDim));
+        panelBtnContainer.add(btn_loadconfig);
+        panelBtnContainer.add(Box.createRigidArea(standardFillerDim));
+        panelBtnContainer.add(Box.createVerticalGlue());
+
+        btn_remove.setMaximumSize(standardBtnDim);
+        btn_moveup.setMaximumSize(standardBtnDim);
+        btn_movedown.setMaximumSize(standardBtnDim);
+        btn_saveconfig.setMaximumSize(standardBtnDim);
+        btn_loadconfig.setMaximumSize(standardBtnDim);
 
         btn_remove.setAlignmentX(Component.CENTER_ALIGNMENT);
         btn_moveup.setAlignmentX(Component.CENTER_ALIGNMENT);
         btn_movedown.setAlignmentX(Component.CENTER_ALIGNMENT);
+        btn_saveconfig.setAlignmentX(Component.CENTER_ALIGNMENT);
+        btn_loadconfig.setAlignmentX(Component.CENTER_ALIGNMENT);
+        move_header.setAlignmentX(Component.CENTER_ALIGNMENT);
+        config_header.setAlignmentX(Component.CENTER_ALIGNMENT);
 
         add(Box.createRigidArea(new Dimension(5, 0)));
         add(pwadScroller);
-        add(Box.createHorizontalGlue());
+        add(Box.createRigidArea(new Dimension(5, 0)));
         add(panelBtnContainer);
+        add(Box.createRigidArea(new Dimension(5, 0)));
+    }
 
+    private void addBtnActions() {
         btn_remove.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 if (nSelectedIndex != -1) {
@@ -103,41 +180,13 @@ public class WADPanel extends JPanel {
                 }
             }
         });
-    }
 
-    public void addWad(String wadName, String wadPath, JFrame parentFrame) {
-        WADComponent newWad = new WADComponent(wadName, wadPath);
-        wadList.add(newWad);
-
-        panelWadContainer.add(newWad);
-
-        parentFrame.revalidate();
-        parentFrame.repaint();
-
-        newWad.btn_select.addActionListener(new ActionListener() {
+        btn_saveconfig.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                // deselecting old button if it exists
-                if (nSelectedIndex != -1) {
-                    wadList.get(nSelectedIndex).resetBorder();
-                    wadList.get(nSelectedIndex).btn_select.setText("select");
+                if (wadList.size() > 0) {
+                    // write json to file
+                    // if file doesn't exist, open jfilechooser to ask where to save
                 }
-
-                int newIndex = wadList.indexOf(newWad);
-
-                if (nSelectedIndex != newIndex) {
-                    newWad.setBorder(BorderFactory.createLineBorder(new Color(0, 125, 167), 2));
-                    nSelectedIndex = wadList.indexOf(newWad);
-                    wadList.get(nSelectedIndex).btn_select.setText("deselect");
-                }
-                // deselecting the item
-                else {
-                    newWad.resetBorder();
-                    newWad.btn_select.setText("select");
-                    nSelectedIndex = -1;
-                }
-
-                parentFrame.revalidate();
-                parentFrame.repaint();
             }
         });
     }

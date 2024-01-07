@@ -5,6 +5,7 @@ import javax.swing.JLabel;
 import javax.swing.JFileChooser;
 import javax.swing.SwingConstants;
 import javax.swing.Action;
+import javax.swing.BorderFactory;
 
 import java.awt.BorderLayout;
 import java.awt.Container;
@@ -19,11 +20,11 @@ import java.util.List;
 import wad_display.WADPanel;
 
 public class PickerWindow {
-    JFrame mainFrame;
-    JPanel btnContainer;
-    WADPanel wadContainer;
-    JButton btn_iwadPicker, btn_pwadPicker, btn_play;
-    JLabel name_iwad;
+    private JFrame mainFrame;
+    private JPanel btnContainer;
+    private WADPanel wadContainer;
+    private JButton btn_iwadPicker, btn_pwadPicker, btn_play;
+    private JLabel name_iwad;
 
     JFileChooser fileChooser;
     String basePath, iwadPath;
@@ -78,7 +79,7 @@ public class PickerWindow {
                     List<String> cmdBuilder = new ArrayList<String>();
                     cmdBuilder.add("gzdoom");
                     cmdBuilder.add("-config");
-                    cmdBuilder.add("/home/abel/.config/gzdoom/gzdoom.ini");
+                    cmdBuilder.add(System.getProperty("user.home") + "/.config/gzdoom/gzdoom.ini");
 
                     cmdBuilder.add("-iwad");
                     cmdBuilder.add(iwadPath);
@@ -96,7 +97,7 @@ public class PickerWindow {
                     try {
                         process = pb.start();
                     } catch (IOException exc) {
-                        exc.printStackTrace();
+                        //exc.printStackTrace();
                     }
                 }
                 else {
@@ -114,6 +115,8 @@ public class PickerWindow {
         btn_play = new JButton("Play");
         name_iwad = new JLabel("[IWAD]");
         fileChooser = new JFileChooser(new File(basePath));
+
+        name_iwad.setBorder(BorderFactory.createEmptyBorder(5, 0, 5, 0));
 
         // viewing in details mode by default
         Action details = fileChooser.getActionMap().get("viewTypeDetails");
