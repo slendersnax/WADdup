@@ -3,11 +3,16 @@ A custom GZDoom launcher made with Java
 
 ### build
 
-It was made using IntelliJ Idea (Community Edition), so I would recommend using that. However, there are other methods of building Java projects and it shouldn't be that hard since you only need the contents of the `src` folder and there aren't too many files.
+I have added Maven support, so if you have it installed you can just execute the `mvn package` command from the main directory. This also generates a `.jar` file, which you can execute with:
 
-When running it from the command line you can pass the path to your Doom WAD directory as an argument. This will set the starting directory for the file browser for that sesssion, otherwise it will open in your home directory. As of a few commits ago the `jar` file is included in the repo and so an example command would be:
 ```
-java -jar sl-gzdoom-wad-picker.jar ~/Documents/WADS
+java -cp target/sl-gzdoom-wad-picker-1.0-SNAPSHOT.jar Main
+```
+
+You can also pass a directory path as a parameter, which will set it to be the default directory when choosing files. Otherwise the file chooser will open in the home directory. This is handy if you have a folder full of WADs somewhere and you don't want to navigate there everytime you start the launcher.
+For example:
+```
+java -cp target/sl-gzdoom-wad-picker-1.0-SNAPSHOT.jar Main ~/Documents/WADS
 ```
 
 Tested on Arch Linux with Java 17 and 21.
@@ -28,7 +33,7 @@ I don't like drag-and-drop that much and I don't really use the other options fr
 - [ ] test on other platforms
 	- [ ] Windows
 	- [ ] general Linux build?
-- [ ] create and save configs
+- [ ] create, save, load configs
 - [ ] create file filter to only show `wad`, `pk3`, and `deh` files 
 - [ ] make it prettier
 - [ ] add build and install script
