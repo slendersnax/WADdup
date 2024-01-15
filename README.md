@@ -6,13 +6,18 @@ A custom GZDoom launcher made with Java
 I have added Maven support, so if you have it installed you can just execute the `mvn package` command from the main directory. This also generates a `.jar` file, which you can execute with:
 
 ```
-java -cp target/sl-gzdoom-wad-picker-1.0-SNAPSHOT.jar Main
+java -jar target/sl-gzdoom-wad-picker-1.0-SNAPSHOT.jar
 ```
 
 You can also pass a directory path as a parameter, which will set it to be the default directory when choosing files. Otherwise the file chooser will open in the home directory. This is handy if you have a folder full of WADs somewhere and you don't want to navigate there everytime you start the launcher.
 For example:
 ```
-java -cp target/sl-gzdoom-wad-picker-1.0-SNAPSHOT.jar Main ~/Documents/WADS
+java -jar target/sl-gzdoom-wad-picker-1.0-SNAPSHOT.jar ~/Documents/WADS
+```
+
+If for some reason this command doesn't work, you can try
+```
+java -cp target/sl-gzdoom-wad-picker-1.0-SNAPSHOT.jar Main
 ```
 
 Tested on Arch Linux with Java 17 and 21.
