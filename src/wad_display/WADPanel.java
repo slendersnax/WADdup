@@ -8,6 +8,7 @@ import javax.swing.JScrollPane;
 import javax.swing.BoxLayout;
 import javax.swing.Box;
 import javax.swing.BorderFactory;
+import javax.swing.JComponent;
 import java.awt.Dimension;
 import java.awt.Component;
 import java.awt.Color;
@@ -18,6 +19,7 @@ import java.util.Collections;
 
 public class WADPanel extends JPanel {
     public ArrayList<WADComponent> wadList;
+    private JFrame parentFrame;
     private JPanel panelWadContainer, panelBtnContainer;
     private JButton btn_remove, btn_moveup, btn_movedown, btn_saveconfig, btn_loadconfig;
     private JLabel move_header, config_header;
@@ -25,7 +27,9 @@ public class WADPanel extends JPanel {
     private Dimension standardBtnDim, standardFillerDim;
     private int nSelectedIndex;
 
-    public WADPanel() {
+    public WADPanel(JFrame _parentFrame) {
+        parentFrame = _parentFrame;
+
         wadList = new ArrayList<WADComponent>();
         panelWadContainer = new JPanel();
         panelBtnContainer = new JPanel();
@@ -36,7 +40,7 @@ public class WADPanel extends JPanel {
         btn_saveconfig = new JButton("save");
         btn_loadconfig = new JButton("load");
 
-        move_header = new JLabel("WAD ops");
+        move_header = new JLabel("PWAD ops");
         config_header = new JLabel("config ops");
 
         pwadScroller = new JScrollPane(panelWadContainer);
@@ -49,8 +53,8 @@ public class WADPanel extends JPanel {
         addBtnActions();
     }
 
-    public void addWad(String wadName, String wadPath, JFrame parentFrame) {
-        WADComponent newWad = new WADComponent(wadName, wadPath);
+    public void addWad(String wadName, String wadPath) {
+        WADComponent newWad = new WADComponent(wadName, wadPath, wadName.substring(wadName.length() - 3));
         wadList.add(newWad);
 
         panelWadContainer.add(newWad);
@@ -184,8 +188,7 @@ public class WADPanel extends JPanel {
         btn_saveconfig.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 if (wadList.size() > 0) {
-                    // write json to file
-                    // if file doesn't exist, open jfilechooser to ask where to save
+                    // save config
                 }
             }
         });

@@ -26,8 +26,8 @@ public class PickerWindow {
     private JButton btn_iwadPicker, btn_pwadPicker, btn_play;
     private JLabel name_iwad;
 
-    JFileChooser fileChooser;
-    String basePath, iwadPath;
+    private JFileChooser fileChooser;
+    private String basePath, iwadPath, userHome;
 
     public PickerWindow(String _basePath) {
         mainFrame = new JFrame("GZDoom WAD Picker");
@@ -38,6 +38,7 @@ public class PickerWindow {
 
         basePath = _basePath;
         iwadPath = "";
+        userHome = System.getProperty("user.home");
 
         addComponents(mainFrame.getContentPane());
         initBtnActions();
@@ -49,7 +50,8 @@ public class PickerWindow {
         btn_iwadPicker.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 int returnVal = fileChooser.showOpenDialog(mainFrame);
-                if(returnVal == JFileChooser.APPROVE_OPTION) {
+
+                if (returnVal == JFileChooser.APPROVE_OPTION) {
                     File file = fileChooser.getSelectedFile();
                     name_iwad.setText(file.getName());
                     iwadPath = file.getAbsolutePath();
@@ -65,7 +67,7 @@ public class PickerWindow {
                     File[] selFiles = fileChooser.getSelectedFiles();
 
                     for(int i = 0; i < selFiles.length; i ++) {
-                        wadContainer.addWad(selFiles[i].getName(), selFiles[i].getAbsolutePath(), mainFrame);
+                        wadContainer.addWad(selFiles[i].getName(), selFiles[i].getAbsolutePath());
                     }
                 }
 
@@ -79,14 +81,19 @@ public class PickerWindow {
                     List<String> cmdBuilder = new ArrayList<String>();
                     cmdBuilder.add("gzdoom");
                     cmdBuilder.add("-config");
-                    cmdBuilder.add(System.getProperty("user.home") + "/.config/gzdoom/gzdoom.ini");
+                    cmdBuilder.add(userHome.concat("/.config/gzdoom/gzdoom.ini"));
 
                     cmdBuilder.add("-iwad");
                     cmdBuilder.add(iwadPath);
 
                     if (wadContainer.wadList.size() > 0) {
                         for (int i = 0; i < wadContainer.wadList.size(); i++) {
-                            cmdBuilder.add("-file");
+                            if (wadContainer.wadList.get(i).sFileType == "deh") {
+                                cmdBuilder.add("-deh");
+                            }
+                            else {
+                                cmdBuilder.add("-file");
+                            }
                             cmdBuilder.add(wadContainer.wadList.get(i).sWADPath);
                         }
                     }
@@ -109,7 +116,7 @@ public class PickerWindow {
 
     public void addComponents(Container Pane) {
         btnContainer = new JPanel();
-        wadContainer = new WADPanel();
+        wadContainer = new WADPanel(mainFrame);
         btn_iwadPicker = new JButton("Pick IWAD");
         btn_pwadPicker = new JButton("Pick PWADS");
         btn_play = new JButton("Play");
