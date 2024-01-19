@@ -5,7 +5,6 @@ import javax.swing.JTextField;
 import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JLabel;
-import javax.swing.JScrollPane;
 import javax.swing.BoxLayout;
 import javax.swing.Box;
 import javax.swing.event.DocumentEvent;
@@ -23,22 +22,23 @@ import java.io.FileOutputStream;
 import java.io.File;
 import java.lang.Object;
 
-import wad_display.WADComponent;
+import core.*;
 
 public class ConfigHandler {
     private JFrame mainFrame;
-    private JPanel loadedWadsPanel, btnHolderPanel, innerLoadPanel;
+    private JPanel loadBtnsPanel, innerLoadPanel, saveBtnsPanel;
     private JLabel nameInstr;
+    private ItemPanel configListPanel;
     private JTextField nameInput;
-    private JScrollPane loadedWadsScroller;
     private String savePanelID, loadPanelID;
     private Dimension standardBtnDim;
 
-    public JButton btn_saveConfig, btn_loadConfig, btn_cancelSave, btn_cancelLoad;
+    public JButton btn_saveConfig, btn_loadConfig, btn_cancelSave, btn_cancelLoad, btn_removeConfig;
     public JPanel savePanel, loadPanel;
 
     private ArrayList<WADComponent> wadList, loadedWads;
     private String iwadPath;
+    private int nSelectedConfig;
 
     public ConfigHandler(JFrame _mainFrame) {
         mainFrame = _mainFrame;
@@ -47,65 +47,70 @@ public class ConfigHandler {
         loadPanelID = "load card";
 
         loadedWads = new ArrayList<WADComponent>();
-
         standardBtnDim = new Dimension(110, 28);
 
         savePanel = new JPanel();
         loadPanel = new JPanel();
+        configListPanel = new ItemPanel(new Dimension(520, 400));
         innerLoadPanel = new JPanel();
-        loadedWadsPanel = new JPanel();
-        btnHolderPanel = new JPanel();
-        loadedWadsScroller = new JScrollPane(loadedWadsPanel);
+        saveBtnsPanel = new JPanel();
+        loadBtnsPanel = new JPanel();
         nameInstr = new JLabel("Enter the name of the config:");
 
         nameInput = new JTextField();
         btn_saveConfig = new JButton("save");
         btn_loadConfig = new JButton("load");
+        btn_removeConfig = new JButton("remove");
         btn_cancelSave = new JButton("cancel");
         btn_cancelLoad = new JButton("cancel");
 
         btn_loadConfig.setMaximumSize(standardBtnDim);
+        btn_removeConfig.setMaximumSize(standardBtnDim);
         btn_cancelLoad.setMaximumSize(standardBtnDim);
 
-        loadedWadsScroller.setPreferredSize(new Dimension(480, 390));
         nameInput.setMaximumSize(new Dimension(180, 20));
-        btnHolderPanel.setPreferredSize(standardBtnDim);
+        loadBtnsPanel.setPreferredSize(standardBtnDim);
 
         savePanel.setLayout(new BoxLayout(savePanel, BoxLayout.Y_AXIS));
         loadPanel.setLayout(new BoxLayout(loadPanel, BoxLayout.Y_AXIS));
         innerLoadPanel.setLayout(new BoxLayout(innerLoadPanel, BoxLayout.LINE_AXIS));
-        loadedWadsPanel.setLayout(new BoxLayout(loadedWadsPanel, BoxLayout.Y_AXIS));
-        btnHolderPanel.setLayout(new BoxLayout(btnHolderPanel, BoxLayout.Y_AXIS));
+        saveBtnsPanel.setLayout(new BoxLayout(saveBtnsPanel, BoxLayout.LINE_AXIS));
+        loadBtnsPanel.setLayout(new BoxLayout(loadBtnsPanel, BoxLayout.Y_AXIS));
 
         nameInstr.setAlignmentX(Component.CENTER_ALIGNMENT);
         nameInput.setAlignmentX(Component.CENTER_ALIGNMENT);
         btn_saveConfig.setAlignmentX(Component.CENTER_ALIGNMENT);
         btn_loadConfig.setAlignmentX(Component.CENTER_ALIGNMENT);
+        btn_removeConfig.setAlignmentX(Component.CENTER_ALIGNMENT);
         btn_cancelSave.setAlignmentX(Component.CENTER_ALIGNMENT);
         btn_cancelLoad.setAlignmentX(Component.CENTER_ALIGNMENT);
-        loadedWadsScroller.setAlignmentX(Component.CENTER_ALIGNMENT);
 
         savePanel.setAlignmentX(Component.CENTER_ALIGNMENT);
         loadPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        saveBtnsPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        saveBtnsPanel.add(btn_saveConfig);
+        saveBtnsPanel.add(Box.createRigidArea(new Dimension(5, 0)));
+        saveBtnsPanel.add(btn_cancelSave);
 
         savePanel.add(Box.createVerticalGlue());
         savePanel.add(nameInstr);
         savePanel.add(Box.createRigidArea(new Dimension(0, 5)));
         savePanel.add(nameInput);
         savePanel.add(Box.createRigidArea(new Dimension(0, 5)));
-        savePanel.add(btn_saveConfig);
-        savePanel.add(Box.createRigidArea(new Dimension(0, 5)));
-        savePanel.add(btn_cancelSave);
+        savePanel.add(saveBtnsPanel);
         savePanel.add(Box.createVerticalGlue());
 
-        btnHolderPanel.add(btn_loadConfig);
-        btnHolderPanel.add(Box.createRigidArea(new Dimension(0, 5)));
-        btnHolderPanel.add(btn_cancelLoad);
+        loadBtnsPanel.add(btn_loadConfig);
+        loadBtnsPanel.add(Box.createRigidArea(new Dimension(0, 5)));
+        loadBtnsPanel.add(btn_removeConfig);
+        loadBtnsPanel.add(Box.createRigidArea(new Dimension(0, 5)));
+        loadBtnsPanel.add(btn_cancelLoad);
 
         innerLoadPanel.add(Box.createRigidArea(new Dimension(5, 0)));
-        innerLoadPanel.add(loadedWadsScroller);
+        innerLoadPanel.add(configListPanel);
         innerLoadPanel.add(Box.createRigidArea(new Dimension(5, 0)));
-        innerLoadPanel.add(btnHolderPanel);
+        innerLoadPanel.add(loadBtnsPanel);
         innerLoadPanel.add(Box.createRigidArea(new Dimension(5, 0)));
 
         loadPanel.add(Box.createRigidArea(new Dimension(0, 5)));
@@ -124,6 +129,30 @@ public class ConfigHandler {
 
             public void changed() {
                 btn_saveConfig.setEnabled(!nameInput.getText().isEmpty());
+            }
+        });
+
+        btn_removeConfig.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    int index = configListPanel.getSelected();
+
+                    if (index != -1) {
+                        Properties props = new Properties();
+                        props.loadFromXML(new FileInputStream("configs.xml"));
+
+                        props.remove(configListPanel.getItemList().get(index).getTitle());
+                        props.storeToXML(new FileOutputStream("configs.xml"), "");
+
+                        configListPanel.removeItem(index);
+                        configListPanel.setSelected(-1);
+
+                        mainFrame.revalidate();
+                        mainFrame.repaint();
+                    }
+                } catch (IOException ex) {
+
+                }
             }
         });
     }
@@ -153,62 +182,39 @@ public class ConfigHandler {
     }
 
     public void loadConfig() {
-        btn_loadConfig.setEnabled(false);
-        ArrayList<WADComponent> loadedConfigs = new ArrayList<WADComponent>();
-        loadedWadsPanel.removeAll();
-        final int[] nSelectedIndex = {-1};
-
         try {
             Properties loadProps = new Properties();
 
             loadProps.loadFromXML(new FileInputStream("configs.xml"));
             Enumeration<Object> propKeys = loadProps.keys();
+            configListPanel.clearItemList();
 
             while(propKeys.hasMoreElements()) {
-                WADComponent wadConfig = new WADComponent(propKeys.nextElement().toString(), "", "");
-                loadedConfigs.add(wadConfig);
-                loadedWadsPanel.add(wadConfig);
-                loadedWadsPanel.revalidate();
-                loadedWadsPanel.repaint();
-
-                wadConfig.btn_select.addActionListener(new ActionListener() {
-                    public void actionPerformed(ActionEvent e) {
-                        if(nSelectedIndex[0] != -1) {
-                            loadedConfigs.get(nSelectedIndex[0]).setDeselected();
-                        }
-
-                        int newIndex = loadedConfigs.indexOf(wadConfig);
-
-                        if (newIndex != nSelectedIndex[0]) {
-                            nSelectedIndex[0] = newIndex;
-                            wadConfig.setSelected();
-
-                            String selectedWads = loadProps.getProperty(wadConfig.getTitle()).toString();
-                            String[] arrSelWads = selectedWads.split(";;");
-
-                            loadedWads.clear();
-                            for(int i = 0; i < arrSelWads.length; i ++) {
-                                loadedWads.add(new WADComponent(arrSelWads[i].substring(arrSelWads[i].lastIndexOf("/") + 1), arrSelWads[i], arrSelWads[i].substring(arrSelWads[i].length() - 3)));
-                            }
-
-                            btn_loadConfig.setEnabled(true);
-                        }
-                        else {
-                            wadConfig.setDeselected();
-                            nSelectedIndex[0] = -1;
-                            btn_loadConfig.setEnabled(false);
-                        }
-
-                        loadedWadsPanel.revalidate();
-                        loadedWadsPanel.repaint();
-                    }
-                });
+                configListPanel.addItem(propKeys.nextElement().toString(), "");
             }
         } catch (IOException ex) {
 
         }
     }
     public ArrayList<WADComponent> getLoadedWads() {
+        loadedWads.clear();
+
+        try {
+            Properties props = new Properties();
+            props.loadFromXML(new FileInputStream("configs.xml"));
+
+            String selConfig = configListPanel.getItemList().get(configListPanel.getSelected()).getTitle();
+
+            String selectedWads = props.getProperty(selConfig);
+            String[] arrSelWads = selectedWads.split(";;");
+
+            for (String arrSelWad : arrSelWads) {
+                loadedWads.add(new WADComponent(arrSelWad.substring(arrSelWad.lastIndexOf("/") + 1), arrSelWad, arrSelWad.substring(arrSelWad.length() - 3)));
+            }
+        }  catch (IOException ex) {
+
+        }
+
         return loadedWads;
     }
 }

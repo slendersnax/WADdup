@@ -1,18 +1,18 @@
 package wad_display;
 
+import core.*;
+
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JScrollPane;
 import javax.swing.JFileChooser;
-import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.Action;
 import java.awt.Dimension;
 import java.awt.Component;
-import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
@@ -20,8 +20,10 @@ import java.util.ArrayList;
 import java.util.Collections;
 
 public class WADPanel extends JPanel {
-    public ArrayList<WADComponent> wadList;
-    public IWADLabel iwadLabel;
+    private ArrayList<WADComponent> wadList;
+    private IWADLabel iwadLabel;
+    private ItemPanel wadListPanel;
+
     private JFrame parentFrame;
     private JPanel panelWadContainer, panelBtnContainer, midPanel;
     private JButton btn_iwadPicker, btn_pwadPicker, btn_remove, btn_moveup, btn_movedown;
@@ -37,7 +39,7 @@ public class WADPanel extends JPanel {
 
         wadList = new ArrayList<WADComponent>();
         iwadLabel = new IWADLabel();
-        panelWadContainer = new JPanel();
+        wadListPanel = new ItemPanel(new Dimension(520, 400));
         panelBtnContainer = new JPanel();
         midPanel = new JPanel();
 
@@ -49,8 +51,6 @@ public class WADPanel extends JPanel {
 
         move_header = new JLabel("PWAD ops");
 
-        pwadScroller = new JScrollPane(panelWadContainer);
-
         standardBtnDim = new Dimension(110, 28);
         standardFillerDim = new Dimension(0, 5);
         nSelectedIndex = -1;
@@ -60,62 +60,19 @@ public class WADPanel extends JPanel {
         addBtnActions();
     }
 
-    public void setWadList(ArrayList<WADComponent> _wadList) {
-        wadList.clear();
-        panelWadContainer.removeAll();
-
-        for(int i = 0; i < _wadList.size(); i ++) {
-            addWad(_wadList.get(i).getTitle(), _wadList.get(i).sWADPath);
-        }
+    public IWADLabel getIwadLabel() {
+        return iwadLabel;
     }
 
-    public ArrayList<WADComponent> getWadList() {
-        return wadList;
-    }
-
-    public void addWad(String wadName, String wadPath) {
-        WADComponent newWad = new WADComponent(wadName, wadPath, wadName.substring(wadName.length() - 3));
-        wadList.add(newWad);
-
-        panelWadContainer.add(newWad);
-
-        parentFrame.revalidate();
-        parentFrame.repaint();
-
-        newWad.btn_select.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                // deselecting old button if it exists
-                if (nSelectedIndex != -1) {
-                    wadList.get(nSelectedIndex).setDeselected();
-                }
-
-                int newIndex = wadList.indexOf(newWad);
-
-                if (nSelectedIndex != newIndex) {
-                    newWad.setSelected();
-                    nSelectedIndex = wadList.indexOf(newWad);
-                }
-                // deselecting the item
-                else {
-                    newWad.setDeselected();
-                    nSelectedIndex = -1;
-                }
-
-                parentFrame.revalidate();
-                parentFrame.repaint();
-            }
-        });
+    public ItemPanel getWadListPanel() {
+        return wadListPanel;
     }
 
     public void addComponents() {
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 
         midPanel.setLayout(new BoxLayout(midPanel, BoxLayout.LINE_AXIS));
-        panelWadContainer.setLayout(new BoxLayout(panelWadContainer, BoxLayout.PAGE_AXIS));
         panelBtnContainer.setLayout(new BoxLayout(panelBtnContainer, BoxLayout.Y_AXIS));
-
-        pwadScroller.setPreferredSize(new Dimension(480, 400));
-        pwadScroller.getVerticalScrollBar().setUnitIncrement(16);
 
         fileChooser = new JFileChooser(new File(basePath));
 
@@ -149,7 +106,7 @@ public class WADPanel extends JPanel {
         move_header.setAlignmentX(Component.CENTER_ALIGNMENT);
 
         midPanel.add(Box.createRigidArea(new Dimension(5, 0)));
-        midPanel.add(pwadScroller);
+        midPanel.add(wadListPanel);
         midPanel.add(Box.createRigidArea(new Dimension(5, 0)));
         midPanel.add(panelBtnContainer);
         midPanel.add(Box.createRigidArea(new Dimension(5, 0)));
@@ -178,8 +135,10 @@ public class WADPanel extends JPanel {
                 if (returnVal == JFileChooser.APPROVE_OPTION) {
                     File[] selFiles = fileChooser.getSelectedFiles();
 
-                    for(int i = 0; i < selFiles.length; i ++) {
-                        addWad(selFiles[i].getName(), selFiles[i].getAbsolutePath());
+                    for (File selFile : selFiles) {
+                        wadListPanel.addItem(selFile.getName(), selFile.getAbsolutePath());
+                        parentFrame.revalidate();
+                        parentFrame.repaint();
                     }
                 }
 
@@ -188,13 +147,11 @@ public class WADPanel extends JPanel {
         });
         btn_remove.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
+                nSelectedIndex = wadListPanel.getSelected();
+
                 if (nSelectedIndex != -1) {
-                    WADComponent toRemove = wadList.get(nSelectedIndex);
-
-                    panelWadContainer.remove(toRemove);
-                    wadList.remove(nSelectedIndex);
-
-                    nSelectedIndex = -1;
+                    wadListPanel.removeItem(nSelectedIndex);
+                    wadListPanel.setSelected(-1);
 
                     revalidate();
                     repaint();
@@ -204,13 +161,11 @@ public class WADPanel extends JPanel {
 
         btn_moveup.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                if (nSelectedIndex > 0) {
-                    WADComponent toMove = wadList.get(nSelectedIndex);
+                nSelectedIndex = wadListPanel.getSelected();
 
-                    Collections.swap(wadList, nSelectedIndex, nSelectedIndex - 1);
-                    panelWadContainer.remove(toMove);
-                    panelWadContainer.add(toMove, nSelectedIndex - 1);
-                    nSelectedIndex --;
+                if (nSelectedIndex > 0) {
+                    wadListPanel.moveItemBack(nSelectedIndex);
+                    wadListPanel.setSelected(nSelectedIndex - 1);
 
                     revalidate();
                     repaint();
@@ -220,13 +175,11 @@ public class WADPanel extends JPanel {
 
         btn_movedown.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                if (nSelectedIndex < wadList.size() - 1 && nSelectedIndex != -1) {
-                    WADComponent toMove = wadList.get(nSelectedIndex);
+                nSelectedIndex = wadListPanel.getSelected();
 
-                    Collections.swap(wadList, nSelectedIndex, nSelectedIndex + 1);
-                    panelWadContainer.remove(toMove);
-                    panelWadContainer.add(toMove, nSelectedIndex + 1);
-                    nSelectedIndex ++;
+                if (nSelectedIndex != -1 && nSelectedIndex < wadListPanel.getItemList().size() - 1) {
+                    wadListPanel.moveItemForward(nSelectedIndex);
+                    wadListPanel.setSelected(nSelectedIndex + 1);
 
                     revalidate();
                     repaint();

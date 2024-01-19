@@ -1,4 +1,4 @@
-package wad_display;
+package core;
 
 import javax.swing.JPanel;
 import javax.swing.JLabel;
@@ -6,10 +6,11 @@ import javax.swing.JButton;
 import javax.swing.BoxLayout;
 import javax.swing.Box;
 import javax.swing.BorderFactory;
-import java.awt.*;
+import java.awt.Dimension;
+import java.awt.Color;
 
 public class WADComponent extends JPanel {
-    public JLabel wadTitle;
+    private JLabel wadTitle;
     public JButton btn_select;
     public String sWADPath, sFileType;
 

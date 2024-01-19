@@ -14,7 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import wad_display.WADPanel;
-import wad_display.WADComponent;
+import core.WADComponent;
 import config.ConfigHandler;
 
 public class PickerWindow {
@@ -52,9 +52,9 @@ public class PickerWindow {
     public void initBtnActions() {
         btn_saveconfig.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                if (wadContainer.wadList.size() > 0 && wadContainer.iwadLabel.getIwadPath() != "") {
+                if (!wadContainer.getWadListPanel().getItemList().isEmpty() && !wadContainer.getIwadLabel().getIwadPath().isEmpty()) {
                     cl.show(midCardPanel, saveCardCode);
-                    configHandler.setConfigData(wadContainer.wadList, wadContainer.iwadLabel.getIwadPath());
+                    configHandler.setConfigData(wadContainer.getWadListPanel().getItemList(), wadContainer.getIwadLabel().getIwadPath());
                 }
             }
         });
@@ -68,24 +68,26 @@ public class PickerWindow {
 
         btn_play.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                if (wadContainer.iwadLabel.getIwadPath() != "") {
+                ArrayList<WADComponent> sessionWads = wadContainer.getWadListPanel().getItemList();
+
+                if (!wadContainer.getIwadLabel().getIwadPath().isEmpty()) {
                     List<String> cmdBuilder = new ArrayList<String>();
                     cmdBuilder.add("gzdoom");
                     cmdBuilder.add("-config");
                     cmdBuilder.add(userHome.concat("/.config/gzdoom/gzdoom.ini"));
 
                     cmdBuilder.add("-iwad");
-                    cmdBuilder.add(wadContainer.iwadLabel.getIwadPath());
+                    cmdBuilder.add(wadContainer.getIwadLabel().getIwadPath());
 
-                    if (wadContainer.wadList.size() > 0) {
-                        for (int i = 0; i < wadContainer.wadList.size(); i++) {
-                            if (wadContainer.wadList.get(i).sFileType == "deh") {
+                    if (!sessionWads.isEmpty()) {
+                        for (WADComponent sessionWad : sessionWads) {
+                            if (sessionWad.sFileType.equals("deh")) {
                                 cmdBuilder.add("-deh");
                             }
                             else {
                                 cmdBuilder.add("-file");
                             }
-                            cmdBuilder.add(wadContainer.wadList.get(i).sWADPath);
+                            cmdBuilder.add(sessionWad.sWADPath);
                         }
                     }
 
@@ -99,7 +101,7 @@ public class PickerWindow {
                     }
                 }
                 else {
-                    wadContainer.iwadLabel.signalNoIWADError();
+                    wadContainer.getIwadLabel().signalNoIWADError();
                 }
             }
         });
@@ -132,10 +134,12 @@ public class PickerWindow {
                 cl.show(midCardPanel, wadCardCode);
                 ArrayList<WADComponent> selectedConfigWads = configHandler.getLoadedWads();
 
-                wadContainer.iwadLabel.setIWADprops(selectedConfigWads.get(0).getTitle(), selectedConfigWads.get(0).sWADPath);
-                selectedConfigWads.remove(0);
+                if (!selectedConfigWads.isEmpty()) {
+                    wadContainer.getIwadLabel().setIWADprops(selectedConfigWads.get(0).getTitle(), selectedConfigWads.get(0).sWADPath);
+                    selectedConfigWads.remove(0);
 
-                wadContainer.setWadList(selectedConfigWads);
+                    wadContainer.getWadListPanel().setItemList(selectedConfigWads);
+                }
             }
         });
     }
