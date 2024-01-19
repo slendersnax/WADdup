@@ -1,4 +1,4 @@
-# sl-gzdoom-wad-picker
+# WADdup
 A custom GZDoom launcher made with Java
 
 ### build
