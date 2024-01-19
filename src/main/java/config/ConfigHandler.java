@@ -184,10 +184,11 @@ public class ConfigHandler {
     public void loadConfig() {
         try {
             Properties loadProps = new Properties();
-
+            // TODO: check if configfile exists before using everywhere
             loadProps.loadFromXML(new FileInputStream("configs.xml"));
             Enumeration<Object> propKeys = loadProps.keys();
             configListPanel.clearItemList();
+            configListPanel.setSelected(-1);
 
             while(propKeys.hasMoreElements()) {
                 configListPanel.addItem(propKeys.nextElement().toString(), "");
