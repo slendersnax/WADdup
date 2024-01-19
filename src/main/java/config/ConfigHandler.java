@@ -51,7 +51,7 @@ public class ConfigHandler {
 
         savePanel = new JPanel();
         loadPanel = new JPanel();
-        configListPanel = new ItemPanel(new Dimension(520, 400));
+        configListPanel = new ItemPanel(new Dimension(520, 420));
         innerLoadPanel = new JPanel();
         saveBtnsPanel = new JPanel();
         loadBtnsPanel = new JPanel();
