@@ -2,7 +2,6 @@ package wad_display;
 
 import javax.swing.JLabel;
 import javax.swing.BorderFactory;
-import javax.swing.SwingConstants;
 import java.awt.Component;
 
 public class IWADLabel extends JLabel {
@@ -14,6 +13,11 @@ public class IWADLabel extends JLabel {
 
         setBorder(BorderFactory.createEmptyBorder(5, 0, 5, 0));
         setAlignmentX(Component.CENTER_ALIGNMENT);
+    }
+
+    public void setIWADprops(String iwadName, String _iwadPath) {
+        setText(iwadName);
+        setIwadPath(_iwadPath);
     }
 
     public String getIwadPath() {

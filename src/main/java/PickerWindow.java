@@ -2,9 +2,10 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JButton;
 import javax.swing.Box;
-
 import javax.swing.BoxLayout;
+
 import java.awt.Container;
+import java.awt.CardLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -13,14 +14,18 @@ import java.util.ArrayList;
 import java.util.List;
 
 import wad_display.WADPanel;
+import wad_display.WADComponent;
+import config.ConfigHandler;
 
 public class PickerWindow {
     private JFrame mainFrame;
-    private JPanel btnContainer;
+    private JPanel btnContainer, midCardPanel;
     private WADPanel wadContainer;
     private JButton btn_play, btn_saveconfig, btn_loadconfig;
+    private CardLayout cl;
 
-    private String basePath, userHome;
+    private String basePath, userHome, saveCardCode, loadCardCode, wadCardCode;
+    private ConfigHandler configHandler;
 
     public PickerWindow(String _basePath) {
         mainFrame = new JFrame("WADdup");
@@ -32,6 +37,12 @@ public class PickerWindow {
         basePath = _basePath;
         userHome = System.getProperty("user.home");
 
+        saveCardCode = "SAVE";
+        loadCardCode = "LOAD";
+        wadCardCode = "WAD";
+
+        configHandler = new ConfigHandler(mainFrame);
+
         addComponents(mainFrame.getContentPane());
         initBtnActions();
 
@@ -42,8 +53,16 @@ public class PickerWindow {
         btn_saveconfig.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 if (wadContainer.wadList.size() > 0 && wadContainer.iwadLabel.getIwadPath() != "") {
-                    // save config
+                    cl.show(midCardPanel, saveCardCode);
+                    configHandler.setConfigData(wadContainer.wadList, wadContainer.iwadLabel.getIwadPath());
                 }
+            }
+        });
+
+        btn_loadconfig.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                configHandler.loadConfig();
+                cl.show(midCardPanel, loadCardCode);
             }
         });
 
@@ -84,11 +103,48 @@ public class PickerWindow {
                 }
             }
         });
+
+        configHandler.btn_cancelSave.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                cl.show(midCardPanel, wadCardCode);
+            }
+        });
+
+        configHandler.btn_cancelLoad.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                cl.show(midCardPanel, wadCardCode);
+            }
+        });
+
+        configHandler.btn_saveConfig.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    configHandler.saveConfig();
+                    cl.show(midCardPanel, wadCardCode);
+                } catch (IOException ex) {
+
+                }
+            }
+        });
+
+        configHandler.btn_loadConfig.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                cl.show(midCardPanel, wadCardCode);
+                ArrayList<WADComponent> selectedConfigWads = configHandler.getLoadedWads();
+
+                wadContainer.iwadLabel.setIWADprops(selectedConfigWads.get(0).getTitle(), selectedConfigWads.get(0).sWADPath);
+                selectedConfigWads.remove(0);
+
+                wadContainer.setWadList(selectedConfigWads);
+            }
+        });
     }
 
     public void addComponents(Container Pane) {
         btnContainer = new JPanel();
         wadContainer = new WADPanel(mainFrame, basePath);
+        midCardPanel = new JPanel();
+        cl = new CardLayout();
 
         btn_saveconfig = new JButton("save config");
         btn_loadconfig = new JButton("load config");
@@ -101,8 +157,15 @@ public class PickerWindow {
 
         mainFrame.setLayout(new BoxLayout(mainFrame.getContentPane(), BoxLayout.Y_AXIS));
 
+        midCardPanel.setLayout(cl);
+        midCardPanel.add(configHandler.savePanel, saveCardCode);
+        midCardPanel.add(configHandler.loadPanel, loadCardCode);
+        midCardPanel.add(wadContainer, wadCardCode);
+
+        cl.show(midCardPanel, wadCardCode);
+
         mainFrame.add(Box.createVerticalGlue());
-        mainFrame.add(wadContainer);
+        mainFrame.add(midCardPanel);
         mainFrame.add(btnContainer);
         mainFrame.add(Box.createVerticalGlue());
     }

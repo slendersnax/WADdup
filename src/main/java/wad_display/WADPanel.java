@@ -60,6 +60,19 @@ public class WADPanel extends JPanel {
         addBtnActions();
     }
 
+    public void setWadList(ArrayList<WADComponent> _wadList) {
+        wadList.clear();
+        panelWadContainer.removeAll();
+
+        for(int i = 0; i < _wadList.size(); i ++) {
+            addWad(_wadList.get(i).getTitle(), _wadList.get(i).sWADPath);
+        }
+    }
+
+    public ArrayList<WADComponent> getWadList() {
+        return wadList;
+    }
+
     public void addWad(String wadName, String wadPath) {
         WADComponent newWad = new WADComponent(wadName, wadPath, wadName.substring(wadName.length() - 3));
         wadList.add(newWad);
@@ -73,21 +86,18 @@ public class WADPanel extends JPanel {
             public void actionPerformed(ActionEvent e) {
                 // deselecting old button if it exists
                 if (nSelectedIndex != -1) {
-                    wadList.get(nSelectedIndex).resetBorder();
-                    wadList.get(nSelectedIndex).btn_select.setText("select");
+                    wadList.get(nSelectedIndex).setDeselected();
                 }
 
                 int newIndex = wadList.indexOf(newWad);
 
                 if (nSelectedIndex != newIndex) {
-                    newWad.setBorder(BorderFactory.createLineBorder(new Color(0, 125, 167), 2));
+                    newWad.setSelected();
                     nSelectedIndex = wadList.indexOf(newWad);
-                    wadList.get(nSelectedIndex).btn_select.setText("deselect");
                 }
                 // deselecting the item
                 else {
-                    newWad.resetBorder();
-                    newWad.btn_select.setText("select");
+                    newWad.setDeselected();
                     nSelectedIndex = -1;
                 }
 
@@ -155,8 +165,7 @@ public class WADPanel extends JPanel {
 
                 if (returnVal == JFileChooser.APPROVE_OPTION) {
                     File file = fileChooser.getSelectedFile();
-                    iwadLabel.setText(file.getName());
-                    iwadLabel.setIwadPath(file.getAbsolutePath());
+                    iwadLabel.setIWADprops(file.getName(), file.getAbsolutePath());
                 }
             }
         });
@@ -165,7 +174,8 @@ public class WADPanel extends JPanel {
             public void actionPerformed(ActionEvent e) {
                 fileChooser.setMultiSelectionEnabled(true);
                 int returnVal = fileChooser.showOpenDialog(parentFrame);
-                if(returnVal == JFileChooser.APPROVE_OPTION) {
+
+                if (returnVal == JFileChooser.APPROVE_OPTION) {
                     File[] selFiles = fileChooser.getSelectedFiles();
 
                     for(int i = 0; i < selFiles.length; i ++) {
