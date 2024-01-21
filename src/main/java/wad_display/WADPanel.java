@@ -137,8 +137,6 @@ public class WADPanel extends JPanel {
 
                     for (File selFile : selFiles) {
                         wadListPanel.addItem(selFile.getName(), selFile.getAbsolutePath());
-                        parentFrame.revalidate();
-                        parentFrame.repaint();
                     }
                 }
 
@@ -152,9 +150,6 @@ public class WADPanel extends JPanel {
                 if (nSelectedIndex != -1) {
                     wadListPanel.removeItem(nSelectedIndex);
                     wadListPanel.setSelected(-1);
-
-                    revalidate();
-                    repaint();
                 }
             }
         });
@@ -166,9 +161,6 @@ public class WADPanel extends JPanel {
                 if (nSelectedIndex > 0) {
                     wadListPanel.moveItemBack(nSelectedIndex);
                     wadListPanel.setSelected(nSelectedIndex - 1);
-
-                    revalidate();
-                    repaint();
                 }
             }
         });
@@ -180,9 +172,6 @@ public class WADPanel extends JPanel {
                 if (nSelectedIndex != -1 && nSelectedIndex < wadListPanel.getItemList().size() - 1) {
                     wadListPanel.moveItemForward(nSelectedIndex);
                     wadListPanel.setSelected(nSelectedIndex + 1);
-
-                    revalidate();
-                    repaint();
                 }
             }
         });

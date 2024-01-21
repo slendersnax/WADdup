@@ -39,12 +39,23 @@ public class ConfigHandler {
     private ArrayList<WADComponent> wadList, loadedWads;
     private String iwadPath;
     private int nSelectedConfig;
+    private Properties propHandler;
+    private File configFile;
 
     public ConfigHandler(JFrame _mainFrame) {
         mainFrame = _mainFrame;
 
         savePanelID = "save card";
         loadPanelID = "load card";
+
+        configFile = new File("configs.xml");
+        propHandler = new Properties();
+
+        try {
+            configFile.createNewFile();
+        } catch (IOException ex) {
+
+        }
 
         loadedWads = new ArrayList<WADComponent>();
         standardBtnDim = new Dimension(110, 28);
@@ -134,27 +145,39 @@ public class ConfigHandler {
 
         btn_removeConfig.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                try {
-                    int index = configListPanel.getSelected();
+                int index = configListPanel.getSelected();
 
-                    if (index != -1) {
-                        Properties props = new Properties();
-                        props.loadFromXML(new FileInputStream("configs.xml"));
+                if (index != -1) {
+                    loadConfigsFromXML();
 
-                        props.remove(configListPanel.getItemList().get(index).getTitle());
-                        props.storeToXML(new FileOutputStream("configs.xml"), "");
+                    propHandler.remove(configListPanel.getItemList().get(index).getTitle());
+                    storeConfigsToXML();
 
-                        configListPanel.removeItem(index);
-                        configListPanel.setSelected(-1);
-
-                        mainFrame.revalidate();
-                        mainFrame.repaint();
-                    }
-                } catch (IOException ex) {
-
+                    configListPanel.removeItem(index);
+                    configListPanel.setSelected(-1);
                 }
             }
         });
+    }
+
+    private void loadConfigsFromXML() {
+        try {
+            if (configFile.exists()) {
+                propHandler.loadFromXML(new FileInputStream(configFile.getName()));
+            }
+        } catch(IOException ex) {
+
+        }
+    }
+
+    private void storeConfigsToXML() {
+        try {
+            if (configFile.exists()) {
+                propHandler.storeToXML(new FileOutputStream(configFile.getName()), "");
+            }
+        } catch(IOException ex) {
+
+        }
     }
 
     public void setConfigData(ArrayList<WADComponent> _wadList, String _iwadPath) {
@@ -166,54 +189,36 @@ public class ConfigHandler {
     }
 
     public void saveConfig() throws IOException {
-        Properties saveProps = new Properties();
         ArrayList<String> wadPaths = new ArrayList<String>(wadList.stream().map(item -> item.sWADPath).toList());
         wadPaths.add(0, iwadPath);
         String joinedWadPaths = String.join(";;", wadPaths);
-        File configFile = new File("configs.xml");
 
-        // if we don't load the existing properties we will overwrite the file contents
-        if (configFile.exists()) {
-            saveProps.loadFromXML(new FileInputStream("configs.xml"));
-        }
+        loadConfigsFromXML();
 
-        saveProps.setProperty(nameInput.getText(), joinedWadPaths);
-        saveProps.storeToXML(new FileOutputStream("configs.xml"), "");
+        propHandler.setProperty(nameInput.getText(), joinedWadPaths);
+        storeConfigsToXML();
     }
 
     public void loadConfig() {
-        try {
-            Properties loadProps = new Properties();
-            // TODO: check if configfile exists before using everywhere
-            loadProps.loadFromXML(new FileInputStream("configs.xml"));
-            Enumeration<Object> propKeys = loadProps.keys();
-            configListPanel.clearItemList();
-            configListPanel.setSelected(-1);
+        loadConfigsFromXML();
+        Enumeration<Object> propKeys = propHandler.keys();
+        configListPanel.clearItemList();
+        configListPanel.setSelected(-1);
 
-            while(propKeys.hasMoreElements()) {
-                configListPanel.addItem(propKeys.nextElement().toString(), "");
-            }
-        } catch (IOException ex) {
-
+        while(propKeys.hasMoreElements()) {
+            configListPanel.addItem(propKeys.nextElement().toString(), "");
         }
     }
     public ArrayList<WADComponent> getLoadedWads() {
         loadedWads.clear();
+        loadConfigsFromXML();
 
-        try {
-            Properties props = new Properties();
-            props.loadFromXML(new FileInputStream("configs.xml"));
+        String selConfig = configListPanel.getItemList().get(configListPanel.getSelected()).getTitle();
+        String selectedWads = propHandler.getProperty(selConfig);
+        String[] arrSelWads = selectedWads.split(";;");
 
-            String selConfig = configListPanel.getItemList().get(configListPanel.getSelected()).getTitle();
-
-            String selectedWads = props.getProperty(selConfig);
-            String[] arrSelWads = selectedWads.split(";;");
-
-            for (String arrSelWad : arrSelWads) {
-                loadedWads.add(new WADComponent(arrSelWad.substring(arrSelWad.lastIndexOf("/") + 1), arrSelWad, arrSelWad.substring(arrSelWad.length() - 3)));
-            }
-        }  catch (IOException ex) {
-
+        for (String arrSelWad : arrSelWads) {
+            loadedWads.add(new WADComponent(arrSelWad.substring(arrSelWad.lastIndexOf("/") + 1), arrSelWad, arrSelWad.substring(arrSelWad.length() - 3)));
         }
 
         return loadedWads;

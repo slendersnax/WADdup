@@ -54,6 +54,9 @@ public class ItemPanel extends JPanel {
     public void clearItemList() {
         itemList.clear();
         itemContainer.removeAll();
+
+        revalidate();
+        repaint();
     }
 
     public void removeItem(int index) {
@@ -63,6 +66,9 @@ public class ItemPanel extends JPanel {
         itemList.remove(index);
 
         nSelectedIndex = -1;
+
+        revalidate();
+        repaint();
     }
 
     public void moveItemBack(int index) {
@@ -71,6 +77,9 @@ public class ItemPanel extends JPanel {
         Collections.swap(itemList, index, index - 1);
         itemContainer.remove(toMove);
         itemContainer.add(toMove, index - 1);
+
+        revalidate();
+        repaint();
     }
 
     public void moveItemForward(int index) {
@@ -79,6 +88,9 @@ public class ItemPanel extends JPanel {
         Collections.swap(itemList, nSelectedIndex, nSelectedIndex + 1);
         itemContainer.remove(toMove);
         itemContainer.add(toMove, nSelectedIndex + 1);
+
+        revalidate();
+        repaint();
     }
 
     public void addItem(String name, String path) {
@@ -111,6 +123,9 @@ public class ItemPanel extends JPanel {
                 repaint();
             }
         });
+
+        revalidate();
+        repaint();
     }
 
     public int getSelected() {
