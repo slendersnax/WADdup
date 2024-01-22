@@ -48,14 +48,8 @@ public class ConfigHandler {
         savePanelID = "save card";
         loadPanelID = "load card";
 
-        configFile = new File("configs.xml");
         propHandler = new Properties();
-
-        try {
-            configFile.createNewFile();
-        } catch (IOException ex) {
-
-        }
+        initConfigFile();
 
         loadedWads = new ArrayList<WADComponent>();
         standardBtnDim = new Dimension(110, 28);
@@ -160,10 +154,44 @@ public class ConfigHandler {
         });
     }
 
+    private void initConfigFile() {
+        String osname = System.getProperty("os.name");
+        String homedir = System.getProperty("user.home");
+        File configdir;
+
+        if (osname.contains("Linux")) {
+            configdir = new File(homedir.concat("/.config/waddup"));
+
+            if(!configdir.exists()) {
+                configdir.mkdirs();
+            }
+
+            configFile = new File(homedir.concat("/.config/waddup/configs.xml"));
+        }
+        else if (osname.contains("Windows")) {
+            configdir = new File(homedir.concat("\\AppData\\waddup"));
+
+            if(!configdir.exists()) {
+                configdir.mkdirs();
+            }
+
+            configFile = new File(homedir.concat("\\AppData\\waddup\\configs.xml"));
+        }
+        else {
+            configFile = new File("configs.xml");
+        }
+
+        try {
+            configFile.createNewFile();
+        } catch (IOException ex) {
+            System.out.println(ex.toString());
+        }
+    }
+
     private void loadConfigsFromXML() {
         try {
             if (configFile.exists()) {
-                propHandler.loadFromXML(new FileInputStream(configFile.getName()));
+                propHandler.loadFromXML(new FileInputStream(configFile.getAbsolutePath()));
             }
         } catch(IOException ex) {
 
@@ -173,7 +201,7 @@ public class ConfigHandler {
     private void storeConfigsToXML() {
         try {
             if (configFile.exists()) {
-                propHandler.storeToXML(new FileOutputStream(configFile.getName()), "");
+                propHandler.storeToXML(new FileOutputStream(configFile.getAbsolutePath()), "");
             }
         } catch(IOException ex) {
 
@@ -213,12 +241,16 @@ public class ConfigHandler {
         loadedWads.clear();
         loadConfigsFromXML();
 
-        String selConfig = configListPanel.getItemList().get(configListPanel.getSelected()).getTitle();
-        String selectedWads = propHandler.getProperty(selConfig);
-        String[] arrSelWads = selectedWads.split(";;");
+        int selectedConfig = configListPanel.getSelected();
 
-        for (String arrSelWad : arrSelWads) {
-            loadedWads.add(new WADComponent(arrSelWad.substring(arrSelWad.lastIndexOf("/") + 1), arrSelWad, arrSelWad.substring(arrSelWad.length() - 3)));
+        if (selectedConfig != -1) {
+            String selConfig = configListPanel.getItemList().get(configListPanel.getSelected()).getTitle();
+            String selectedWads = propHandler.getProperty(selConfig);
+            String[] arrSelWads = selectedWads.split(";;");
+
+            for (String arrSelWad : arrSelWads) {
+                loadedWads.add(new WADComponent(arrSelWad.substring(arrSelWad.lastIndexOf("/") + 1), arrSelWad, arrSelWad.substring(arrSelWad.length() - 3)));
+            }
         }
 
         return loadedWads;
