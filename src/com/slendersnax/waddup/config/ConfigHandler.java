@@ -1,4 +1,4 @@
-package config;
+package com.slendersnax.waddup.config;
 
 import javax.swing.JFrame;
 import javax.swing.JTextField;
@@ -22,7 +22,7 @@ import java.io.FileOutputStream;
 import java.io.File;
 import java.lang.Object;
 
-import core.*;
+import com.slendersnax.waddup.core.*;
 
 public class ConfigHandler {
     private JFrame mainFrame;

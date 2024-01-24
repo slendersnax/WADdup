@@ -1,4 +1,4 @@
-package core;
+package com.slendersnax.waddup.core;
 
 import javax.swing.JPanel;
 import javax.swing.JLabel;

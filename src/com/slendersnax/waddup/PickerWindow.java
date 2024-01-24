@@ -1,3 +1,5 @@
+package com.slendersnax.waddup;
+
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JButton;
@@ -13,9 +15,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import wad_display.WADPanel;
-import core.WADComponent;
-import config.ConfigHandler;
+import com.slendersnax.waddup.wad_display.WADPanel;
+import com.slendersnax.waddup.core.WADComponent;
+import com.slendersnax.waddup.config.ConfigHandler;
 
 public class PickerWindow {
     private JFrame mainFrame;
@@ -73,8 +75,8 @@ public class PickerWindow {
                 if (!wadContainer.getIwadLabel().getIwadPath().isEmpty()) {
                     List<String> cmdBuilder = new ArrayList<String>();
                     cmdBuilder.add("gzdoom");
-                    cmdBuilder.add("-config");
-                    cmdBuilder.add(userHome.concat("/.config/gzdoom/gzdoom.ini"));
+                    cmdBuilder.add("-com.slendersnax.waddup.config");
+                    cmdBuilder.add(userHome.concat("/.com.slendersnax.waddup.config/gzdoom/gzdoom.ini"));
 
                     cmdBuilder.add("-iwad");
                     cmdBuilder.add(wadContainer.getIwadLabel().getIwadPath());

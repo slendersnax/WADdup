@@ -1,26 +1,29 @@
 # WADdup
 A custom GZDoom launcher made with Java
 
-### build
+### prerequisites
 
-I have added Maven support, so if you have it installed you can just execute the `mvn package` command from the main directory. This also generates a `.jar` file, which you can execute with:
+In order to run the program you need Java 17 (or a newer version) installed. If you want to build it from source, [Maven](https://maven.apache.org/download.cgi) is the best option.
+
+### installation
+
+Head over to the [releases](https://github.com/slendersnax/WADdup/releases/) page and download the latest `waddup-x.x.jar` file. This is an executable file so you can just double click on it and it will launch (at the moment it's suggest to run it from the command line however).
+
+### build and run
+
+You can build it using Maven or import it into your IDE of choice and build it from there.
+
+Using Maven: open the command line and execute the `mvn package` command from the main directory. This will generate a `waddup-x.x.jar` file in the `target` folder (where `x.x` is the version number). You can execute this file by double clicking on it or from the command line like this (substituting `x.x` with your version):
 
 ```
-java -jar target/waddup-0.9.jar
+java -jar target/waddup-x.x.jar
 ```
 
-You can also pass a directory path as a parameter, which will set it to be the default directory when choosing files. Otherwise the file chooser will open in the home directory. This is handy if you have a folder full of WADs somewhere and you don't want to navigate there everytime you start the launcher.
+In the command line you can also pass a directory path as a parameter, which will set it to be the default directory when choosing files for the current session. Otherwise the file chooser will open in the home directory. This is handy if you have a folder full of WADs somewhere and you don't want to navigate there everytime you start the launcher.
 For example:
 ```
-java -jar target/waddup-0.9.jar ~/Documents/WADS
+java -jar target/waddup-x.x.jar ~/Documents/WADS
 ```
-
-If for some reason this command doesn't work, you can try
-```
-java -cp target/waddup-0.9.jar Main
-```
-
-Tested on Arch Linux with Java 17 and 21.
 
 ### screenshot(s)
 
@@ -36,6 +39,12 @@ I don't like drag-and-drop that much and I don't really use the other options fr
 - able to remove PWADs or change their loading order
 - able to save and load WAD configurations
 
+### notes
+
+As of right now:
+- the latest version is still optimised for Linux so I don't suggest running it on Windows (yet).
+- it's suggested to run it from the command line with the command found in the **build and run** section above
+
 ### todo
 
 - [ ] test on other platforms
@@ -44,8 +53,9 @@ I don't like drag-and-drop that much and I don't really use the other options fr
 - [x] create, save, load configs
 	- [x] configs are now created in the same place on Linux
 	- [ ] test this on other platforms
+- [ ] options to set GZDoom executable and GZDoom config location
 - [ ] create file filter to only show `wad`, `pk3`, and `deh` files 
 - [ ] make it prettier
 - [x] add build and install script
-	- kind of done? Maven builds an executable `jar` file, but maybe we could add a bash wrapper and desktop icon
-- [ ] maybe add other GZDoom launch options (Vulkan vs. OpenGL, Fullscreen, etc)
+- ~~maybe add other GZDoom launch options (Vulkan vs. OpenGL, Fullscreen, etc)?~~
+	- you can set these from inside GZDoom so this isn't needed
