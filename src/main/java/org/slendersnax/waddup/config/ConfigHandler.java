@@ -1,4 +1,4 @@
-package com.slendersnax.waddup.config;
+package org.slendersnax.waddup.config;
 
 import javax.swing.JFrame;
 import javax.swing.JTextField;
@@ -21,8 +21,9 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.File;
 import java.lang.Object;
+import java.util.stream.Collectors;
 
-import com.slendersnax.waddup.core.*;
+import org.slendersnax.waddup.core.*;
 
 public class ConfigHandler {
     private JFrame mainFrame;
@@ -217,7 +218,7 @@ public class ConfigHandler {
     }
 
     public void saveConfig() throws IOException {
-        ArrayList<String> wadPaths = new ArrayList<String>(wadList.stream().map(item -> item.sWADPath).toList());
+        ArrayList<String> wadPaths = new ArrayList<String>(wadList.stream().map(item -> item.sWADPath).collect(Collectors.toList()));
         wadPaths.add(0, iwadPath);
         String joinedWadPaths = String.join(";;", wadPaths);
 

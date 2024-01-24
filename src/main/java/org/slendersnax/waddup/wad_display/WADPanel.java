@@ -1,6 +1,6 @@
-package com.slendersnax.waddup.wad_display;
+package org.slendersnax.waddup.wad_display;
 
-import com.slendersnax.waddup.core.*;
+import org.slendersnax.waddup.core.*;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;

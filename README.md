@@ -3,11 +3,18 @@ A custom GZDoom launcher made with Java
 
 ### prerequisites
 
-In order to run the program you need Java 17 (or a newer version) installed. If you want to build it from source, [Maven](https://maven.apache.org/download.cgi) is the best option.
+In order to run the program you need Java 8 (or a newer version) installed. If you want to build it from source, [Maven](https://maven.apache.org/download.cgi) is the best option.
+
+Most people have a version of Java installed, and it's usually Java 8. If you're unsure if you have it installed, or what version you have installed, check out these guides for:
+- Linux: https://phoenixnap.com/kb/check-java-version-linux
+- Windows 10: https://www.howtogeek.com/717330/how-to-check-your-java-version-on-windows-10/
+- Windows 11: https://www.howtogeek.com/838703/how-to-check-your-java-version-on-windows-11/
+
+On Linux you can install it using your preferred package manager. On Windows, head over to the [Java download page](https://www.java.com/en/download/) and follow the guide to install it.
 
 ### installation
 
-Head over to the [releases](https://github.com/slendersnax/WADdup/releases/) page and download the latest `waddup-x.x.jar` file. This is an executable file so you can just double click on it and it will launch (at the moment it's suggest to run it from the command line however).
+Head over to the [releases](https://github.com/slendersnax/WADdup/releases/) page and download the latest `waddup-x.x.jar` file. This is an executable file so you can just double click on it and it will launch (at the moment it's recommended to run it from the command line however).
 
 ### build and run
 

@@ -1,4 +1,4 @@
-package com.slendersnax.waddup;
+package org.slendersnax.waddup;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -15,9 +15,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.slendersnax.waddup.wad_display.WADPanel;
-import com.slendersnax.waddup.core.WADComponent;
-import com.slendersnax.waddup.config.ConfigHandler;
+import org.slendersnax.waddup.wad_display.WADPanel;
+import org.slendersnax.waddup.core.WADComponent;
+import org.slendersnax.waddup.config.ConfigHandler;
 
 public class PickerWindow {
     private JFrame mainFrame;

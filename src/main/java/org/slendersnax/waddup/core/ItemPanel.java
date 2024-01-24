@@ -1,4 +1,4 @@
-package com.slendersnax.waddup.core;
+package org.slendersnax.waddup.core;
 
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
