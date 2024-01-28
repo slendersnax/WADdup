@@ -10,7 +10,7 @@ import java.awt.Dimension;
 import java.awt.Color;
 
 public class WADComponent extends JPanel {
-    private JLabel wadTitle;
+    private final JLabel wadTitle;
     public JButton btn_select;
     public String sWADPath, sFileType;
 

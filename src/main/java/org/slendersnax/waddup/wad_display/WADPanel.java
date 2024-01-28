@@ -6,7 +6,6 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JButton;
 import javax.swing.JLabel;
-import javax.swing.JScrollPane;
 import javax.swing.JFileChooser;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -16,30 +15,30 @@ import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
-import java.util.ArrayList;
 
 public class WADPanel extends JPanel {
-    private ArrayList<WADComponent> wadList;
-    private IWADLabel iwadLabel;
-    private ItemPanel wadListPanel;
+    private final IWADLabel iwadLabel;
+    private final ItemPanel wadListPanel;
 
-    private JFrame parentFrame;
-    private JPanel panelWadContainer, panelBtnContainer, midPanel;
-    private JButton btn_iwadPicker, btn_pwadPicker, btn_remove, btn_moveup, btn_movedown;
-    private JLabel move_header;
-    private JScrollPane pwadScroller;
+    private final JFrame parentFrame;
+    private final JPanel midPanel;
+    private final VerticalBtnPanel panelBtnContainer;
+    private final JButton btn_iwadPicker, btn_pwadPicker, btn_remove, btn_moveup, btn_movedown;
+    private final JLabel move_header;
     private JFileChooser fileChooser;
-    private Dimension standardBtnDim, standardFillerDim;
+    private final Dimension standardBtnDim, standardFillerDim;
     private int nSelectedIndex;
-    private String basePath;
+    private final String basePath;
 
     public WADPanel(JFrame _parentFrame, String _basePath) {
         parentFrame = _parentFrame;
 
-        wadList = new ArrayList<WADComponent>();
+        standardBtnDim = new Dimension(110, 28);
+        standardFillerDim = new Dimension(0, 5);
+
         iwadLabel = new IWADLabel();
         wadListPanel = new ItemPanel(new Dimension(520, 400));
-        panelBtnContainer = new JPanel();
+        panelBtnContainer = new VerticalBtnPanel(new Dimension(110, 400));
         midPanel = new JPanel();
 
         btn_iwadPicker = new JButton("Pick IWAD");
@@ -50,8 +49,6 @@ public class WADPanel extends JPanel {
 
         move_header = new JLabel("PWAD ops");
 
-        standardBtnDim = new Dimension(110, 28);
-        standardFillerDim = new Dimension(0, 5);
         nSelectedIndex = -1;
         basePath = _basePath;
 
@@ -71,24 +68,21 @@ public class WADPanel extends JPanel {
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 
         midPanel.setLayout(new BoxLayout(midPanel, BoxLayout.LINE_AXIS));
-        panelBtnContainer.setLayout(new BoxLayout(panelBtnContainer, BoxLayout.Y_AXIS));
 
         fileChooser = new JFileChooser(new File(basePath));
 
         // viewing in details mode by default
         Action details = fileChooser.getActionMap().get("viewTypeDetails");
         details.actionPerformed(null);
+        fileChooser.setFileHidingEnabled(false);
 
-        panelBtnContainer.add(btn_iwadPicker);
-        panelBtnContainer.add(Box.createRigidArea(standardFillerDim));
+        panelBtnContainer.addElem(btn_iwadPicker);
         panelBtnContainer.add(btn_pwadPicker);
         panelBtnContainer.add(Box.createVerticalGlue());
         panelBtnContainer.add(move_header);
         panelBtnContainer.add(Box.createRigidArea(standardFillerDim));
-        panelBtnContainer.add(btn_moveup);
-        panelBtnContainer.add(Box.createRigidArea(standardFillerDim));
-        panelBtnContainer.add(btn_movedown);
-        panelBtnContainer.add(Box.createRigidArea(standardFillerDim));
+        panelBtnContainer.addElem(btn_moveup);
+        panelBtnContainer.addElem(btn_movedown);
         panelBtnContainer.add(btn_remove);
 
         btn_remove.setMaximumSize(standardBtnDim);
@@ -158,7 +152,7 @@ public class WADPanel extends JPanel {
                 nSelectedIndex = wadListPanel.getSelected();
 
                 if (nSelectedIndex > 0) {
-                    wadListPanel.moveItemBack(nSelectedIndex);
+                    wadListPanel.moveSelectedItemBack();
                     wadListPanel.setSelected(nSelectedIndex - 1);
                 }
             }
@@ -169,7 +163,7 @@ public class WADPanel extends JPanel {
                 nSelectedIndex = wadListPanel.getSelected();
 
                 if (nSelectedIndex != -1 && nSelectedIndex < wadListPanel.getItemList().size() - 1) {
-                    wadListPanel.moveItemForward(nSelectedIndex);
+                    wadListPanel.moveSelectedItemForward();
                     wadListPanel.setSelected(nSelectedIndex + 1);
                 }
             }

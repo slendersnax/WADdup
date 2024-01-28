@@ -16,7 +16,7 @@ public class IWADLabel extends JLabel {
     }
 
     public void setIWADprops(String iwadName, String _iwadPath) {
-        setText(iwadName);
+        setText("IWAD: ".concat(iwadName));
         setIwadPath(_iwadPath);
     }
 

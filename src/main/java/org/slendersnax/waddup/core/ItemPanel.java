@@ -10,9 +10,9 @@ import java.awt.event.ActionListener;
 import java.util.Collections;
 
 public class ItemPanel extends JPanel {
-    private ArrayList<WADComponent> itemList;
-    private JPanel itemContainer;
-    private JScrollPane containerScroller;
+    private final ArrayList<WADComponent> itemList;
+    private final JPanel itemContainer;
+    private final JScrollPane containerScroller;
     private int nSelectedIndex;
     public ItemPanel(Dimension size) {
         setSize(size);
@@ -46,8 +46,8 @@ public class ItemPanel extends JPanel {
         itemList.clear();
         itemContainer.removeAll();
 
-        for(int i = 0; i < _itemList.size(); i ++) {
-            addItem(_itemList.get(i).getTitle(), _itemList.get(i).sWADPath);
+        for (WADComponent wadComponent : _itemList) {
+            addItem(wadComponent.getTitle(), wadComponent.sWADPath);
         }
     }
 
@@ -71,18 +71,18 @@ public class ItemPanel extends JPanel {
         repaint();
     }
 
-    public void moveItemBack(int index) {
-        WADComponent toMove = itemList.get(index);
+    public void moveSelectedItemBack() {
+        WADComponent toMove = itemList.get(nSelectedIndex);
 
-        Collections.swap(itemList, index, index - 1);
+        Collections.swap(itemList, nSelectedIndex, nSelectedIndex - 1);
         itemContainer.remove(toMove);
-        itemContainer.add(toMove, index - 1);
+        itemContainer.add(toMove, nSelectedIndex - 1);
 
         revalidate();
         repaint();
     }
 
-    public void moveItemForward(int index) {
+    public void moveSelectedItemForward() {
         WADComponent toMove = itemList.get(nSelectedIndex);
 
         Collections.swap(itemList, nSelectedIndex, nSelectedIndex + 1);
