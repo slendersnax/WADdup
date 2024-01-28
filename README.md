@@ -36,6 +36,7 @@ java -jar waddup-x.x.jar
 ![screenshot 1](screenshots/waddup_1.png?)
 ![screenshot 2](screenshots/waddup_2.png?)
 ![screenshot 3](screenshots/waddup_3.png?)
+![screenshot 4](screenshots/waddup_4.png?)
 
 ### features and reasons
 
