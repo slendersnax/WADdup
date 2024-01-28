@@ -40,8 +40,13 @@ public class ConfigHandler {
     private ArrayList<WADComponent> wadList, loadedWads;
     private String iwadPath;
     private int nSelectedConfig;
-    private Properties propHandler;
-    private File configFile;
+    private final Properties propHandler;
+    private File configFile, settingsFile;
+
+    public ConfigHandler() {
+        propHandler = new Properties();
+        initConfigFile();
+    }
 
     public ConfigHandler(JFrame _mainFrame) {
         mainFrame = _mainFrame;
@@ -134,7 +139,14 @@ public class ConfigHandler {
             }
 
             public void changed() {
-                btn_saveConfig.setEnabled(!nameInput.getText().isEmpty());
+                // at WADComponent we're getting the filetype of the items by taking the last three characters
+                // so this has to be more than 3 characters long
+                if (nameInput.getText().length() > 3) {
+                    btn_saveConfig.setEnabled(true);
+                }
+                else {
+                    btn_saveConfig.setEnabled(false);
+                }
             }
         });
 
@@ -143,10 +155,10 @@ public class ConfigHandler {
                 int index = configListPanel.getSelected();
 
                 if (index != -1) {
-                    loadConfigsFromXML();
+                    loadConfigsFromXML(configFile);
 
                     propHandler.remove(configListPanel.getItemList().get(index).getTitle());
-                    storeConfigsToXML();
+                    storeConfigsToXML(configFile);
 
                     configListPanel.removeItem(index);
                     configListPanel.setSelected(-1);
@@ -168,6 +180,7 @@ public class ConfigHandler {
             }
 
             configFile = new File(homedir.concat("/.config/waddup/configs.xml"));
+            settingsFile = new File(homedir.concat("/.config/waddup/settings.xml"));
         }
         else if (osname.contains("Windows")) {
             configdir = new File(homedir.concat("\\AppData\\waddup"));
@@ -176,37 +189,61 @@ public class ConfigHandler {
                 configdir.mkdirs();
             }
 
-            configFile = new File(homedir.concat("\\AppData\\waddup\\configs.xml"));
+            configFile = new File(homedir.concat("\\AppData\\Local\\waddup\\configs.xml"));
+            settingsFile = new File(homedir.concat("\\AppData\\Local\\waddup\\settings.xml"));
         }
         else {
             configFile = new File("configs.xml");
+            settingsFile = new File("settings.xml");
         }
 
         try {
             configFile.createNewFile();
+            settingsFile.createNewFile();
         } catch (IOException ex) {
-            System.out.println(ex.toString());
+            ex.printStackTrace();
         }
     }
 
-    private void loadConfigsFromXML() {
+    private void loadConfigsFromXML(File file) {
         try {
-            if (configFile.exists()) {
-                propHandler.loadFromXML(new FileInputStream(configFile.getAbsolutePath()));
+            if (file.exists()) {
+                propHandler.loadFromXML(new FileInputStream(file.getAbsolutePath()));
             }
         } catch(IOException ex) {
-
+            ex.printStackTrace();
         }
     }
 
-    private void storeConfigsToXML() {
+    private void storeConfigsToXML(File file) {
         try {
-            if (configFile.exists()) {
-                propHandler.storeToXML(new FileOutputStream(configFile.getAbsolutePath()), "");
+            if (file.exists()) {
+                propHandler.storeToXML(new FileOutputStream(file.getAbsolutePath()), "");
             }
         } catch(IOException ex) {
-
+            ex.printStackTrace();
         }
+    }
+
+    public void storeSetting(String propName, String propValue) {
+        loadConfigsFromXML(settingsFile);
+        propHandler.setProperty(propName, propValue);
+        storeConfigsToXML(settingsFile);
+    }
+
+    public String getSetting(String propName) {
+        loadConfigsFromXML(settingsFile);
+
+        if (propHandler.containsKey(propName)) {
+            return propHandler.getProperty(propName);
+        }
+        return "";
+    }
+
+    private void storeProperty(String propName, String propValue) {
+        loadConfigsFromXML(configFile);
+        propHandler.setProperty(propName, propValue);
+        storeConfigsToXML(configFile);
     }
 
     public void setConfigData(ArrayList<WADComponent> _wadList, String _iwadPath) {
@@ -222,14 +259,12 @@ public class ConfigHandler {
         wadPaths.add(0, iwadPath);
         String joinedWadPaths = String.join(";;", wadPaths);
 
-        loadConfigsFromXML();
-
-        propHandler.setProperty(nameInput.getText(), joinedWadPaths);
-        storeConfigsToXML();
+        storeProperty(nameInput.getText(), joinedWadPaths);
     }
 
     public void loadConfig() {
-        loadConfigsFromXML();
+        propHandler.clear();
+        loadConfigsFromXML(configFile);
         Enumeration<Object> propKeys = propHandler.keys();
         configListPanel.clearItemList();
         configListPanel.setSelected(-1);
@@ -240,7 +275,7 @@ public class ConfigHandler {
     }
     public ArrayList<WADComponent> getLoadedWads() {
         loadedWads.clear();
-        loadConfigsFromXML();
+        loadConfigsFromXML(configFile);
 
         int selectedConfig = configListPanel.getSelected();
 

@@ -6,46 +6,63 @@ import javax.swing.JButton;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 
-import java.awt.Container;
+import java.awt.BorderLayout;
 import java.awt.CardLayout;
+import java.awt.Container;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.List;
 
+import org.slendersnax.waddup.config.*;
 import org.slendersnax.waddup.wad_display.WADPanel;
 import org.slendersnax.waddup.core.WADComponent;
-import org.slendersnax.waddup.config.ConfigHandler;
 
 public class PickerWindow {
     private JFrame mainFrame;
     private JPanel btnContainer, midCardPanel;
     private WADPanel wadContainer;
-    private JButton btn_play, btn_saveconfig, btn_loadconfig;
+    private final OptionsPanel optionsPanel;
+    private JButton btn_play, btn_saveconfig, btn_loadconfig, btn_options;
     private CardLayout cl;
 
-    private String basePath, userHome, saveCardCode, loadCardCode, wadCardCode;
-    private ConfigHandler configHandler;
+    private String basePath;
+    private final String saveCardCode, loadCardCode, wadCardCode, optionsCardCode;
+    private final String osname;
+    private final ConfigHandler configHandler;
+    private final GZDoomLauncher launcher;
 
-    public PickerWindow(String _basePath) {
+    public PickerWindow() {
         mainFrame = new JFrame("WADdup");
         mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         mainFrame.setSize(640, 480);
         mainFrame.setResizable(false);
         mainFrame.setLocationRelativeTo(null); // centers it on screen automatically
 
-        basePath = _basePath;
-        userHome = System.getProperty("user.home");
+        configHandler = new ConfigHandler(mainFrame);
+        optionsPanel = new OptionsPanel(mainFrame);
+
+        basePath = configHandler.getSetting("wad_directory");
+
+        String propOsname = System.getProperty("os.name");
+        if (propOsname.contains("Linux")) {
+            osname = "Linux";
+        }
+        else if (propOsname.contains("Windows")) {
+            osname = "Windows";
+        }
+        else {
+            osname = "unknown";
+        }
+        launcher = new GZDoomLauncher(osname);
 
         saveCardCode = "SAVE";
         loadCardCode = "LOAD";
         wadCardCode = "WAD";
+        optionsCardCode = "OPTIONS";
 
-        configHandler = new ConfigHandler(mainFrame);
-
-        addComponents(mainFrame.getContentPane());
+        addComponents();
         initBtnActions();
 
         mainFrame.setVisible(true);
@@ -68,39 +85,18 @@ public class PickerWindow {
             }
         });
 
+        btn_options.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                cl.show(midCardPanel, optionsCardCode);
+            }
+        });
+
         btn_play.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 ArrayList<WADComponent> sessionWads = wadContainer.getWadListPanel().getItemList();
 
                 if (!wadContainer.getIwadLabel().getIwadPath().isEmpty()) {
-                    List<String> cmdBuilder = new ArrayList<String>();
-                    cmdBuilder.add("gzdoom");
-                    cmdBuilder.add("-com.slendersnax.waddup.config");
-                    cmdBuilder.add(userHome.concat("/.com.slendersnax.waddup.config/gzdoom/gzdoom.ini"));
-
-                    cmdBuilder.add("-iwad");
-                    cmdBuilder.add(wadContainer.getIwadLabel().getIwadPath());
-
-                    if (!sessionWads.isEmpty()) {
-                        for (WADComponent sessionWad : sessionWads) {
-                            if (sessionWad.sFileType.equals("deh")) {
-                                cmdBuilder.add("-deh");
-                            }
-                            else {
-                                cmdBuilder.add("-file");
-                            }
-                            cmdBuilder.add(sessionWad.sWADPath);
-                        }
-                    }
-
-                    ProcessBuilder pb = new ProcessBuilder(cmdBuilder);
-                    Process process;
-
-                    try {
-                        process = pb.start();
-                    } catch (IOException exc) {
-                        //exc.printStackTrace();
-                    }
+                    launcher.run(wadContainer.getIwadLabel().getIwadPath(), sessionWads);
                 }
                 else {
                     wadContainer.getIwadLabel().signalNoIWADError();
@@ -126,7 +122,7 @@ public class PickerWindow {
                     configHandler.saveConfig();
                     cl.show(midCardPanel, wadCardCode);
                 } catch (IOException ex) {
-
+                    ex.printStackTrace();
                 }
             }
         });
@@ -144,22 +140,30 @@ public class PickerWindow {
                 }
             }
         });
+
+        optionsPanel.btnBack.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                cl.show(midCardPanel, wadCardCode);
+            }
+        });
     }
 
-    public void addComponents(Container Pane) {
+    public void addComponents() {
         btnContainer = new JPanel();
         wadContainer = new WADPanel(mainFrame, basePath);
         midCardPanel = new JPanel();
         cl = new CardLayout();
 
-        btn_saveconfig = new JButton("save config");
-        btn_loadconfig = new JButton("load config");
+        btn_saveconfig = new JButton("save WAD config");
+        btn_loadconfig = new JButton("load WAD config");
 
         btn_play = new JButton("Play");
+        btn_options = new JButton("Settings");
 
-        btnContainer.add(btn_saveconfig);
-        btnContainer.add(btn_loadconfig);
-        btnContainer.add(btn_play);
+        btnContainer.add(btn_options, BorderLayout.WEST);
+        btnContainer.add(btn_saveconfig, BorderLayout.WEST);
+        btnContainer.add(btn_loadconfig, BorderLayout.WEST);
+        btnContainer.add(btn_play, BorderLayout.EAST);
 
         mainFrame.setLayout(new BoxLayout(mainFrame.getContentPane(), BoxLayout.Y_AXIS));
 
@@ -167,6 +171,7 @@ public class PickerWindow {
         midCardPanel.add(configHandler.savePanel, saveCardCode);
         midCardPanel.add(configHandler.loadPanel, loadCardCode);
         midCardPanel.add(wadContainer, wadCardCode);
+        midCardPanel.add(optionsPanel, optionsCardCode);
 
         cl.show(midCardPanel, wadCardCode);
 
