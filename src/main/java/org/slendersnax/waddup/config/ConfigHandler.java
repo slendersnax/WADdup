@@ -183,7 +183,7 @@ public class ConfigHandler {
             settingsFile = new File(homedir.concat("/.config/waddup/settings.xml"));
         }
         else if (osname.contains("Windows")) {
-            configdir = new File(homedir.concat("\\AppData\\waddup"));
+            configdir = new File(homedir.concat("\\AppData\\Local\\waddup"));
 
             if(!configdir.exists()) {
                 configdir.mkdirs();

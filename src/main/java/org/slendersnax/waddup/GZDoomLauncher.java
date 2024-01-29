@@ -17,14 +17,15 @@ public class GZDoomLauncher {
     }
 
     public void run(String iwadPath, ArrayList<WADComponent> pwadList) {
-        boolean useWine, useWinePrefix;
+        boolean usePortable, useWine, useWinePrefix;
 
+        usePortable = configHandler.getSetting("use_portable").equals("True");
         useWine = configHandler.getSetting("use_wine").equals("True");
         useWinePrefix = configHandler.getSetting("use_wineprefix").equals("True");
 
         if (osname.equals("Linux")) {
             if (!useWine) {
-                runLinuxNative(iwadPath, pwadList);
+                runLinuxNative(iwadPath, pwadList, usePortable);
             }
             else {
                 runLinuxWine(iwadPath, pwadList, useWinePrefix);
@@ -35,9 +36,15 @@ public class GZDoomLauncher {
         }
     }
 
-    public void runLinuxNative(String iwadPath, ArrayList<WADComponent> pwadList) {
+    public void runLinuxNative(String iwadPath, ArrayList<WADComponent> pwadList, boolean usePortable) {
         List<String> cmdBuilder = new ArrayList<String>();
-        cmdBuilder.add("gzdoom");
+
+        if (usePortable) {
+            cmdBuilder.add(configHandler.getSetting("linux_portable"));
+        }
+        else {
+            cmdBuilder.add("gzdoom");
+        }
 
         cmdBuilder.add("-iwad");
         cmdBuilder.add(iwadPath);

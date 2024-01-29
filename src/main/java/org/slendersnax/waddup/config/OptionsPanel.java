@@ -25,10 +25,10 @@ public class OptionsPanel extends JPanel {
     private final ConfigHandler configHandler;
     private final VerticalBtnPanel panCategories;
     private final JPanel innerPanel, panSettings, globalSettings, winSettings, nixSettings;
-    private final JCheckBox wineCheck, wineprefixCheck;
-    private final JButton btnGlobalSettings, btnWinSettings, btnNixSettings, btnSelectWadDir, btnSelectExecWin, btnSelectExecNix, btnSelectWinePrefix, btnSave;
+    private final JCheckBox wineCheck, wineprefixCheck, portableCheck;
+    private final JButton btnGlobalSettings, btnWinSettings, btnNixSettings, btnSelectWadDir, btnSelectExecWin, btnSelectExecNix, btnSelectWinePrefix, btnSelectPortable, btnSave;
     private final JFileChooser fileChooser;
-    private final JLabel wadDirectory, winExec, nixExec, winePrefix;
+    private final JLabel wadDirectory, winExec, nixExec, winePrefix, portableExecPath;
     private final CardLayout cl;
 
     private final String sGlobalCardCode, sWinCardCode, sNixCardCode;
@@ -77,12 +77,15 @@ public class OptionsPanel extends JPanel {
         winExec = new JLabel("[GZDoom EXECUTABLE LOCATION]");
 
         // linux settings items
+        portableCheck = new JCheckBox("Run using portable version");
         wineCheck = new JCheckBox("Run using Wine");
         wineprefixCheck = new JCheckBox("Run using specific Wine Prefix");
         btnSelectExecNix = new JButton("Select executable");
         btnSelectWinePrefix = new JButton("Select Wine Prefix location");
+        btnSelectPortable = new JButton("Select portable Linux executable");
         nixExec = new JLabel("[GZDoom EXECUTABLE LOCATION]");
         winePrefix = new JLabel("[WINE PREFIX]");
+        portableExecPath = new JLabel("[Portable Executable Path]");
 
         panSettings.setLayout(cl);
         panSettings.setBorder(BorderFactory.createLineBorder(new Color(100, 100, 100), 1));
@@ -105,6 +108,11 @@ public class OptionsPanel extends JPanel {
 
         nixSettings.setLayout(new BoxLayout(nixSettings, BoxLayout.PAGE_AXIS));
         nixSettings.add(Box.createRigidArea(new Dimension(7, 0)));
+        nixSettings.add(portableCheck);
+        nixSettings.add(btnSelectPortable);
+        nixSettings.add(Box.createRigidArea(new Dimension(0, 5)));
+        nixSettings.add(portableExecPath);
+        nixSettings.add(Box.createRigidArea(new Dimension(0, 5)));
         nixSettings.add(wineCheck);
         nixSettings.add(btnSelectExecNix);
         nixSettings.add(Box.createRigidArea(new Dimension(0, 5)));
@@ -147,6 +155,7 @@ public class OptionsPanel extends JPanel {
         String sWinExec = configHandler.getSetting("windows_executable");
         String sNixExec = configHandler.getSetting("linux_exe");
         String sNixWinePrefix = configHandler.getSetting("wine_prefix");
+        String sPortablePath = configHandler.getSetting("linux_portable");
 
         if (!sWadDir.isEmpty()) {
             wadDirectory.setText(sWadDir);
@@ -162,6 +171,14 @@ public class OptionsPanel extends JPanel {
 
         if (!sNixWinePrefix.isEmpty()) {
             winePrefix.setText(sNixWinePrefix);
+        }
+
+        if (!sPortablePath.isEmpty()) {
+            winePrefix.setText(sPortablePath);
+        }
+
+        if (configHandler.getSetting("use_portable").equals("True")) {
+            portableCheck.setSelected(true);
         }
 
         if (configHandler.getSetting("use_wine").equals("True")) {
@@ -198,6 +215,8 @@ public class OptionsPanel extends JPanel {
                 String sWinExec = winExec.getText();
                 String sNixExec = nixExec.getText();
                 String sNixWinePrefix = winePrefix.getText();
+                String sPortablePath = portableExecPath.getText();
+                boolean bUsePortable = portableCheck.isSelected();
                 boolean bUseWine = wineCheck.isSelected();
                 boolean bUseWinePrefix = wineprefixCheck.isSelected();
 
@@ -213,7 +232,11 @@ public class OptionsPanel extends JPanel {
                 if (!sNixWinePrefix.isEmpty()) {
                     configHandler.storeSetting("wine_prefix", sNixWinePrefix);
                 }
+                if (!sPortablePath.isEmpty()) {
+                    configHandler.storeSetting("linux_portable", sPortablePath);
+                }
 
+                configHandler.storeSetting("use_portable", bUsePortable ? "True" : "False");
                 configHandler.storeSetting("use_wine", bUseWine ? "True" : "False");
                 configHandler.storeSetting("use_wineprefix", bUseWinePrefix ? "True" : "False");
             }
@@ -254,6 +277,19 @@ public class OptionsPanel extends JPanel {
                 if (returnVal == JFileChooser.APPROVE_OPTION) {
                     File file = fileChooser.getSelectedFile();
                     nixExec.setText(file.getAbsolutePath());
+                }
+            }
+        });
+
+        btnSelectPortable.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+
+                int returnVal = fileChooser.showOpenDialog(_mainFrame);
+
+                if (returnVal == JFileChooser.APPROVE_OPTION) {
+                    File file = fileChooser.getSelectedFile();
+                    portableExecPath.setText(file.getAbsolutePath());
                 }
             }
         });
