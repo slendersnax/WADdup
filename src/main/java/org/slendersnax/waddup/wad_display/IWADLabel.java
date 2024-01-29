@@ -27,8 +27,4 @@ public class IWADLabel extends JLabel {
     public void setIwadPath(String _iwadPath) {
         iwadPath = _iwadPath;
     }
-
-    public void signalNoIWADError() {
-        setText("PLEASE PICK AN IWAD FILE");
-    }
 }

@@ -3,12 +3,12 @@ package org.slendersnax.waddup;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JButton;
+import javax.swing.JOptionPane;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
-import java.awt.Container;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -43,7 +43,7 @@ public class PickerWindow {
         configHandler = new ConfigHandler(mainFrame);
         optionsPanel = new OptionsPanel(mainFrame);
 
-        basePath = configHandler.getSetting("wad_directory");
+        basePath = configHandler.getPropHandler().getProperty(1, "wad_directory");
 
         String propOsname = System.getProperty("os.name");
         if (propOsname.contains("Linux")) {
@@ -99,7 +99,7 @@ public class PickerWindow {
                     launcher.run(wadContainer.getIwadLabel().getIwadPath(), sessionWads);
                 }
                 else {
-                    wadContainer.getIwadLabel().signalNoIWADError();
+                    JOptionPane.showMessageDialog(mainFrame, "You have no IWAD selected", "Error", JOptionPane.WARNING_MESSAGE);
                 }
             }
         });

@@ -20,9 +20,10 @@ import java.awt.event.ActionListener;
 import java.io.File;
 
 import org.slendersnax.waddup.core.VerticalBtnPanel;
+import org.slendersnax.waddup.core.PropWrapper;
 
 public class OptionsPanel extends JPanel {
-    private final ConfigHandler configHandler;
+    private final PropWrapper settingsHandler;
     private final VerticalBtnPanel panCategories;
     private final JPanel innerPanel, panSettings, globalSettings, winSettings, nixSettings;
     private final JCheckBox wineCheck, wineprefixCheck, portableCheck;
@@ -44,7 +45,7 @@ public class OptionsPanel extends JPanel {
 
         cl = new CardLayout();
 
-        configHandler = new ConfigHandler(_mainFrame);
+        settingsHandler = new PropWrapper();
         fileChooser = new JFileChooser();
 
         // viewing in details mode by default
@@ -151,11 +152,11 @@ public class OptionsPanel extends JPanel {
     }
 
     private void initSettings() {
-        String sWadDir = configHandler.getSetting("wad_directory");
-        String sWinExec = configHandler.getSetting("windows_executable");
-        String sNixExec = configHandler.getSetting("linux_exe");
-        String sNixWinePrefix = configHandler.getSetting("wine_prefix");
-        String sPortablePath = configHandler.getSetting("linux_portable");
+        String sWadDir = settingsHandler.getProperty(1,"wad_directory");
+        String sWinExec = settingsHandler.getProperty(1,"windows_executable");
+        String sNixExec = settingsHandler.getProperty(1,"linux_exe");
+        String sNixWinePrefix = settingsHandler.getProperty(1,"wine_prefix");
+        String sPortablePath = settingsHandler.getProperty(1,"linux_portable");
 
         if (!sWadDir.isEmpty()) {
             wadDirectory.setText(sWadDir);
@@ -174,20 +175,12 @@ public class OptionsPanel extends JPanel {
         }
 
         if (!sPortablePath.isEmpty()) {
-            winePrefix.setText(sPortablePath);
+            portableExecPath.setText(sPortablePath);
         }
 
-        if (configHandler.getSetting("use_portable").equals("True")) {
-            portableCheck.setSelected(true);
-        }
-
-        if (configHandler.getSetting("use_wine").equals("True")) {
-            wineCheck.setSelected(true);
-        }
-
-        if (configHandler.getSetting("use_wineprefix").equals("True")) {
-            wineprefixCheck.setSelected(true);
-        }
+        portableCheck.setSelected(settingsHandler.getProperty(1, "use_portable").equals("True"));
+        wineCheck.setSelected(settingsHandler.getProperty(1, "use_wine").equals("True"));
+        wineprefixCheck.setSelected(settingsHandler.getProperty(1, "use_wineprefix").equals("True"));
     }
 
     private void addBtnActions(JFrame _mainFrame) {
@@ -221,24 +214,24 @@ public class OptionsPanel extends JPanel {
                 boolean bUseWinePrefix = wineprefixCheck.isSelected();
 
                 if (!sWadDir.isEmpty()) {
-                    configHandler.storeSetting("wad_directory", sWadDir);
+                    settingsHandler.storeProperty(1, "wad_directory", sWadDir);
                 }
                 if (!sWinExec.isEmpty()) {
-                    configHandler.storeSetting("windows_executable", sWinExec);
+                    settingsHandler.storeProperty(1, "windows_executable", sWinExec);
                 }
                 if (!sNixExec.isEmpty()) {
-                    configHandler.storeSetting("linux_exe", sNixExec);
+                    settingsHandler.storeProperty(1, "linux_exe", sNixExec);
                 }
                 if (!sNixWinePrefix.isEmpty()) {
-                    configHandler.storeSetting("wine_prefix", sNixWinePrefix);
+                    settingsHandler.storeProperty(1, "wine_prefix", sNixWinePrefix);
                 }
                 if (!sPortablePath.isEmpty()) {
-                    configHandler.storeSetting("linux_portable", sPortablePath);
+                    settingsHandler.storeProperty(1, "linux_portable", sPortablePath);
                 }
 
-                configHandler.storeSetting("use_portable", bUsePortable ? "True" : "False");
-                configHandler.storeSetting("use_wine", bUseWine ? "True" : "False");
-                configHandler.storeSetting("use_wineprefix", bUseWinePrefix ? "True" : "False");
+                settingsHandler.storeProperty(1, "use_portable", bUsePortable ? "True" : "False");
+                settingsHandler.storeProperty(1, "use_wine", bUseWine ? "True" : "False");
+                settingsHandler.storeProperty(1, "use_wineprefix", bUseWinePrefix ? "True" : "False");
             }
         });
 

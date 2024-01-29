@@ -1,7 +1,7 @@
 package org.slendersnax.waddup;
 
 import org.slendersnax.waddup.core.WADComponent;
-import org.slendersnax.waddup.config.ConfigHandler;
+import org.slendersnax.waddup.core.PropWrapper;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -9,19 +9,19 @@ import java.util.List;
 
 public class GZDoomLauncher {
     private final String osname;
-    private final ConfigHandler configHandler;
+    private final PropWrapper settingsHandler;
 
     public GZDoomLauncher(String _osname) {
         osname = _osname;
-        configHandler = new ConfigHandler();
+        settingsHandler = new PropWrapper();
     }
 
     public void run(String iwadPath, ArrayList<WADComponent> pwadList) {
         boolean usePortable, useWine, useWinePrefix;
 
-        usePortable = configHandler.getSetting("use_portable").equals("True");
-        useWine = configHandler.getSetting("use_wine").equals("True");
-        useWinePrefix = configHandler.getSetting("use_wineprefix").equals("True");
+        usePortable = settingsHandler.getProperty(1, "use_portable").equals("True");
+        useWine = settingsHandler.getProperty(1, "use_wine").equals("True");
+        useWinePrefix = settingsHandler.getProperty(1, "use_wineprefix").equals("True");
 
         if (osname.equals("Linux")) {
             if (!useWine) {
@@ -40,7 +40,7 @@ public class GZDoomLauncher {
         List<String> cmdBuilder = new ArrayList<String>();
 
         if (usePortable) {
-            cmdBuilder.add(configHandler.getSetting("linux_portable"));
+            cmdBuilder.add(settingsHandler.getProperty(1, "linux_portable"));
         }
         else {
             cmdBuilder.add("gzdoom");
@@ -75,7 +75,7 @@ public class GZDoomLauncher {
         List<String> cmdBuilder = new ArrayList<String>();
 
         cmdBuilder.add("wine");
-        cmdBuilder.add(configHandler.getSetting("linux_exe"));
+        cmdBuilder.add(settingsHandler.getProperty(1, "linux_exe"));
 
         cmdBuilder.add("-iwad");
         cmdBuilder.add(iwadPath);
@@ -95,7 +95,7 @@ public class GZDoomLauncher {
         ProcessBuilder pb = new ProcessBuilder(cmdBuilder);
 
         if (useWinePrefix) {
-            pb.environment().put("WINEPREFIX", configHandler.getSetting("wine_prefix"));
+            pb.environment().put("WINEPREFIX", settingsHandler.getProperty(1, "wine_prefix"));
         }
 
         Process process;
@@ -109,7 +109,7 @@ public class GZDoomLauncher {
 
     public void runWindows(String iwadPath, ArrayList<WADComponent> pwadList) {
         List<String> cmdBuilder = new ArrayList<String>();
-        cmdBuilder.add(configHandler.getSetting("windows_executable"));
+        cmdBuilder.add(settingsHandler.getProperty(1, "windows_executable"));
 
         cmdBuilder.add("-iwad");
         cmdBuilder.add(iwadPath);
