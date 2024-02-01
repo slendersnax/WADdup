@@ -14,7 +14,7 @@ public class VerticalBtnPanel extends JPanel {
         verticalBtnSpace = new Dimension(0, 5);
         standardBtnSize = new Dimension(_size.width, 28);
 
-        super.setSize(_size);
+        setSize(_size);
         setPreferredSize(_size);
         setMaximumSize(_size);
     }
@@ -25,5 +25,12 @@ public class VerticalBtnPanel extends JPanel {
 
         add(comp);
         add(Box.createRigidArea(verticalBtnSpace));
+    }
+
+    public void addLastElem(JComponent comp) {
+        comp.setPreferredSize(standardBtnSize);
+        comp.setMaximumSize(standardBtnSize);
+
+        add(comp);
     }
 }

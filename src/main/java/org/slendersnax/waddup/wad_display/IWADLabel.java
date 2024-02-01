@@ -20,6 +20,11 @@ public class IWADLabel extends JLabel {
         setIwadPath(_iwadPath);
     }
 
+    public void resetIWADprops() {
+        setText("[IWAD]");
+        setIwadPath("");
+    }
+
     public String getIwadPath() {
         return iwadPath;
     }

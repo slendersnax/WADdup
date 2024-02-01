@@ -9,6 +9,13 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Collections;
 
+/*
+A generic panel which contains a list of WADComponents and keeps track of
+which one is selected. Only one may be selected at all times.
+
+TODO: look into replacing this with radio button or something similar
+ */
+
 public class ItemPanel extends JPanel {
     private final ArrayList<WADComponent> itemList;
     private final JPanel itemContainer;
@@ -59,38 +66,46 @@ public class ItemPanel extends JPanel {
         repaint();
     }
 
-    public void removeItem(int index) {
-        WADComponent wadToRemove = itemList.get(index);
+    public void removeSelectedItem() {
+        if (nSelectedIndex != -1 && !itemList.isEmpty()) {
+            itemContainer.remove(itemList.get(nSelectedIndex));
+            itemList.remove(nSelectedIndex);
 
-        itemContainer.remove(wadToRemove);
-        itemList.remove(index);
+            nSelectedIndex = -1;
 
-        nSelectedIndex = -1;
-
-        revalidate();
-        repaint();
+            revalidate();
+            repaint();
+        }
     }
 
     public void moveSelectedItemBack() {
-        WADComponent toMove = itemList.get(nSelectedIndex);
+        if (nSelectedIndex > 0) {
+            WADComponent toMove = itemList.get(nSelectedIndex);
 
-        Collections.swap(itemList, nSelectedIndex, nSelectedIndex - 1);
-        itemContainer.remove(toMove);
-        itemContainer.add(toMove, nSelectedIndex - 1);
+            Collections.swap(itemList, nSelectedIndex, nSelectedIndex - 1);
+            itemContainer.remove(toMove);
+            itemContainer.add(toMove, nSelectedIndex - 1);
 
-        revalidate();
-        repaint();
+            nSelectedIndex--;
+
+            revalidate();
+            repaint();
+        }
     }
 
     public void moveSelectedItemForward() {
-        WADComponent toMove = itemList.get(nSelectedIndex);
+        if (nSelectedIndex != -1 && nSelectedIndex < itemList.size() - 1) {
+            WADComponent toMove = itemList.get(nSelectedIndex);
 
-        Collections.swap(itemList, nSelectedIndex, nSelectedIndex + 1);
-        itemContainer.remove(toMove);
-        itemContainer.add(toMove, nSelectedIndex + 1);
+            Collections.swap(itemList, nSelectedIndex, nSelectedIndex + 1);
+            itemContainer.remove(toMove);
+            itemContainer.add(toMove, nSelectedIndex + 1);
 
-        revalidate();
-        repaint();
+            nSelectedIndex++;
+
+            revalidate();
+            repaint();
+        }
     }
 
     public void addItem(String name, String path) {
@@ -132,7 +147,7 @@ public class ItemPanel extends JPanel {
         return nSelectedIndex;
     }
 
-    public void setSelected(int index) {
-        nSelectedIndex = index;
+    public void resetSelected() {
+        nSelectedIndex = -1;
     }
 }

@@ -1,4 +1,4 @@
-package org.slendersnax.waddup.config;
+package org.slendersnax.waddup.mainpanels;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -21,22 +21,21 @@ import java.io.File;
 
 import org.slendersnax.waddup.core.VerticalBtnPanel;
 import org.slendersnax.waddup.core.PropWrapper;
+import org.slendersnax.waddup.core.SlenderConstants;
 
 public class OptionsPanel extends JPanel {
     private final PropWrapper settingsHandler;
     private final VerticalBtnPanel panCategories;
     private final JPanel innerPanel, panSettings, globalSettings, winSettings, nixSettings;
     private final JCheckBox wineCheck, wineprefixCheck, portableCheck;
-    private final JButton btnGlobalSettings, btnWinSettings, btnNixSettings, btnSelectWadDir, btnSelectExecWin, btnSelectExecNix, btnSelectWinePrefix, btnSelectPortable, btnSave;
+    private final JButton btnGlobalSettings, btnWinSettings, btnNixSettings, btnSelectWadDir, btnSelectExecWin, btnSelectExecNix, btnSelectWinePrefix, btnSelectPortable, btnSave, btnMainMenu;
     private final JFileChooser fileChooser;
     private final JLabel wadDirectory, winExec, nixExec, winePrefix, portableExecPath;
     private final CardLayout cl;
 
     private final String sGlobalCardCode, sWinCardCode, sNixCardCode;
-    public JButton btnBack;
     
-    public OptionsPanel(JFrame _mainFrame) {
-        setSize(640, 420);
+    public OptionsPanel(JFrame _mainFrame, Dimension _mainFrameSize) {
         setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
 
         sGlobalCardCode = "GLOBAL";
@@ -53,7 +52,7 @@ public class OptionsPanel extends JPanel {
         details.actionPerformed(null);
         fileChooser.setFileHidingEnabled(false);
 
-        panCategories = new VerticalBtnPanel(new Dimension(110, 420));
+        panCategories = new VerticalBtnPanel(new Dimension((int)(_mainFrameSize.width * 0.20), _mainFrameSize.height));
         panSettings = new JPanel();
         innerPanel = new JPanel();
 
@@ -64,10 +63,8 @@ public class OptionsPanel extends JPanel {
         btnGlobalSettings = new JButton("Global");
         btnWinSettings = new JButton("Windows");
         btnNixSettings = new JButton("Linux");
-        btnBack = new JButton("Back");
         btnSave = new JButton("Save");
-
-        btnBack.setMaximumSize(new Dimension(110, 28));
+        btnMainMenu = new JButton("Main Menu");
 
         // global settings items
         btnSelectWadDir = new JButton("Select WAD Folder");
@@ -91,9 +88,9 @@ public class OptionsPanel extends JPanel {
         panSettings.setLayout(cl);
         panSettings.setBorder(BorderFactory.createLineBorder(new Color(100, 100, 100), 1));
 
-        globalSettings.setPreferredSize(new Dimension(500, 500));
-        winSettings.setPreferredSize(new Dimension(500, 500));
-        nixSettings.setPreferredSize(new Dimension(500, 500));
+        globalSettings.setPreferredSize(new Dimension((int)(_mainFrameSize.width * 0.80), (int)(_mainFrameSize.height * 0.80)));
+        winSettings.setPreferredSize(new Dimension((int)(_mainFrameSize.width * 0.80), (int)(_mainFrameSize.height * 0.80)));
+        nixSettings.setPreferredSize(new Dimension((int)(_mainFrameSize.width * 0.80), (int)(_mainFrameSize.height * 0.80)));
 
         globalSettings.setLayout(new BoxLayout(globalSettings, BoxLayout.PAGE_AXIS));
         globalSettings.add(Box.createRigidArea(new Dimension(5, 5)));
@@ -129,7 +126,7 @@ public class OptionsPanel extends JPanel {
         panCategories.addElem(btnNixSettings);
         panCategories.add(Box.createVerticalGlue());
         panCategories.addElem(btnSave);
-        panCategories.add(btnBack);
+        panCategories.addLastElem(btnMainMenu);
 
         panSettings.add(globalSettings, sGlobalCardCode);
         panSettings.add(winSettings, sWinCardCode);
@@ -145,18 +142,26 @@ public class OptionsPanel extends JPanel {
 
         add(Box.createRigidArea(new Dimension(0, 5)));
         add(innerPanel);
+        add(Box.createRigidArea(new Dimension(5, 5)));
 
         addBtnActions(_mainFrame);
         initSettings();
-        setVisible(true);
+    }
+
+    public void showDefaultCard() {
+        cl.show(panSettings, sGlobalCardCode);
+    }
+
+    public JButton getBtnMainMenu() {
+        return btnMainMenu;
     }
 
     private void initSettings() {
-        String sWadDir = settingsHandler.getProperty(1,"wad_directory");
-        String sWinExec = settingsHandler.getProperty(1,"windows_executable");
-        String sNixExec = settingsHandler.getProperty(1,"linux_exe");
-        String sNixWinePrefix = settingsHandler.getProperty(1,"wine_prefix");
-        String sPortablePath = settingsHandler.getProperty(1,"linux_portable");
+        String sWadDir = settingsHandler.getProperty(PropWrapper.FILE_SETTINGS_INDEX, SlenderConstants.SETTINGS_WAD_DIRECTORY);
+        String sWinExec = settingsHandler.getProperty(PropWrapper.FILE_SETTINGS_INDEX, SlenderConstants.SETTINGS_WIN_EXE);
+        String sNixExec = settingsHandler.getProperty(PropWrapper.FILE_SETTINGS_INDEX, SlenderConstants.SETTINGS_NIX_WIN_EXE);
+        String sNixWinePrefix = settingsHandler.getProperty(PropWrapper.FILE_SETTINGS_INDEX, SlenderConstants.SETTINGS_WINE_PREFIX);
+        String sPortablePath = settingsHandler.getProperty(PropWrapper.FILE_SETTINGS_INDEX, SlenderConstants.SETTINGS_NIX_PORTABLE_EXE);
 
         if (!sWadDir.isEmpty()) {
             wadDirectory.setText(sWadDir);
@@ -178,9 +183,9 @@ public class OptionsPanel extends JPanel {
             portableExecPath.setText(sPortablePath);
         }
 
-        portableCheck.setSelected(settingsHandler.getProperty(1, "use_portable").equals("True"));
-        wineCheck.setSelected(settingsHandler.getProperty(1, "use_wine").equals("True"));
-        wineprefixCheck.setSelected(settingsHandler.getProperty(1, "use_wineprefix").equals("True"));
+        portableCheck.setSelected(settingsHandler.getProperty(PropWrapper.FILE_SETTINGS_INDEX, SlenderConstants.SETTINGS_NIX_USE_PORTABLE).equals("True"));
+        wineCheck.setSelected(settingsHandler.getProperty(PropWrapper.FILE_SETTINGS_INDEX, SlenderConstants.SETTINGS_NIX_USE_WINE).equals("True"));
+        wineprefixCheck.setSelected(settingsHandler.getProperty(PropWrapper.FILE_SETTINGS_INDEX, SlenderConstants.SETTINGS_NIX_USE_WINE_PREFIX).equals("True"));
     }
 
     private void addBtnActions(JFrame _mainFrame) {
@@ -214,24 +219,24 @@ public class OptionsPanel extends JPanel {
                 boolean bUseWinePrefix = wineprefixCheck.isSelected();
 
                 if (!sWadDir.isEmpty()) {
-                    settingsHandler.storeProperty(1, "wad_directory", sWadDir);
+                    settingsHandler.storeProperty(PropWrapper.FILE_SETTINGS_INDEX, SlenderConstants.SETTINGS_WAD_DIRECTORY, sWadDir);
                 }
                 if (!sWinExec.isEmpty()) {
-                    settingsHandler.storeProperty(1, "windows_executable", sWinExec);
+                    settingsHandler.storeProperty(PropWrapper.FILE_SETTINGS_INDEX, SlenderConstants.SETTINGS_WIN_EXE, sWinExec);
                 }
                 if (!sNixExec.isEmpty()) {
-                    settingsHandler.storeProperty(1, "linux_exe", sNixExec);
+                    settingsHandler.storeProperty(PropWrapper.FILE_SETTINGS_INDEX, SlenderConstants.SETTINGS_NIX_WIN_EXE, sNixExec);
                 }
                 if (!sNixWinePrefix.isEmpty()) {
-                    settingsHandler.storeProperty(1, "wine_prefix", sNixWinePrefix);
+                    settingsHandler.storeProperty(PropWrapper.FILE_SETTINGS_INDEX, SlenderConstants.SETTINGS_WINE_PREFIX, sNixWinePrefix);
                 }
                 if (!sPortablePath.isEmpty()) {
-                    settingsHandler.storeProperty(1, "linux_portable", sPortablePath);
+                    settingsHandler.storeProperty(PropWrapper.FILE_SETTINGS_INDEX, SlenderConstants.SETTINGS_NIX_PORTABLE_EXE, sPortablePath);
                 }
 
-                settingsHandler.storeProperty(1, "use_portable", bUsePortable ? "True" : "False");
-                settingsHandler.storeProperty(1, "use_wine", bUseWine ? "True" : "False");
-                settingsHandler.storeProperty(1, "use_wineprefix", bUseWinePrefix ? "True" : "False");
+                settingsHandler.storeProperty(PropWrapper.FILE_SETTINGS_INDEX, SlenderConstants.SETTINGS_NIX_USE_PORTABLE, bUsePortable ? "True" : "False");
+                settingsHandler.storeProperty(PropWrapper.FILE_SETTINGS_INDEX, SlenderConstants.SETTINGS_NIX_USE_WINE, bUseWine ? "True" : "False");
+                settingsHandler.storeProperty(PropWrapper.FILE_SETTINGS_INDEX, SlenderConstants.SETTINGS_NIX_USE_WINE_PREFIX, bUseWinePrefix ? "True" : "False");
             }
         });
 

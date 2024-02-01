@@ -1,7 +1,5 @@
 package org.slendersnax.waddup.wad_display;
 
-import org.slendersnax.waddup.core.*;
-
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JButton;
@@ -10,11 +8,14 @@ import javax.swing.JFileChooser;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.Action;
+import javax.swing.SwingConstants;
 import java.awt.Dimension;
-import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+
+import org.slendersnax.waddup.core.VerticalBtnPanel;
+import org.slendersnax.waddup.core.ItemPanel;
 
 public class WADPanel extends JPanel {
     private final IWADLabel iwadLabel;
@@ -23,33 +24,34 @@ public class WADPanel extends JPanel {
     private final JFrame parentFrame;
     private final JPanel midPanel;
     private final VerticalBtnPanel panelBtnContainer;
-    private final JButton btn_iwadPicker, btn_pwadPicker, btn_remove, btn_moveup, btn_movedown;
+    private final JButton btn_iwadPicker, btn_pwadPicker, btn_remove, btn_removeAll, btn_moveup, btn_movedown, btn_saveConfig, btn_loadConfig;
     private final JLabel move_header;
     private JFileChooser fileChooser;
-    private final Dimension standardBtnDim, standardFillerDim;
-    private int nSelectedIndex;
+    private final Dimension stdVerticalFiller, stdHorizontalFiller;
     private final String basePath;
 
-    public WADPanel(JFrame _parentFrame, String _basePath) {
+    public WADPanel(JFrame _parentFrame, Dimension _parentFrameSize, String _basePath) {
         parentFrame = _parentFrame;
-
-        standardBtnDim = new Dimension(110, 28);
-        standardFillerDim = new Dimension(0, 5);
+        stdVerticalFiller = new Dimension(0, 5);
+        stdHorizontalFiller = new Dimension(5, 0);
 
         iwadLabel = new IWADLabel();
-        wadListPanel = new ItemPanel(new Dimension(520, 400));
-        panelBtnContainer = new VerticalBtnPanel(new Dimension(110, 400));
+        wadListPanel = new ItemPanel(new Dimension((int)(_parentFrameSize.width * 0.80), (int)(_parentFrameSize.height * 0.80)));
+        panelBtnContainer = new VerticalBtnPanel(new Dimension((int)(_parentFrameSize.width * 0.20), (int)(_parentFrameSize.height * 0.80)));
         midPanel = new JPanel();
 
         btn_iwadPicker = new JButton("Pick IWAD");
         btn_pwadPicker = new JButton("Pick PWADS");
         btn_remove = new JButton("remove");
+        btn_removeAll = new JButton("remove all");
         btn_moveup = new JButton("move up");
         btn_movedown = new JButton("move down");
+        btn_saveConfig = new JButton("save config");
+        btn_loadConfig = new JButton("load config");
 
         move_header = new JLabel("PWAD ops");
+        move_header.setHorizontalAlignment(SwingConstants.CENTER);
 
-        nSelectedIndex = -1;
         basePath = _basePath;
 
         addComponents();
@@ -64,11 +66,18 @@ public class WADPanel extends JPanel {
         return wadListPanel;
     }
 
+    public JButton getBtn_saveConfig() {
+        return btn_saveConfig;
+    }
+
+    public JButton getBtn_loadConfig() {
+        return btn_loadConfig;
+    }
+
     public void addComponents() {
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 
         midPanel.setLayout(new BoxLayout(midPanel, BoxLayout.LINE_AXIS));
-
         fileChooser = new JFileChooser(new File(basePath));
 
         // viewing in details mode by default
@@ -77,32 +86,21 @@ public class WADPanel extends JPanel {
         fileChooser.setFileHidingEnabled(false);
 
         panelBtnContainer.addElem(btn_iwadPicker);
-        panelBtnContainer.add(btn_pwadPicker);
+        panelBtnContainer.addElem(btn_pwadPicker);
+        panelBtnContainer.addElem(btn_saveConfig);
+        panelBtnContainer.addElem(btn_loadConfig);
         panelBtnContainer.add(Box.createVerticalGlue());
-        panelBtnContainer.add(move_header);
-        panelBtnContainer.add(Box.createRigidArea(standardFillerDim));
+        panelBtnContainer.addElem(move_header);
         panelBtnContainer.addElem(btn_moveup);
         panelBtnContainer.addElem(btn_movedown);
-        panelBtnContainer.add(btn_remove);
+        panelBtnContainer.addElem(btn_remove);
+        panelBtnContainer.addLastElem(btn_removeAll);
 
-        btn_remove.setMaximumSize(standardBtnDim);
-        btn_moveup.setMaximumSize(standardBtnDim);
-        btn_movedown.setMaximumSize(standardBtnDim);
-        btn_iwadPicker.setMaximumSize(standardBtnDim);
-        btn_pwadPicker.setMaximumSize(standardBtnDim);
-
-        btn_remove.setAlignmentX(Component.CENTER_ALIGNMENT);
-        btn_moveup.setAlignmentX(Component.CENTER_ALIGNMENT);
-        btn_movedown.setAlignmentX(Component.CENTER_ALIGNMENT);
-        btn_iwadPicker.setAlignmentX(Component.CENTER_ALIGNMENT);
-        btn_pwadPicker.setAlignmentX(Component.CENTER_ALIGNMENT);
-        move_header.setAlignmentX(Component.CENTER_ALIGNMENT);
-
-        midPanel.add(Box.createRigidArea(new Dimension(5, 0)));
+        midPanel.add(Box.createRigidArea(stdHorizontalFiller));
         midPanel.add(wadListPanel);
-        midPanel.add(Box.createRigidArea(new Dimension(5, 0)));
+        midPanel.add(Box.createRigidArea(stdHorizontalFiller));
         midPanel.add(panelBtnContainer);
-        midPanel.add(Box.createRigidArea(new Dimension(5, 0)));
+        midPanel.add(Box.createRigidArea(stdHorizontalFiller));
 
         add(iwadLabel);
         add(midPanel);
@@ -138,34 +136,26 @@ public class WADPanel extends JPanel {
         });
         btn_remove.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                nSelectedIndex = wadListPanel.getSelected();
+                wadListPanel.removeSelectedItem();
+            }
+        });
 
-                if (nSelectedIndex != -1) {
-                    wadListPanel.removeItem(nSelectedIndex);
-                    wadListPanel.setSelected(-1);
-                }
+        btn_removeAll.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                wadListPanel.clearItemList();
+                iwadLabel.resetIWADprops();
             }
         });
 
         btn_moveup.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                nSelectedIndex = wadListPanel.getSelected();
-
-                if (nSelectedIndex > 0) {
-                    wadListPanel.moveSelectedItemBack();
-                    wadListPanel.setSelected(nSelectedIndex - 1);
-                }
+                wadListPanel.moveSelectedItemBack();
             }
         });
 
         btn_movedown.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                nSelectedIndex = wadListPanel.getSelected();
-
-                if (nSelectedIndex != -1 && nSelectedIndex < wadListPanel.getItemList().size() - 1) {
-                    wadListPanel.moveSelectedItemForward();
-                    wadListPanel.setSelected(nSelectedIndex + 1);
-                }
+                wadListPanel.moveSelectedItemForward();
             }
         });
     }

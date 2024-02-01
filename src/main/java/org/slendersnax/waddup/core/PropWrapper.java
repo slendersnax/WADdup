@@ -12,6 +12,9 @@ public class PropWrapper {
     private File configFile, settingsFile;
     private File[] files;
 
+    public static final int FILE_CONFIG_INDEX = 0;
+    public static final int FILE_SETTINGS_INDEX = 1;
+
     public PropWrapper() {
         propHandler = new Properties();
         files = new File[2];

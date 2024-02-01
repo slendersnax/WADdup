@@ -1,7 +1,9 @@
 package org.slendersnax.waddup;
 
+import org.slendersnax.waddup.mainpanels.AppWindow;
+
 public class Main {
     public static void main(String[] args) {
-        PickerWindow mainWindow = new PickerWindow();
+        AppWindow mainWindow = new AppWindow();
     }
 }

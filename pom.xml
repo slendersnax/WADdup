@@ -6,7 +6,7 @@
 
     <groupId>org.slendersnax.waddup</groupId>
     <artifactId>waddup</artifactId>
-    <version>0.92.2</version>
+    <version>0.93</version>
 
     <build>
         <pluginManagement>
