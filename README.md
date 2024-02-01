@@ -24,7 +24,7 @@ Using Maven: open the command line and execute the `mvn package` command from th
 
 ### run
 
-As of the most recent version the classic method of double clicking on it is now the recommended method (yay). When running it for the first time it's recommended to go to "Settings" and select your main WAD folder (if you have one). This will make it easier to select the WADS since the file selector will always open in that directory from then on.
+As of a few versions ago the classic method of double clicking on it is now the recommended method (yay). When running it for the first time it's recommended to go to "Settings" and select your main WAD folder (if you have one). This will make it easier to select the WADS since the file selector will always open in that directory from then on.
 
 If you want to run it from the command line, you can use:
 ```
@@ -58,15 +58,17 @@ I don't like drag-and-drop that much and I don't really use the other options fr
 
 ### todo
 
-- [ ] test on other platforms
-	- [ ] Windows
-	- [ ] general Linux build?
+- [x] test on other platforms
+	- [x] Windows
+	- ~~general Linux build?~~
+		- it's made in Java so barring any exceptions where the basic home folder structure is different, this is fine
 - [x] create, save, load configs
 	- [x] configs are now created in the same place on Linux
 	- [x] test this on Windows
 - [x] options to set GZDoom executable
 - [ ] create file filter to only show `wad`, `pk3`, and `deh` files 
 - [ ] make it prettier
+- [ ] add tests
 - [x] add build and install script
 - ~~maybe add other GZDoom launch options (Vulkan vs. OpenGL, Fullscreen, etc)?~~
 	- you can set these from inside GZDoom so this isn't needed
