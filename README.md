@@ -50,8 +50,7 @@ I don't like drag-and-drop that much and I don't really use the other options fr
 ### tips
 
 - in order for the changes made in "Settings" to take effect, you **must** press the "Save" button. This applies to the current session as well.
-- on Linux you can run GZDoom using Wine: go to "Settings" - "Linux", check the "Run using Wine" checkbox and select the location of the Windows GZDoom executable
-	- please note that the location of the native Linux GZDoom saved games and the Wine GZDoom saved games are different
+- please note that the location of the native Linux GZDoom saved games and the Wine GZDoom saved games is different
 	- nothing is stopping you from copying your games over though :D: on Linux they can most often be found in `~/.config/gzdoom/savegames/`, and you can copy them to the Wine Prefix that you're using: `[your wine prefix]/drive_c/users/[your user]/Saved Games/GZDoom/`
 		- your default Wine Prefix is `~/.wine`
 	- you can also change what Prefix Wine uses to load the game
