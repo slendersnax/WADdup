@@ -27,7 +27,7 @@ public class OptionsPanel extends JPanel {
     private final PropWrapper settingsHandler;
     private final VerticalBtnPanel panCategories;
     private final JPanel innerPanel, panSettings, globalSettings, winSettings, nixSettings;
-    private final JCheckBox wineCheck, wineprefixCheck, portableCheck;
+    private final JCheckBox wineCheck, wineprefixCheck, portableCheck, gamemodeCheck;
     private final JButton btnGlobalSettings, btnWinSettings, btnNixSettings, btnSelectWadDir, btnSelectExecWin, btnSelectExecNix, btnSelectWinePrefix, btnSelectPortable, btnSave, btnMainMenu;
     private final JFileChooser fileChooser;
     private final JLabel wadDirectory, winExec, nixExec, winePrefix, portableExecPath;
@@ -78,6 +78,8 @@ public class OptionsPanel extends JPanel {
         portableCheck = new JCheckBox("Run using portable version");
         wineCheck = new JCheckBox("Run using Wine");
         wineprefixCheck = new JCheckBox("Run using specific Wine Prefix");
+        gamemodeCheck = new JCheckBox("Use gamemode");
+
         btnSelectExecNix = new JButton("Select executable");
         btnSelectWinePrefix = new JButton("Select Wine Prefix location");
         btnSelectPortable = new JButton("Select portable Linux executable");
@@ -106,6 +108,8 @@ public class OptionsPanel extends JPanel {
 
         nixSettings.setLayout(new BoxLayout(nixSettings, BoxLayout.PAGE_AXIS));
         nixSettings.add(Box.createRigidArea(new Dimension(7, 0)));
+        nixSettings.add(gamemodeCheck);
+        nixSettings.add(Box.createRigidArea(new Dimension(0, 5)));
         nixSettings.add(portableCheck);
         nixSettings.add(btnSelectPortable);
         nixSettings.add(Box.createRigidArea(new Dimension(0, 5)));
@@ -186,6 +190,7 @@ public class OptionsPanel extends JPanel {
         portableCheck.setSelected(settingsHandler.getProperty(PropWrapper.FILE_SETTINGS_INDEX, SlenderConstants.SETTINGS_NIX_USE_PORTABLE).equals("True"));
         wineCheck.setSelected(settingsHandler.getProperty(PropWrapper.FILE_SETTINGS_INDEX, SlenderConstants.SETTINGS_NIX_USE_WINE).equals("True"));
         wineprefixCheck.setSelected(settingsHandler.getProperty(PropWrapper.FILE_SETTINGS_INDEX, SlenderConstants.SETTINGS_NIX_USE_WINE_PREFIX).equals("True"));
+        gamemodeCheck.setSelected(settingsHandler.getProperty(PropWrapper.FILE_SETTINGS_INDEX, SlenderConstants.SETTINGS_NIX_USE_GAMEMODE).equals("True"));
     }
 
     private void addBtnActions(JFrame _mainFrame) {
@@ -217,6 +222,7 @@ public class OptionsPanel extends JPanel {
                 boolean bUsePortable = portableCheck.isSelected();
                 boolean bUseWine = wineCheck.isSelected();
                 boolean bUseWinePrefix = wineprefixCheck.isSelected();
+                boolean bUseGamemode = gamemodeCheck.isSelected();
 
                 if (!sWadDir.isEmpty()) {
                     settingsHandler.storeProperty(PropWrapper.FILE_SETTINGS_INDEX, SlenderConstants.SETTINGS_WAD_DIRECTORY, sWadDir);
@@ -237,6 +243,7 @@ public class OptionsPanel extends JPanel {
                 settingsHandler.storeProperty(PropWrapper.FILE_SETTINGS_INDEX, SlenderConstants.SETTINGS_NIX_USE_PORTABLE, bUsePortable ? "True" : "False");
                 settingsHandler.storeProperty(PropWrapper.FILE_SETTINGS_INDEX, SlenderConstants.SETTINGS_NIX_USE_WINE, bUseWine ? "True" : "False");
                 settingsHandler.storeProperty(PropWrapper.FILE_SETTINGS_INDEX, SlenderConstants.SETTINGS_NIX_USE_WINE_PREFIX, bUseWinePrefix ? "True" : "False");
+                settingsHandler.storeProperty(PropWrapper.FILE_SETTINGS_INDEX, SlenderConstants.SETTINGS_NIX_USE_GAMEMODE, bUseGamemode ? "True" : "False");
             }
         });
 

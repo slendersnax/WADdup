@@ -14,18 +14,19 @@ public class GZDoomLauncher {
     }
 
     public void run(String iwadPath, ArrayList<WADComponent> pwadList) {
-        boolean usePortable, useWine, useWinePrefix;
+        boolean usePortable, useWine, useWinePrefix, useGamemode;
 
         usePortable = settingsHandler.getProperty(PropWrapper.FILE_SETTINGS_INDEX, SlenderConstants.SETTINGS_NIX_USE_PORTABLE).equals("True");
         useWine = settingsHandler.getProperty(PropWrapper.FILE_SETTINGS_INDEX, SlenderConstants.SETTINGS_NIX_USE_WINE).equals("True");
         useWinePrefix = settingsHandler.getProperty(PropWrapper.FILE_SETTINGS_INDEX, SlenderConstants.SETTINGS_NIX_USE_WINE_PREFIX).equals("True");
+        useGamemode = settingsHandler.getProperty(PropWrapper.FILE_SETTINGS_INDEX, SlenderConstants.SETTINGS_NIX_USE_GAMEMODE).equals("True");
 
         if (osname.equals("Linux")) {
             if (!useWine) {
-                runLinuxNative(iwadPath, pwadList, usePortable);
+                runLinuxNative(iwadPath, pwadList, usePortable, useGamemode);
             }
             else {
-                runLinuxWine(iwadPath, pwadList, useWinePrefix);
+                runLinuxWine(iwadPath, pwadList, useWinePrefix, useGamemode);
             }
         }
         else if (osname.equals("Windows")) {
@@ -33,8 +34,12 @@ public class GZDoomLauncher {
         }
     }
 
-    public void runLinuxNative(String iwadPath, ArrayList<WADComponent> pwadList, boolean usePortable) {
+    public void runLinuxNative(String iwadPath, ArrayList<WADComponent> pwadList, boolean usePortable, boolean useGamemode) {
         List<String> cmdBuilder = new ArrayList<String>();
+
+        if (useGamemode) {
+            cmdBuilder.add("gamemoderun");
+        }
 
         if (usePortable) {
             cmdBuilder.add(settingsHandler.getProperty(PropWrapper.FILE_SETTINGS_INDEX, SlenderConstants.SETTINGS_NIX_PORTABLE_EXE));
@@ -68,8 +73,12 @@ public class GZDoomLauncher {
         }
     }
 
-    public void runLinuxWine(String iwadPath, ArrayList<WADComponent> pwadList, boolean useWinePrefix) {
+    public void runLinuxWine(String iwadPath, ArrayList<WADComponent> pwadList, boolean useWinePrefix, boolean useGamemode) {
         List<String> cmdBuilder = new ArrayList<String>();
+
+        if (useGamemode) {
+            cmdBuilder.add("gamemoderun");
+        }
 
         cmdBuilder.add("wine");
         cmdBuilder.add(settingsHandler.getProperty(PropWrapper.FILE_SETTINGS_INDEX, SlenderConstants.SETTINGS_NIX_WIN_EXE));
