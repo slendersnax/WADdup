@@ -28,7 +28,7 @@ public class OptionsPanel extends JPanel {
     private final VerticalBtnPanel panCategories;
     private final JPanel innerPanel, panSettings, globalSettings, winSettings, nixSettings;
     private final JCheckBox wineCheck, wineprefixCheck, portableCheck, gamemodeCheck;
-    private final JButton btnGlobalSettings, btnWinSettings, btnNixSettings, btnSelectWadDir, btnSelectExecWin, btnSelectExecNix, btnSelectWinePrefix, btnSelectPortable, btnSave, btnMainMenu;
+    private final JButton btnGlobalSettings, btnWinSettings, btnNixSettings, btnSelectWadDir, btnSelectExecWin, btnSelectExecNix, btnSelectWinePrefix, btnSelectPortable, btnSave, btnWadPanel;
     private final JFileChooser fileChooser;
     private final JLabel wadDirectory, winExec, nixExec, winePrefix, portableExecPath;
     private final CardLayout cl;
@@ -64,7 +64,7 @@ public class OptionsPanel extends JPanel {
         btnWinSettings = new JButton("Windows");
         btnNixSettings = new JButton("Linux");
         btnSave = new JButton("Save");
-        btnMainMenu = new JButton("Main Menu");
+        btnWadPanel = new JButton("Select WADS");
 
         // global settings items
         btnSelectWadDir = new JButton("Select WAD Folder");
@@ -130,7 +130,7 @@ public class OptionsPanel extends JPanel {
         panCategories.addElem(btnNixSettings);
         panCategories.add(Box.createVerticalGlue());
         panCategories.addElem(btnSave);
-        panCategories.addLastElem(btnMainMenu);
+        panCategories.addLastElem(btnWadPanel);
 
         panSettings.add(globalSettings, sGlobalCardCode);
         panSettings.add(winSettings, sWinCardCode);
@@ -156,8 +156,8 @@ public class OptionsPanel extends JPanel {
         cl.show(panSettings, sGlobalCardCode);
     }
 
-    public JButton getBtnMainMenu() {
-        return btnMainMenu;
+    public JButton getBtnWadPanel() {
+        return btnWadPanel;
     }
 
     private void initSettings() {

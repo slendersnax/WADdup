@@ -12,7 +12,7 @@ public class VerticalBtnPanel extends JPanel {
     public VerticalBtnPanel(Dimension _size) {
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
         verticalBtnSpace = new Dimension(0, 5);
-        standardBtnSize = new Dimension(_size.width, 28);
+        standardBtnSize = new Dimension(_size.width, SlenderConstants.STD_BTN_HEIGHT);
 
         setSize(_size);
         setPreferredSize(_size);
@@ -21,6 +21,7 @@ public class VerticalBtnPanel extends JPanel {
 
     public void addElem(JComponent comp) {
         comp.setPreferredSize(standardBtnSize);
+        comp.setSize(standardBtnSize);
         comp.setMaximumSize(standardBtnSize);
 
         add(comp);
@@ -29,6 +30,7 @@ public class VerticalBtnPanel extends JPanel {
 
     public void addLastElem(JComponent comp) {
         comp.setPreferredSize(standardBtnSize);
+        comp.setSize(standardBtnSize);
         comp.setMaximumSize(standardBtnSize);
 
         add(comp);

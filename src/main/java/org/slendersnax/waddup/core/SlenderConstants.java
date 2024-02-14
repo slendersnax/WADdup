@@ -15,4 +15,6 @@ public class SlenderConstants {
     // the separator used to join and then split the individual file paths
     // for each config / property in the "config.xml" file
     public static final String CONFIG_ITEM_SEPARATOR        = ";;";
+
+    public static final int STD_BTN_HEIGHT = 28;
 }

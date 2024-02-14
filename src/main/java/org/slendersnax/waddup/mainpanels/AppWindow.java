@@ -12,12 +12,11 @@ import java.awt.event.ActionListener;
 public class AppWindow {
     private final JFrame mainFrame;
     private final JPanel wrapperPanel;
-    private final MainMenuPanel mainMenuPanel;
     private final PickerPanel pickerPanel;
     private final OptionsPanel optionsPanel;
     private final CardLayout mainCL;
 
-    private final String codeMainMenu, codeWadPicker, codeSettings;
+    private final String codeWadPicker, codeSettings;
 
     public AppWindow() {
         // finding out the display resolution of the monitor (or main monitor in the case of multi-monitor setups)
@@ -31,56 +30,40 @@ public class AppWindow {
         mainFrame = new JFrame("WADdup");
         mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         mainFrame.setSize(mainFrameDimension);
-        mainFrame.setResizable(false);
         mainFrame.setLocationRelativeTo(null); // centers it on screen automatically
 
         wrapperPanel = new JPanel();
         pickerPanel = new PickerPanel(mainFrame, mainFrameDimension);
         optionsPanel = new OptionsPanel(mainFrame, mainFrameDimension);
-        mainMenuPanel = new MainMenuPanel(mainFrameDimension);
 
         mainCL = new CardLayout();
 
-        codeMainMenu = "MAIN_MENU";
         codeWadPicker = "WAD_PICKER";
         codeSettings = "SETTINGS";
 
         wrapperPanel.setLayout(mainCL);
         wrapperPanel.add(pickerPanel, codeWadPicker);
-        wrapperPanel.add(mainMenuPanel, codeMainMenu);
         wrapperPanel.add(optionsPanel, codeSettings);
 
         mainFrame.add(wrapperPanel);
-        mainCL.show(wrapperPanel, codeMainMenu);
+        mainCL.show(wrapperPanel, codeWadPicker);
         initBtnActions();
 
         mainFrame.setVisible(true);
     }
 
     private void initBtnActions() {
-        pickerPanel.getBtn_mainMenu().addActionListener(new ActionListener() {
+        pickerPanel.getBtnSettings().addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                mainCL.show(wrapperPanel, codeMainMenu);
+                mainCL.show(wrapperPanel, codeSettings);
                 pickerPanel.showDefaultCard();
             }
         });
 
-        optionsPanel.getBtnMainMenu().addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                mainCL.show(wrapperPanel, codeMainMenu);
-                optionsPanel.showDefaultCard();
-            }
-        });
-
-        mainMenuPanel.getBtnPlay().addActionListener(new ActionListener() {
+        optionsPanel.getBtnWadPanel().addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 mainCL.show(wrapperPanel, codeWadPicker);
-            }
-        });
-
-        mainMenuPanel.getBtnSettings().addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                mainCL.show(wrapperPanel, codeSettings);
+                optionsPanel.showDefaultCard();
             }
         });
     }

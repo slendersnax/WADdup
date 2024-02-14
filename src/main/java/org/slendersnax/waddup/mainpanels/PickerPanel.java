@@ -5,12 +5,10 @@ import javax.swing.JPanel;
 import javax.swing.JButton;
 import javax.swing.JOptionPane;
 import javax.swing.BoxLayout;
-import javax.swing.BorderFactory;
+import javax.swing.Box;
 
-import java.awt.BorderLayout;
 import java.awt.CardLayout;
 import java.awt.Dimension;
-import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -30,10 +28,10 @@ public class PickerPanel extends JPanel {
     private WADPanel wadContainer;
 
     private final JFrame mainFrame;
-    private JPanel btnContainer, midCardPanel;
-    private JButton btn_play, btn_mainMenu;
+    private JPanel panelBtnContainer, panelMidCard;
+    private JButton btnPlay, btnSettings;
     private CardLayout cl;
-    private final Dimension mainFrameSize;
+    private final Dimension mainFrameSize, stdHGapSize, stdVGapSize, stdBtnSize;
 
     private final String basePath;
     private final String saveCardCode, loadCardCode, wadCardCode;
@@ -60,13 +58,13 @@ public class PickerPanel extends JPanel {
         saveConfigPanel = new SaveConfigPanel(frameSize);
         loadConfigPanel = new LoadConfigPanel(frameSize);
 
-        btnContainer = new JPanel();
+        panelBtnContainer = new JPanel();
         wadContainer = new WADPanel(mainFrame, mainFrameSize, basePath);
-        midCardPanel = new JPanel();
+        panelMidCard = new JPanel();
         cl = new CardLayout();
 
-        btn_play = new JButton("Play");
-        btn_mainMenu = new JButton("Main Menu");
+        btnPlay = new JButton("Play");
+        btnSettings = new JButton("Settings");
 
         String propOsname = System.getProperty("os.name");
         if (propOsname.contains("Linux")) {
@@ -80,22 +78,29 @@ public class PickerPanel extends JPanel {
         }
         launcher = new GZDoomLauncher(osname);
 
+        stdHGapSize = new Dimension(5, 0);
+        stdVGapSize = new Dimension(0, 5);
+        stdBtnSize = new Dimension((int)(frameSize.width * 0.20), SlenderConstants.STD_BTN_HEIGHT);
+
         addComponents();
         initBtnActions();
 
-        cl.show(midCardPanel, wadCardCode);
+        cl.show(panelMidCard, wadCardCode);
     }
 
-    public JButton getBtn_mainMenu() {
-        return btn_mainMenu;
+    public JButton getBtnSettings() {
+        return btnSettings;
     }
 
     public void initBtnActions() {
         wadContainer.getBtn_saveConfig().addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 if (!wadContainer.getWadListPanel().getItemList().isEmpty() && !wadContainer.getIwadLabel().getIwadPath().isEmpty()) {
-                    cl.show(midCardPanel, saveCardCode);
+                    cl.show(panelMidCard, saveCardCode);
                     saveConfigPanel.setConfigData(wadContainer.getWadListPanel().getItemList(), wadContainer.getIwadLabel().getIwadPath());
+                }
+                else {
+                    JOptionPane.showMessageDialog(mainFrame, "No IWAD selected or no PWADS selected", "Error", JOptionPane.WARNING_MESSAGE);
                 }
             }
         });
@@ -103,11 +108,11 @@ public class PickerPanel extends JPanel {
         wadContainer.getBtn_loadConfig().addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 loadConfigPanel.loadConfig();
-                cl.show(midCardPanel, loadCardCode);
+                cl.show(panelMidCard, loadCardCode);
             }
         });
 
-        btn_play.addActionListener(new ActionListener() {
+        btnPlay.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 ArrayList<WADComponent> sessionWads = wadContainer.getWadListPanel().getItemList();
 
@@ -122,26 +127,26 @@ public class PickerPanel extends JPanel {
 
         saveConfigPanel.getBtn_cancelSave().addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                cl.show(midCardPanel, wadCardCode);
+                cl.show(panelMidCard, wadCardCode);
             }
         });
 
         loadConfigPanel.getBtn_cancelLoad().addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                cl.show(midCardPanel, wadCardCode);
+                cl.show(panelMidCard, wadCardCode);
             }
         });
 
         saveConfigPanel.getBtn_saveConfig().addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 saveConfigPanel.saveConfig();
-                cl.show(midCardPanel, wadCardCode);
+                cl.show(panelMidCard, wadCardCode);
             }
         });
 
         loadConfigPanel.getBtn_loadConfig().addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                cl.show(midCardPanel, wadCardCode);
+                cl.show(panelMidCard, wadCardCode);
                 ArrayList<WADComponent> selectedConfigWads = loadConfigPanel.getLoadedWads();
 
                 if (!selectedConfigWads.isEmpty()) {
@@ -155,20 +160,31 @@ public class PickerPanel extends JPanel {
     }
 
     public void showDefaultCard() {
-        cl.show(midCardPanel, wadCardCode);
+        cl.show(panelMidCard, wadCardCode);
     }
 
     public void addComponents() {
-        btnContainer.add(btn_mainMenu, BorderLayout.WEST);
-        btnContainer.add(btn_play, BorderLayout.EAST);
+        btnSettings.setMaximumSize(stdBtnSize);
+        btnSettings.setPreferredSize(stdBtnSize);
+        btnPlay.setMaximumSize(stdBtnSize);
+        btnPlay.setPreferredSize(stdBtnSize);
 
-        midCardPanel.setSize(new Dimension(mainFrameSize.width, (int)(mainFrameSize.height * 0.8)));
-        midCardPanel.setLayout(cl);
-        midCardPanel.add(saveConfigPanel, saveCardCode);
-        midCardPanel.add(loadConfigPanel, loadCardCode);
-        midCardPanel.add(wadContainer, wadCardCode);
+        panelBtnContainer.setLayout(new BoxLayout(panelBtnContainer, BoxLayout.X_AXIS));
+        panelBtnContainer.add(Box.createRigidArea(stdHGapSize));
+        panelBtnContainer.add(btnSettings);
+        panelBtnContainer.add(Box.createHorizontalGlue());
+        panelBtnContainer.add(btnPlay);
+        panelBtnContainer.add(Box.createRigidArea(stdHGapSize));
 
-        add(midCardPanel);
-        add(btnContainer);
+        panelMidCard.setSize(new Dimension(mainFrameSize.width, (int)(mainFrameSize.height * 0.8)));
+        panelMidCard.setLayout(cl);
+        panelMidCard.add(saveConfigPanel, saveCardCode);
+        panelMidCard.add(loadConfigPanel, loadCardCode);
+        panelMidCard.add(wadContainer, wadCardCode);
+
+        add(panelMidCard);
+        add(Box.createRigidArea(stdVGapSize));
+        add(panelBtnContainer);
+        add(Box.createRigidArea(stdVGapSize));
     }
 }
