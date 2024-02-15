@@ -55,6 +55,9 @@ I don't like drag-and-drop that much and I don't really use the other options fr
 		- your default Wine Prefix is `~/.wine`
 	- you can also change what Prefix Wine uses to load the game
 
+- as of v0.95 when resizing the window the new size is saved automatically
+	- **important**: when resizing to a larger size, some elements may get resized until you restart the program 
+
 ### todo
 
 - [x] test on other platforms
@@ -65,7 +68,7 @@ I don't like drag-and-drop that much and I don't really use the other options fr
 	- [x] configs are now created in the same place on Linux
 	- [x] test this on Windows
 - [x] options to set GZDoom executable
-- [ ] create file filter to only show `wad`, `pk3`, and `deh` files 
+- [ ] create file filter to only show `wad`, `pk3` (also `zip` I guess), and `deh` files 
 - [ ] make it prettier
 - [ ] add tests
 - [x] add build and install script
