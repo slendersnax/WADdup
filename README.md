@@ -26,6 +26,10 @@ Using Maven: open the command line and execute the `mvn package` command from th
 
 As of a few versions ago the classic method of double clicking on it is now the recommended method (yay). When running it for the first time it's recommended to go to "Settings" and select your main WAD folder (if you have one). This will make it easier to select the WADS since the file selector will always open in that directory from then on.
 
+On Windows you **have to** go to "Settings" -> "Windows" and set the location of the executable.
+
+If you did either of the above, press "Save" to save those settings, otherwise it's not going to work.
+
 If you want to run it from the command line, you can use:
 ```
 java -jar waddup-x.x.jar
