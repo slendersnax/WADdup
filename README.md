@@ -76,5 +76,10 @@ I don't like drag-and-drop that much and I don't really use the other options fr
 - [ ] make it prettier
 - [ ] add tests
 - [x] add build and install script
-- ~~maybe add other GZDoom launch options (Vulkan vs. OpenGL, Fullscreen, etc)?~~
-	- you can set these from inside GZDoom so this isn't needed
+- [ ] add option to add custom command line options
+- [ ] add drag-and-drop
+- [ ] setup wizard
+	- [ ] Windows: select exe path
+	- [ ] general: select WAD folder path
+- [ ] make explorer a bit more convenient to use
+	- [ ] copy paste directory paths directly
