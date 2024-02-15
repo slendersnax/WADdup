@@ -10,7 +10,9 @@ public class SlenderConstants {
     public static final String SETTINGS_NIX_USE_PORTABLE    = "use_portable";
     public static final String SETTINGS_NIX_USE_WINE        = "use_wine";
     public static final String SETTINGS_NIX_USE_WINE_PREFIX = "use_wineprefix";
-    public static final String SETTINGS_NIX_USE_GAMEMODE     = "use_gamemode";
+    public static final String SETTINGS_NIX_USE_GAMEMODE    = "use_gamemode";
+    public static final String SETTINGS_PREF_WIDTH          = "preferred_width";
+    public static final String SETTINGS_PREF_HEIGHT         = "preferred_height";
 
     // the separator used to join and then split the individual file paths
     // for each config / property in the "config.xml" file

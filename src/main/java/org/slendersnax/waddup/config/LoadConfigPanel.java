@@ -52,7 +52,9 @@ public class LoadConfigPanel extends JPanel {
         panelInnerContainer.add(Box.createRigidArea(new Dimension(5, 0)));
         panelInnerContainer.add(panelBtnContainer);
 
+        add(Box.createRigidArea(new Dimension(0, 5)));
         add(lbl_loadTitle);
+        add(Box.createRigidArea(new Dimension(0, 5)));
         add(panelInnerContainer);
 
         addBtnActions();
