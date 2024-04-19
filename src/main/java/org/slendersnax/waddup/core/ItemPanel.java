@@ -13,7 +13,8 @@ import java.util.Collections;
 A generic panel which contains a list of WADComponents and keeps track of
 which one is selected. Only one may be selected at all times.
 
-TODO: look into replacing this with radio button or something similar
+I could replace this with radio buttons which are functionally the same, but
+those are more fitting for options, settings, questionnaires, etc. Leaving this as it is.
  */
 
 public class ItemPanel extends JPanel {

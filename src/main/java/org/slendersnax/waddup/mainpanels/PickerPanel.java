@@ -39,6 +39,8 @@ public class PickerPanel extends JPanel {
     private final GZDoomLauncher launcher;
     private final PropWrapper propWrapper;
 
+    private boolean savedNewConfig;
+
     public PickerPanel(JFrame _mainFrame, Dimension frameSize) {
         mainFrame = _mainFrame;
         mainFrameSize = frameSize;
@@ -82,6 +84,9 @@ public class PickerPanel extends JPanel {
         stdVGapSize = new Dimension(0, 5);
         stdBtnSize = new Dimension((int)(frameSize.width * 0.20), SlenderConstants.STD_BTN_HEIGHT);
 
+        savedNewConfig = false;
+        loadConfigPanel.loadConfig();
+
         addComponents();
         initBtnActions();
 
@@ -98,6 +103,7 @@ public class PickerPanel extends JPanel {
                 if (!wadContainer.getWadListPanel().getItemList().isEmpty() && !wadContainer.getIwadLabel().getIwadPath().isEmpty()) {
                     cl.show(panelMidCard, saveCardCode);
                     saveConfigPanel.setConfigData(wadContainer.getWadListPanel().getItemList(), wadContainer.getIwadLabel().getIwadPath());
+                    savedNewConfig = true;
                 }
                 else {
                     JOptionPane.showMessageDialog(mainFrame, "No IWAD selected or no PWADS selected", "Error", JOptionPane.WARNING_MESSAGE);
@@ -107,7 +113,13 @@ public class PickerPanel extends JPanel {
 
         wadContainer.getBtn_loadConfig().addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                loadConfigPanel.loadConfig();
+                // we only load the config again if we save a new configuration
+                // still not the MOST efficient, but nice
+                if (savedNewConfig) {
+                    loadConfigPanel.loadConfig();
+                    savedNewConfig = false;
+                }
+
                 cl.show(panelMidCard, loadCardCode);
             }
         });

@@ -10,7 +10,6 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import java.awt.Dimension;
 import java.awt.Component;
-import java.io.IOException;
 import java.util.ArrayList;
 
 import org.slendersnax.waddup.core.*;
@@ -95,7 +94,6 @@ public class SaveConfigPanel extends JPanel {
 
     public void saveConfig() {
         ArrayList<String> wadPaths = new ArrayList<String>();
-        //wadList.stream().map(item -> item.sWADPath).collect(Collectors.toList())
 
         for (WADComponent wad : wadList) {
             wadPaths.add(wad.sWADPath);
