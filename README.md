@@ -60,7 +60,7 @@ I don't like drag-and-drop that much and I don't really use the other options fr
 	- you can also change what Prefix Wine uses to load the game
 
 - as of v0.95 when resizing the window the new size is saved automatically
-	- **important**: when resizing to a larger size, some elements may get resized until you restart the program 
+	- **important**: when resizing to a larger size, some elements may not get resized until you restart the program 
 
 ### todo
 
