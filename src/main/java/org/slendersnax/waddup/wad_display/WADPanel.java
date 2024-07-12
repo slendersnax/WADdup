@@ -9,6 +9,7 @@ import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.Action;
 import javax.swing.SwingConstants;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -27,6 +28,7 @@ public class WADPanel extends JPanel {
     private final JButton btn_iwadPicker, btn_pwadPicker, btn_remove, btn_removeAll, btn_moveup, btn_movedown, btn_saveConfig, btn_loadConfig;
     private final JLabel move_header;
     private JFileChooser fileChooser;
+    private FileNameExtensionFilter wadFilter;
     private final Dimension stdVerticalFiller, stdHorizontalFiller;
     private final String basePath;
 
@@ -53,6 +55,8 @@ public class WADPanel extends JPanel {
         move_header.setHorizontalAlignment(SwingConstants.CENTER);
 
         basePath = _basePath;
+
+        wadFilter = new FileNameExtensionFilter("DOOM mod files (wad, pk3, zip, deh)", "wad", "pk3", "zip", "deh");
 
         addComponents();
         addBtnActions();
@@ -84,6 +88,8 @@ public class WADPanel extends JPanel {
         Action details = fileChooser.getActionMap().get("viewTypeDetails");
         details.actionPerformed(null);
         fileChooser.setFileHidingEnabled(false);
+        fileChooser.setAcceptAllFileFilterUsed(false);
+        fileChooser.addChoosableFileFilter(wadFilter);
 
         panelBtnContainer.addElem(btn_iwadPicker);
         panelBtnContainer.addElem(btn_pwadPicker);

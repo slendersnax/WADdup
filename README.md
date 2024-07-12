@@ -72,7 +72,7 @@ I don't like drag-and-drop that much and I don't really use the other options fr
 	- [x] configs are now created in the same place on Linux
 	- [x] test this on Windows
 - [x] options to set GZDoom executable
-- [ ] create file filter to only show `wad`, `pk3` (also `zip` I guess), and `deh` files 
+- [x] create file filter to only show `wad`, `pk3` (also `zip` I guess), and `deh` files 
 - [ ] make it prettier
 - [ ] add tests
 - [x] add build and install script
