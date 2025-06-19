@@ -76,10 +76,17 @@ I don't like drag-and-drop that much and I don't really use the other options fr
 - [ ] make it prettier
 - [ ] add tests
 - [x] add build and install script
-- [ ] add option to add custom command line options
 - [ ] add drag-and-drop
 - [ ] setup wizard
 	- [ ] Windows: select exe path
 	- [ ] general: select WAD folder path
 - [ ] make explorer a bit more convenient to use
 	- [ ] copy paste directory paths directly
+    - [ ] review the element labels, some sound a bit weird and unintuitive considering what they're for
+- settings:
+  - [ ] add "Other" category for BSD, Mac, whatever
+  - [ ] _check_ (hehe) if you can make some checkboxes mutually exclusive
+  - [ ] global: option to add custom command line options
+- maybe add desktop shortcut?
+  - [ ] Windows
+  - [ ] Linux
