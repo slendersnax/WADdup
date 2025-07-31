@@ -8,7 +8,7 @@ public class IWADLabel extends JLabel {
     private String iwadPath;
 
     public IWADLabel() {
-        super("[IWAD]");
+        super("[no IWAD selected]");
         iwadPath = "";
 
         setBorder(BorderFactory.createEmptyBorder(5, 0, 5, 0));
@@ -21,7 +21,7 @@ public class IWADLabel extends JLabel {
     }
 
     public void resetIWADprops() {
-        setText("[IWAD]");
+        setText("[no IWAD selected]");
         setIwadPath("");
     }
 

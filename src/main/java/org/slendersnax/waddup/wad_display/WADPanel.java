@@ -17,10 +17,11 @@ import java.io.File;
 
 import org.slendersnax.waddup.core.VerticalBtnPanel;
 import org.slendersnax.waddup.core.ItemPanel;
+import org.slendersnax.waddup.core.WADModel;
 
 public class WADPanel extends JPanel {
     private final IWADLabel iwadLabel;
-    private final ItemPanel wadListPanel;
+    private final ItemPanel<WADModel> wadListPanel;
 
     private final JFrame parentFrame;
     private final JPanel midPanel;
@@ -29,16 +30,15 @@ public class WADPanel extends JPanel {
     private final JLabel move_header;
     private JFileChooser fileChooser;
     private FileNameExtensionFilter wadFilter;
-    private final Dimension stdVerticalFiller, stdHorizontalFiller;
+    private final Dimension stdHorizontalFiller;
     private final String basePath;
 
     public WADPanel(JFrame _parentFrame, Dimension _parentFrameSize, String _basePath) {
         parentFrame = _parentFrame;
-        stdVerticalFiller = new Dimension(0, 5);
         stdHorizontalFiller = new Dimension(5, 0);
 
         iwadLabel = new IWADLabel();
-        wadListPanel = new ItemPanel(new Dimension((int)(_parentFrameSize.width * 0.80), (int)(_parentFrameSize.height * 0.80)));
+        wadListPanel = new ItemPanel<WADModel>(new Dimension((int)(_parentFrameSize.width * 0.80), (int)(_parentFrameSize.height * 0.80)), true);
         panelBtnContainer = new VerticalBtnPanel(new Dimension((int)(_parentFrameSize.width * 0.20), (int)(_parentFrameSize.height * 0.80)));
         midPanel = new JPanel();
 
@@ -133,7 +133,8 @@ public class WADPanel extends JPanel {
                     File[] selFiles = fileChooser.getSelectedFiles();
 
                     for (File selFile : selFiles) {
-                        wadListPanel.addItem(selFile.getName(), selFile.getAbsolutePath());
+                        String name = selFile.getName();
+                        wadListPanel.addItem(new WADModel(name, selFile.getAbsolutePath(), name.substring(name.length() - 3)));
                     }
                 }
 
@@ -142,7 +143,7 @@ public class WADPanel extends JPanel {
         });
         btn_remove.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                wadListPanel.removeSelectedItem();
+                wadListPanel.removeSelectedItems();
             }
         });
 

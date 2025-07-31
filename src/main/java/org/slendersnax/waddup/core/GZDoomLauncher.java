@@ -13,7 +13,7 @@ public class GZDoomLauncher {
         settingsHandler = new PropWrapper();
     }
 
-    public void run(String iwadPath, ArrayList<WADComponent> pwadList) {
+    public void run(String iwadPath, ArrayList<WADModel> pwadList) {
         boolean usePortable, useWine, useWinePrefix, useGamemode;
 
         usePortable = settingsHandler.getProperty(PropWrapper.FILE_SETTINGS_INDEX, SlenderConstants.SETTINGS_NIX_USE_PORTABLE).equals("True");
@@ -34,7 +34,7 @@ public class GZDoomLauncher {
         }
     }
 
-    public void runLinuxNative(String iwadPath, ArrayList<WADComponent> pwadList, boolean usePortable, boolean useGamemode) {
+    public void runLinuxNative(String iwadPath, ArrayList<WADModel> pwadList, boolean usePortable, boolean useGamemode) {
         List<String> cmdBuilder = new ArrayList<String>();
 
         if (useGamemode) {
@@ -52,7 +52,7 @@ public class GZDoomLauncher {
         cmdBuilder.add(iwadPath);
 
         if (!pwadList.isEmpty()) {
-            for (WADComponent sessionWad : pwadList) {
+            for (WADModel sessionWad : pwadList) {
                 if (sessionWad.sFileType.equals("deh")) {
                     cmdBuilder.add("-deh");
                 }
@@ -73,7 +73,7 @@ public class GZDoomLauncher {
         }
     }
 
-    public void runLinuxWine(String iwadPath, ArrayList<WADComponent> pwadList, boolean useWinePrefix, boolean useGamemode) {
+    public void runLinuxWine(String iwadPath, ArrayList<WADModel> pwadList, boolean useWinePrefix, boolean useGamemode) {
         List<String> cmdBuilder = new ArrayList<String>();
 
         if (useGamemode) {
@@ -87,7 +87,7 @@ public class GZDoomLauncher {
         cmdBuilder.add(iwadPath);
 
         if (!pwadList.isEmpty()) {
-            for (WADComponent sessionWad : pwadList) {
+            for (WADModel sessionWad : pwadList) {
                 if (sessionWad.sFileType.equals("deh")) {
                     cmdBuilder.add("-deh");
                 }
@@ -113,7 +113,7 @@ public class GZDoomLauncher {
         }
     }
 
-    public void runWindows(String iwadPath, ArrayList<WADComponent> pwadList) {
+    public void runWindows(String iwadPath, ArrayList<WADModel> pwadList) {
         List<String> cmdBuilder = new ArrayList<String>();
         cmdBuilder.add(settingsHandler.getProperty(PropWrapper.FILE_SETTINGS_INDEX, SlenderConstants.SETTINGS_WIN_EXE));
 
@@ -121,7 +121,7 @@ public class GZDoomLauncher {
         cmdBuilder.add(iwadPath);
 
         if (!pwadList.isEmpty()) {
-            for (WADComponent sessionWad : pwadList) {
+            for (WADModel sessionWad : pwadList) {
                 if (sessionWad.sFileType.equals("deh")) {
                     cmdBuilder.add("-deh");
                 }

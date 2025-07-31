@@ -11,23 +11,19 @@ import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.Enumeration;
 
-import org.slendersnax.waddup.core.VerticalBtnPanel;
-import org.slendersnax.waddup.core.ItemPanel;
-import org.slendersnax.waddup.core.PropWrapper;
-import org.slendersnax.waddup.core.WADComponent;
-import org.slendersnax.waddup.core.SlenderConstants;
+import org.slendersnax.waddup.core.*;
 
 public class LoadConfigPanel extends JPanel {
 
     private final VerticalBtnPanel panelBtnContainer;
-    private final ItemPanel panelConfigs;
+    private final ItemPanel<String> panelConfigs;
     private final JPanel panelInnerContainer;
     private final JButton btn_loadConfig, btn_cancelLoad, btn_removeConfig;
     private final JLabel lbl_loadTitle;
     private final PropWrapper propWrapper;
 
     public LoadConfigPanel(Dimension frameSize) {
-        panelConfigs = new ItemPanel(new Dimension((int)(frameSize.width * 0.85), frameSize.height));
+        panelConfigs = new ItemPanel<String>(new Dimension((int)(frameSize.width * 0.85), frameSize.height), false);
         panelBtnContainer = new VerticalBtnPanel(new Dimension((int)(frameSize.width * 0.20), frameSize.height));
         panelInnerContainer = new JPanel();
 
@@ -71,12 +67,11 @@ public class LoadConfigPanel extends JPanel {
     public void addBtnActions() {
         btn_removeConfig.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                int index = panelConfigs.getSelected();
+                ArrayList<String> selectedObject = panelConfigs.getSelected();
 
-                if (index != -1) {
-                    propWrapper.removeProperty(PropWrapper.FILE_CONFIG_INDEX, panelConfigs.getItemList().get(index).getTitle());
-                    panelConfigs.removeSelectedItem();
-                }
+                // only one config selection allowed
+                propWrapper.removeProperty(PropWrapper.FILE_CONFIG_INDEX, selectedObject.get(0));
+                panelConfigs.removeSelectedItems();
             }
         });
     }
@@ -86,24 +81,22 @@ public class LoadConfigPanel extends JPanel {
     public void loadConfig() {
         Enumeration<Object> propKeys = propWrapper.getKeys(PropWrapper.FILE_CONFIG_INDEX);
         panelConfigs.clearItemList();
-        panelConfigs.resetSelected();
 
         while(propKeys.hasMoreElements()) {
-            panelConfigs.addItem(propKeys.nextElement().toString(), "");
+            panelConfigs.addItem(propKeys.nextElement().toString());
         }
     }
-    public ArrayList<WADComponent> getLoadedWads() {
-        ArrayList<WADComponent> loadedWads = new ArrayList<WADComponent>();
+    public ArrayList<WADModel> getLoadedWads() {
+        ArrayList<WADModel> loadedWads = new ArrayList<WADModel>();
 
-        int selectedConfig = panelConfigs.getSelected();
+        ArrayList<String> selectedConfig = panelConfigs.getSelected();
 
-        if (selectedConfig != -1) {
-            String selConfig = panelConfigs.getItemList().get(panelConfigs.getSelected()).getTitle();
-            String selectedWads = propWrapper.getProperty(PropWrapper.FILE_CONFIG_INDEX, selConfig);
+        if (!selectedConfig.isEmpty()) {
+            String selectedWads = propWrapper.getProperty(PropWrapper.FILE_CONFIG_INDEX, selectedConfig.get(0));
             String[] arrSelWads = selectedWads.split(SlenderConstants.CONFIG_ITEM_SEPARATOR);
 
             for (String arrSelWad : arrSelWads) {
-                loadedWads.add(new WADComponent(arrSelWad.substring(arrSelWad.lastIndexOf("/") + 1), arrSelWad, arrSelWad.substring(arrSelWad.length() - 3)));
+                loadedWads.add(new WADModel(arrSelWad.substring(arrSelWad.lastIndexOf("/") + 1), arrSelWad, arrSelWad.substring(arrSelWad.length() - 3)));
             }
         }
 

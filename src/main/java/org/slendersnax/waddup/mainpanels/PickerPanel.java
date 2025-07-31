@@ -19,7 +19,7 @@ import org.slendersnax.waddup.config.LoadConfigPanel;
 import org.slendersnax.waddup.core.GZDoomLauncher;
 import org.slendersnax.waddup.core.PropWrapper;
 import org.slendersnax.waddup.core.SlenderConstants;
-import org.slendersnax.waddup.core.WADComponent;
+import org.slendersnax.waddup.core.WADModel;
 import org.slendersnax.waddup.wad_display.WADPanel;
 
 public class PickerPanel extends JPanel {
@@ -126,7 +126,7 @@ public class PickerPanel extends JPanel {
 
         btnPlay.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                ArrayList<WADComponent> sessionWads = wadContainer.getWadListPanel().getItemList();
+                ArrayList<WADModel> sessionWads = wadContainer.getWadListPanel().getItemList();
 
                 if (!wadContainer.getIwadLabel().getIwadPath().isEmpty()) {
                     launcher.run(wadContainer.getIwadLabel().getIwadPath(), sessionWads);
@@ -159,10 +159,10 @@ public class PickerPanel extends JPanel {
         loadConfigPanel.getBtn_loadConfig().addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 cl.show(panelMidCard, wadCardCode);
-                ArrayList<WADComponent> selectedConfigWads = loadConfigPanel.getLoadedWads();
+                ArrayList<WADModel> selectedConfigWads = loadConfigPanel.getLoadedWads();
 
                 if (!selectedConfigWads.isEmpty()) {
-                    wadContainer.getIwadLabel().setIWADprops(selectedConfigWads.get(0).getTitle(), selectedConfigWads.get(0).sWADPath);
+                    wadContainer.getIwadLabel().setIWADprops(selectedConfigWads.get(0).sWadTitle, selectedConfigWads.get(0).sWADPath);
                     selectedConfigWads.remove(0);
 
                     wadContainer.getWadListPanel().setItemList(selectedConfigWads);

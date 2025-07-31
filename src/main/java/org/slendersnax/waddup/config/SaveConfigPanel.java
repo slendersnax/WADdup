@@ -20,7 +20,7 @@ public class SaveConfigPanel extends JPanel {
     private JTextField nameInput;
     private JButton btn_saveConfig, btn_cancelSave;
 
-    private ArrayList<WADComponent> wadList;
+    private ArrayList<WADModel> wadList;
     private String iwadPath;
     private final PropWrapper propHandler;
 
@@ -84,7 +84,7 @@ public class SaveConfigPanel extends JPanel {
         return btn_cancelSave;
     }
 
-    public void setConfigData(ArrayList<WADComponent> _wadList, String _iwadPath) {
+    public void setConfigData(ArrayList<WADModel> _wadList, String _iwadPath) {
         nameInput.setText("");
         btn_saveConfig.setEnabled(false);
 
@@ -95,7 +95,7 @@ public class SaveConfigPanel extends JPanel {
     public void saveConfig() {
         ArrayList<String> wadPaths = new ArrayList<String>();
 
-        for (WADComponent wad : wadList) {
+        for (WADModel wad : wadList) {
             wadPaths.add(wad.sWADPath);
         }
 

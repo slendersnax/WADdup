@@ -1,78 +1,83 @@
 package org.slendersnax.waddup.core;
 
+import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.BoxLayout;
+import javax.swing.DefaultListModel;
+import javax.swing.ListSelectionModel;
 import java.util.ArrayList;
-import java.awt.Dimension;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.Collections;
+import java.awt.Dimension;
 
-/*
-A generic panel which contains a list of WADComponents and keeps track of
-which one is selected. Only one may be selected at all times.
+public class ItemPanel<T> extends JPanel {
+    private final ArrayList<T> itemList;
+    private final JList<String> objJList;
+    private final DefaultListModel<String> listModel;
 
-I could replace this with radio buttons which are functionally the same, but
-those are more fitting for options, settings, questionnaires, etc. Leaving this as it is.
- */
-
-public class ItemPanel extends JPanel {
-    private final ArrayList<WADComponent> itemList;
-    private final JPanel itemContainer;
-    private final JScrollPane containerScroller;
-    private int nSelectedIndex;
-    public ItemPanel(Dimension size) {
+    public ItemPanel(Dimension size, boolean enableMultiSelection) {
         setSize(size);
         setMaximumSize(size);
         setPreferredSize(size);
 
         setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
 
-        itemList = new ArrayList<WADComponent>();
+        itemList = new ArrayList<T>();
 
-        itemContainer = new JPanel();
-        itemContainer.setLayout(new BoxLayout(itemContainer, BoxLayout.PAGE_AXIS));
+        listModel = new DefaultListModel<String>();
+        objJList = new JList<String>();
 
-        containerScroller = new JScrollPane(itemContainer);
+        objJList.setModel(listModel);
+
+        // TODO: moving multiple items is wonky at the moment, some get deselected
+        // until the fix disabling multi selection
+
+        enableMultiSelection = false;
+
+        if (!enableMultiSelection) {
+            objJList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        }
+        else {
+            objJList.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
+        }
+
+        JScrollPane containerScroller = new JScrollPane(objJList);
         containerScroller.getVerticalScrollBar().setUnitIncrement(16);
 
         containerScroller.setSize(size);
         containerScroller.setMaximumSize(size);
         containerScroller.setPreferredSize(size);
 
-        nSelectedIndex = -1;
-
         add(containerScroller);
     }
 
-    public ArrayList<WADComponent> getItemList() {
+    public ArrayList<T> getItemList() {
         return itemList;
     }
 
-    public void setItemList(ArrayList<WADComponent> _itemList) {
+    public void setItemList(ArrayList<T> _itemList) {
         itemList.clear();
-        itemContainer.removeAll();
+        listModel.clear();
 
-        for (WADComponent wadComponent : _itemList) {
-            addItem(wadComponent.getTitle(), wadComponent.sWADPath);
+        for (T obj : _itemList) {
+            addItem(obj);
         }
     }
 
     public void clearItemList() {
         itemList.clear();
-        itemContainer.removeAll();
+        listModel.clear();
 
         revalidate();
         repaint();
     }
 
-    public void removeSelectedItem() {
-        if (nSelectedIndex != -1 && !itemList.isEmpty()) {
-            itemContainer.remove(itemList.get(nSelectedIndex));
-            itemList.remove(nSelectedIndex);
+    public void removeSelectedItems() {
+        while (!objJList.isSelectionEmpty()) {
+            int nSelectedIndex = objJList.getSelectedIndex();
 
-            nSelectedIndex = -1;
+            itemList.remove(nSelectedIndex);
+            listModel.remove(nSelectedIndex);
 
             revalidate();
             repaint();
@@ -80,14 +85,19 @@ public class ItemPanel extends JPanel {
     }
 
     public void moveSelectedItemBack() {
-        if (nSelectedIndex > 0) {
-            WADComponent toMove = itemList.get(nSelectedIndex);
+        if (!objJList.isSelectionEmpty()) {
+            int[] selectedIndices = objJList.getSelectedIndices();
 
-            Collections.swap(itemList, nSelectedIndex, nSelectedIndex - 1);
-            itemContainer.remove(toMove);
-            itemContainer.add(toMove, nSelectedIndex - 1);
+            for(int i = 0; i < selectedIndices.length; i ++) {
+                if (selectedIndices[i] > 0) {
+                    Collections.swap(itemList, selectedIndices[i], selectedIndices[i] - 1);
 
-            nSelectedIndex--;
+                    String aux = listModel.get(selectedIndices[i]);
+                    listModel.remove(selectedIndices[i]);
+                    listModel.add(selectedIndices[i] - 1, aux);
+                    objJList.setSelectedIndex(selectedIndices[i] - 1);
+                }
+            }
 
             revalidate();
             repaint();
@@ -95,60 +105,41 @@ public class ItemPanel extends JPanel {
     }
 
     public void moveSelectedItemForward() {
-        if (nSelectedIndex != -1 && nSelectedIndex < itemList.size() - 1) {
-            WADComponent toMove = itemList.get(nSelectedIndex);
+        if (!objJList.isSelectionEmpty()) {
+            int[] selectedIndices = objJList.getSelectedIndices();
 
-            Collections.swap(itemList, nSelectedIndex, nSelectedIndex + 1);
-            itemContainer.remove(toMove);
-            itemContainer.add(toMove, nSelectedIndex + 1);
+            for(int i = selectedIndices.length - 1; i >= 0; i --) {
+                if (selectedIndices[i] < itemList.size() - 1) {
+                    Collections.swap(itemList, selectedIndices[i], selectedIndices[i] + 1);
 
-            nSelectedIndex++;
+                    String aux = listModel.get(selectedIndices[i]);
+                    listModel.remove(selectedIndices[i]);
+                    listModel.add(selectedIndices[i] + 1, aux);
+                    objJList.setSelectedIndex(selectedIndices[i] + 1);
+                }
+            }
 
             revalidate();
             repaint();
         }
     }
 
-    public void addItem(String name, String path) {
-        WADComponent wad = new WADComponent(name, path, name.substring(name.length() - 3));
-
-        itemList.add(wad);
-        itemContainer.add(wad);
-
-        wad.btn_select.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                // deselecting old wad if it exists
-                if (nSelectedIndex != -1) {
-                    itemList.get(nSelectedIndex).setDeselected();
-                }
-
-                int newIndex = itemList.indexOf(wad);
-
-                // we only select the new one if it isn't the same as the old one
-                if (nSelectedIndex != newIndex) {
-                    wad.setSelected();
-                    nSelectedIndex = itemList.indexOf(wad);
-                }
-                // otherwise we deselect it
-                else {
-                    wad.setDeselected();
-                    nSelectedIndex = -1;
-                }
-
-                revalidate();
-                repaint();
-            }
-        });
+    public void addItem(T obj) {
+        itemList.add(obj);
+        listModel.addElement(obj.toString());
 
         revalidate();
         repaint();
     }
 
-    public int getSelected() {
-        return nSelectedIndex;
-    }
+    public ArrayList<T> getSelected() {
+        ArrayList<T> selectedObjects = new ArrayList<T>();
+        int[] selectedIndices = objJList.getSelectedIndices();
 
-    public void resetSelected() {
-        nSelectedIndex = -1;
+        for(int index : selectedIndices) {
+            selectedObjects.add(itemList.get(index));
+        }
+
+        return selectedObjects;
     }
 }
