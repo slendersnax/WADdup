@@ -29,11 +29,6 @@ public class ItemPanel<T> extends JPanel {
 
         objJList.setModel(listModel);
 
-        // TODO: moving multiple items is wonky at the moment, some get deselected
-        // until the fix disabling multi selection
-
-        enableMultiSelection = false;
-
         if (!enableMultiSelection) {
             objJList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         }
@@ -89,15 +84,19 @@ public class ItemPanel<T> extends JPanel {
             int[] selectedIndices = objJList.getSelectedIndices();
 
             for(int i = 0; i < selectedIndices.length; i ++) {
-                if (selectedIndices[i] > 0) {
+                if (selectedIndices[i] > 0 && !objJList.isSelectedIndex(selectedIndices[i] - 1)) {
                     Collections.swap(itemList, selectedIndices[i], selectedIndices[i] - 1);
 
                     String aux = listModel.get(selectedIndices[i]);
                     listModel.remove(selectedIndices[i]);
                     listModel.add(selectedIndices[i] - 1, aux);
-                    objJList.setSelectedIndex(selectedIndices[i] - 1);
+                    selectedIndices[i] --;
                 }
             }
+
+            // need to do it this way, the setSelectedIndex deselects previously selected items
+            // so when multiple are selected, only the last one stays selected after moving
+            objJList.setSelectedIndices(selectedIndices);
 
             revalidate();
             repaint();
@@ -109,15 +108,17 @@ public class ItemPanel<T> extends JPanel {
             int[] selectedIndices = objJList.getSelectedIndices();
 
             for(int i = selectedIndices.length - 1; i >= 0; i --) {
-                if (selectedIndices[i] < itemList.size() - 1) {
+                if (selectedIndices[i] < itemList.size() - 1 && !objJList.isSelectedIndex(selectedIndices[i] + 1)) {
                     Collections.swap(itemList, selectedIndices[i], selectedIndices[i] + 1);
 
                     String aux = listModel.get(selectedIndices[i]);
                     listModel.remove(selectedIndices[i]);
                     listModel.add(selectedIndices[i] + 1, aux);
-                    objJList.setSelectedIndex(selectedIndices[i] + 1);
+                    selectedIndices[i] ++;
                 }
             }
+
+            objJList.setSelectedIndices(selectedIndices);
 
             revalidate();
             repaint();

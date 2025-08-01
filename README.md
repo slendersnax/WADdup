@@ -61,6 +61,7 @@ I don't like drag-and-drop that much and I don't really use the other options fr
 
 - as of v0.95 when resizing the window the new size is saved automatically
 	- **important**: when resizing to a larger size, some elements may not get resized until you restart the program 
+- as of v0.96.1 you can select multiple PWADs in the main screen and move them and remove them at the same time
 
 ### todo
 
