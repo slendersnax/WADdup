@@ -11,15 +11,25 @@ import javax.swing.Action;
 import javax.swing.SwingConstants;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.Dimension;
+import java.awt.dnd.DropTargetListener;
+import java.awt.dnd.DropTargetDragEvent;
+import java.awt.dnd.DropTarget;
+import java.awt.dnd.DropTargetEvent;
+import java.awt.dnd.DropTargetDropEvent;
+import java.awt.dnd.DnDConstants;
+import java.awt.datatransfer.Transferable;
+import java.awt.datatransfer.DataFlavor;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.util.List;
+import java.util.Arrays;
 
 import org.slendersnax.waddup.core.VerticalBtnPanel;
 import org.slendersnax.waddup.core.ItemPanel;
 import org.slendersnax.waddup.core.WADModel;
 
-public class WADPanel extends JPanel {
+public class WADPanel extends JPanel implements DropTargetListener {
     private final IWADLabel iwadLabel;
     private final ItemPanel<WADModel> wadListPanel;
 
@@ -58,6 +68,8 @@ public class WADPanel extends JPanel {
 
         wadFilter = new FileNameExtensionFilter("DOOM mod files (wad, pk3, zip, deh)", "wad", "pk3", "zip", "deh");
 
+        DropTarget dropTarget = new DropTarget(wadListPanel, this);
+
         addComponents();
         addBtnActions();
     }
@@ -66,7 +78,7 @@ public class WADPanel extends JPanel {
         return iwadLabel;
     }
 
-    public ItemPanel getWadListPanel() {
+    public ItemPanel<WADModel> getWadListPanel() {
         return wadListPanel;
     }
 
@@ -166,4 +178,59 @@ public class WADPanel extends JPanel {
             }
         });
     }
+
+    @Override
+    public void dragEnter(DropTargetDragEvent dropTargetDragEvent) {
+
+    }
+
+    @Override
+    public void dragOver(DropTargetDragEvent dropTargetDragEvent) {
+
+    }
+
+    @Override
+    public void dropActionChanged(DropTargetDragEvent dropTargetDragEvent) {
+
+    }
+
+    @Override
+    public void dragExit(DropTargetEvent dropTargetEvent) {
+
+    }
+
+    // TODO: add drop support to IWAD separately
+    // drag-and-drop support which only accepts listed file types
+    @Override
+    public void drop(DropTargetDropEvent dtde) {
+        try {
+            dtde.acceptDrop(DnDConstants.ACTION_COPY);
+
+            Transferable transferable = dtde.getTransferable();
+
+            if (transferable.isDataFlavorSupported(DataFlavor.javaFileListFlavor)) {
+                List<File> files = (List<File>) transferable.getTransferData(DataFlavor.javaFileListFlavor);
+
+                if (areValidFileTypes(files)) {
+                    for (File file : files) {
+                        String name = file.getName();
+                        wadListPanel.addItem(new WADModel(name, file.getAbsolutePath(), name.substring(name.length() - 3)));
+                    }
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private boolean areValidFileTypes(List<File> files) {
+    String[] validExtensions = {".wad", ".pk3", ".zip", ".deh"}; // define valid file types
+    for (File file : files) {
+        String fileName = file.getName().toLowerCase();
+        boolean isValid = Arrays.stream(validExtensions)
+                                 .anyMatch(fileName::endsWith);
+        if (!isValid) return false;
+    }
+    return true;
+}
 }
