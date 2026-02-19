@@ -100,13 +100,13 @@ public class PickerPanel extends JPanel {
     public void initBtnActions() {
         wadContainer.getBtn_saveConfig().addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                if (!wadContainer.getWadListPanel().getItemList().isEmpty() && !wadContainer.getIwadLabel().getIwadPath().isEmpty()) {
+                if (!wadContainer.getIwadLabel().getIwadPath().isEmpty()) {
                     cl.show(panelMidCard, saveCardCode);
                     saveConfigPanel.setConfigData(wadContainer.getWadListPanel().getItemList(), wadContainer.getIwadLabel().getIwadPath());
                     savedNewConfig = true;
                 }
                 else {
-                    JOptionPane.showMessageDialog(mainFrame, "No IWAD selected or no PWADS selected", "Error", JOptionPane.WARNING_MESSAGE);
+                    JOptionPane.showMessageDialog(mainFrame, "No IWAD selected!", "Error", JOptionPane.WARNING_MESSAGE);
                 }
             }
         });
