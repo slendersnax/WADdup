@@ -94,7 +94,7 @@ public class PropWrapper {
         if (propHandler.containsKey(propName)) {
             return propHandler.getProperty(propName);
         }
-        return "";
+        return null;
     }
 
     public void removeProperty(int fileIndex, String propName) {

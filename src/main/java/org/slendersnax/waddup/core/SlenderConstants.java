@@ -14,8 +14,6 @@ public class SlenderConstants {
     public static final String SETTINGS_PREF_WIDTH          = "preferred_width";
     public static final String SETTINGS_PREF_HEIGHT         = "preferred_height";
 
-    public static final String SETTINGS_CONFIG_VERSION      = "config_version";
-
     // the separator used to join and then split the individual file paths
     // for each config / property in the "config.xml" file
     public static final String CONFIG_ITEM_SEPARATOR        = ";;";

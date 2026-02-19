@@ -6,6 +6,7 @@ import javax.swing.JPanel;
 import javax.swing.JLabel;
 import javax.swing.BoxLayout;
 import javax.swing.Box;
+import javax.swing.JOptionPane;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import java.awt.Dimension;
@@ -93,6 +94,17 @@ public class SaveConfigPanel extends JPanel {
     }
 
     public void saveConfig() {
+        // check if this config name already exists
+        // if so, ask the user if they want to overwrite existing config
+        if (propHandler.getProperty(PropWrapper.FILE_CONFIG_INDEX, nameInput.getText()) != null) {
+
+            int reply = JOptionPane.showConfirmDialog(null, "A configuration with this name already exists. Do you want to overwrite it?", "Name conflict", JOptionPane.YES_NO_OPTION);
+
+            if (reply == JOptionPane.NO_OPTION) {
+                return;
+            }
+        }
+
         ArrayList<String> wadPaths = new ArrayList<String>();
 
         for (WADModel wad : wadList) {
