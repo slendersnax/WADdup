@@ -35,7 +35,7 @@ public class AppWindow extends JFrame implements ComponentListener {
         Dimension mainFrameDimension = new Dimension((int)(width / 2), (int)(height / 1.5));
         propWrapper = new PropWrapper();
 
-        if (propWrapper.getProperty(PropWrapper.FILE_SETTINGS_INDEX, SlenderConstants.SETTINGS_PREF_WIDTH).isEmpty()) {
+        if (propWrapper.getProperty(PropWrapper.FILE_SETTINGS_INDEX, SlenderConstants.SETTINGS_PREF_WIDTH) == null) {
             propWrapper.storeProperty(PropWrapper.FILE_SETTINGS_INDEX, SlenderConstants.SETTINGS_PREF_WIDTH, Integer.toString(mainFrameDimension.width));
             propWrapper.storeProperty(PropWrapper.FILE_SETTINGS_INDEX, SlenderConstants.SETTINGS_PREF_HEIGHT, Integer.toString(mainFrameDimension.height));
         }
