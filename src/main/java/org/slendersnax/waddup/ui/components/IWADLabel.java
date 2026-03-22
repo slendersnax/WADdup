@@ -1,4 +1,4 @@
-package org.slendersnax.waddup.wad_display;
+package org.slendersnax.waddup.ui.components;
 
 import javax.swing.JLabel;
 import javax.swing.BorderFactory;

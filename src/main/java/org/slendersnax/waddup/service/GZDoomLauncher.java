@@ -1,4 +1,8 @@
-package org.slendersnax.waddup.core;
+package org.slendersnax.waddup.service;
+
+import org.slendersnax.waddup.infrastructure.PropWrapper;
+import org.slendersnax.waddup.infrastructure.SlenderConstants;
+import org.slendersnax.waddup.model.WADModel;
 
 import java.io.IOException;
 import java.util.ArrayList;

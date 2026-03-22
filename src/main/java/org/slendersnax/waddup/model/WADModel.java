@@ -1,4 +1,4 @@
-package org.slendersnax.waddup.core;
+package org.slendersnax.waddup.model;
 
 public class WADModel {
     public String sWadTitle, sWADPath, sFileType;

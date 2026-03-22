@@ -1,4 +1,4 @@
-package org.slendersnax.waddup.config;
+package org.slendersnax.waddup.ui;
 
 import javax.swing.JPanel;
 import javax.swing.JButton;
@@ -11,7 +11,11 @@ import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.Enumeration;
 
-import org.slendersnax.waddup.core.*;
+import org.slendersnax.waddup.infrastructure.PropWrapper;
+import org.slendersnax.waddup.infrastructure.SlenderConstants;
+import org.slendersnax.waddup.model.WADModel;
+import org.slendersnax.waddup.ui.components.ItemPanel;
+import org.slendersnax.waddup.ui.components.VerticalBtnPanel;
 
 public class LoadConfigPanel extends JPanel {
 

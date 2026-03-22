@@ -1,4 +1,4 @@
-package org.slendersnax.waddup.core;
+package org.slendersnax.waddup.ui.components;
 
 import javax.swing.JList;
 import javax.swing.JPanel;

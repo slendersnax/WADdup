@@ -1,4 +1,4 @@
-package org.slendersnax.waddup.mainpanels;
+package org.slendersnax.waddup.ui;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -11,8 +11,8 @@ import java.awt.event.ActionListener;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
 
-import org.slendersnax.waddup.core.SlenderConstants;
-import org.slendersnax.waddup.core.PropWrapper;
+import org.slendersnax.waddup.infrastructure.SlenderConstants;
+import org.slendersnax.waddup.infrastructure.PropWrapper;
 
 public class AppWindow extends JFrame implements ComponentListener {
     private final JPanel wrapperPanel;

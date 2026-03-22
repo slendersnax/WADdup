@@ -1,4 +1,4 @@
-package org.slendersnax.waddup.core;
+package org.slendersnax.waddup.infrastructure;
 
 import java.io.IOException;
 import java.util.Enumeration;

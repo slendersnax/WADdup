@@ -1,4 +1,4 @@
-package org.slendersnax.waddup.wad_display;
+package org.slendersnax.waddup.ui.components;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -25,9 +25,7 @@ import java.io.File;
 import java.util.List;
 import java.util.Arrays;
 
-import org.slendersnax.waddup.core.VerticalBtnPanel;
-import org.slendersnax.waddup.core.ItemPanel;
-import org.slendersnax.waddup.core.WADModel;
+import org.slendersnax.waddup.model.WADModel;
 
 public class WADPanel extends JPanel implements DropTargetListener {
     private final IWADLabel iwadLabel;

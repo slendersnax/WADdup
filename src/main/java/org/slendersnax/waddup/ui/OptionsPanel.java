@@ -1,4 +1,4 @@
-package org.slendersnax.waddup.mainpanels;
+package org.slendersnax.waddup.ui;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -19,9 +19,9 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 
-import org.slendersnax.waddup.core.VerticalBtnPanel;
-import org.slendersnax.waddup.core.PropWrapper;
-import org.slendersnax.waddup.core.SlenderConstants;
+import org.slendersnax.waddup.ui.components.VerticalBtnPanel;
+import org.slendersnax.waddup.infrastructure.PropWrapper;
+import org.slendersnax.waddup.infrastructure.SlenderConstants;
 
 public class OptionsPanel extends JPanel {
     private final PropWrapper settingsHandler;

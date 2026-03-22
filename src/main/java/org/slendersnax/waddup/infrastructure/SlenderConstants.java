@@ -1,4 +1,4 @@
-package org.slendersnax.waddup.core;
+package org.slendersnax.waddup.infrastructure;
 
 public class SlenderConstants {
     // these are the names of the properties found in the "settings.xml" file

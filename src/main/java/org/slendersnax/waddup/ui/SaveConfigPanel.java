@@ -1,4 +1,4 @@
-package org.slendersnax.waddup.config;
+package org.slendersnax.waddup.ui;
 
 import javax.swing.JTextField;
 import javax.swing.JButton;
@@ -13,7 +13,9 @@ import java.awt.Dimension;
 import java.awt.Component;
 import java.util.ArrayList;
 
-import org.slendersnax.waddup.core.*;
+import org.slendersnax.waddup.infrastructure.PropWrapper;
+import org.slendersnax.waddup.infrastructure.SlenderConstants;
+import org.slendersnax.waddup.model.WADModel;
 
 public class SaveConfigPanel extends JPanel {
     private JPanel saveBtnsPanel;

@@ -1,4 +1,4 @@
-package org.slendersnax.waddup.mainpanels;
+package org.slendersnax.waddup.ui;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -14,13 +14,11 @@ import java.awt.event.ActionListener;
 
 import java.util.ArrayList;
 
-import org.slendersnax.waddup.config.SaveConfigPanel;
-import org.slendersnax.waddup.config.LoadConfigPanel;
-import org.slendersnax.waddup.core.GZDoomLauncher;
-import org.slendersnax.waddup.core.PropWrapper;
-import org.slendersnax.waddup.core.SlenderConstants;
-import org.slendersnax.waddup.core.WADModel;
-import org.slendersnax.waddup.wad_display.WADPanel;
+import org.slendersnax.waddup.service.GZDoomLauncher;
+import org.slendersnax.waddup.infrastructure.PropWrapper;
+import org.slendersnax.waddup.infrastructure.SlenderConstants;
+import org.slendersnax.waddup.model.WADModel;
+import org.slendersnax.waddup.ui.components.WADPanel;
 
 public class PickerPanel extends JPanel {
     private final SaveConfigPanel saveConfigPanel;
