@@ -11,10 +11,12 @@ import java.awt.event.ActionListener;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
 
+import org.slendersnax.waddup.ui.helpers.NavigationHandler;
+
 import org.slendersnax.waddup.infrastructure.SlenderConstants;
 import org.slendersnax.waddup.infrastructure.PropWrapper;
 
-public class AppWindow extends JFrame implements ComponentListener {
+public class AppWindow extends JFrame implements ComponentListener, NavigationHandler {
     private final JPanel wrapperPanel;
     private final PickerPanel pickerPanel;
     private final OptionsPanel optionsPanel;
@@ -50,8 +52,8 @@ public class AppWindow extends JFrame implements ComponentListener {
         addComponentListener(this);
 
         wrapperPanel = new JPanel();
-        pickerPanel = new PickerPanel(this, mainFrameDimension);
-        optionsPanel = new OptionsPanel(this, mainFrameDimension);
+        pickerPanel = new PickerPanel(mainFrameDimension);
+        optionsPanel = new OptionsPanel(mainFrameDimension);
 
         mainCL = new CardLayout();
 
@@ -93,4 +95,15 @@ public class AppWindow extends JFrame implements ComponentListener {
         propWrapper.storeProperty(PropWrapper.FILE_SETTINGS_INDEX, SlenderConstants.SETTINGS_PREF_WIDTH, Integer.toString(this.getWidth()));
         propWrapper.storeProperty(PropWrapper.FILE_SETTINGS_INDEX, SlenderConstants.SETTINGS_PREF_HEIGHT, Integer.toString(this.getHeight()));
     };
+
+    @Override
+    public void showPanel(String name) {
+        switch(name) {
+            case "test":
+                System.out.println("test");
+                break;
+            default:
+                break;
+        }
+    }
 }

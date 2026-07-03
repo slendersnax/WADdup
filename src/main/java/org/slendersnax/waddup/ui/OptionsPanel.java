@@ -35,7 +35,7 @@ public class OptionsPanel extends JPanel {
 
     private final String sGlobalCardCode, sWinCardCode, sNixCardCode;
     
-    public OptionsPanel(JFrame _mainFrame, Dimension _mainFrameSize) {
+    public OptionsPanel(Dimension _mainFrameSize) {
         setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
 
         sGlobalCardCode = "GLOBAL";
@@ -148,7 +148,7 @@ public class OptionsPanel extends JPanel {
         add(innerPanel);
         add(Box.createRigidArea(new Dimension(5, 5)));
 
-        addBtnActions(_mainFrame);
+        addBtnActions();
         initSettings();
     }
 
@@ -193,7 +193,7 @@ public class OptionsPanel extends JPanel {
         gamemodeCheck.setSelected(settingsHandler.getProperty(PropWrapper.FILE_SETTINGS_INDEX, SlenderConstants.SETTINGS_NIX_USE_GAMEMODE).equals("True"));
     }
 
-    private void addBtnActions(JFrame _mainFrame) {
+    private void addBtnActions() {
         btnGlobalSettings.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 cl.show(panSettings, sGlobalCardCode);
@@ -251,7 +251,7 @@ public class OptionsPanel extends JPanel {
             public void actionPerformed(ActionEvent e) {
                 fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
 
-                int returnVal = fileChooser.showOpenDialog(_mainFrame);
+                int returnVal = fileChooser.showOpenDialog(getParent());
 
                 if (returnVal == JFileChooser.APPROVE_OPTION) {
                     File file = fileChooser.getSelectedFile();
@@ -264,7 +264,7 @@ public class OptionsPanel extends JPanel {
             public void actionPerformed(ActionEvent e) {
                 fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
 
-                int returnVal = fileChooser.showOpenDialog(_mainFrame);
+                int returnVal = fileChooser.showOpenDialog(getParent());
 
                 if (returnVal == JFileChooser.APPROVE_OPTION) {
                     File file = fileChooser.getSelectedFile();
@@ -277,7 +277,7 @@ public class OptionsPanel extends JPanel {
             public void actionPerformed(ActionEvent e) {
                 fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
 
-                int returnVal = fileChooser.showOpenDialog(_mainFrame);
+                int returnVal = fileChooser.showOpenDialog(getParent());
 
                 if (returnVal == JFileChooser.APPROVE_OPTION) {
                     File file = fileChooser.getSelectedFile();
@@ -290,7 +290,7 @@ public class OptionsPanel extends JPanel {
             public void actionPerformed(ActionEvent e) {
                 fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
 
-                int returnVal = fileChooser.showOpenDialog(_mainFrame);
+                int returnVal = fileChooser.showOpenDialog(getParent());
 
                 if (returnVal == JFileChooser.APPROVE_OPTION) {
                     File file = fileChooser.getSelectedFile();
@@ -303,7 +303,7 @@ public class OptionsPanel extends JPanel {
             public void actionPerformed(ActionEvent e) {
                 fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
 
-                int returnVal = fileChooser.showOpenDialog(_mainFrame);
+                int returnVal = fileChooser.showOpenDialog(getParent());
 
                 if (returnVal == JFileChooser.APPROVE_OPTION) {
                     File file = fileChooser.getSelectedFile();

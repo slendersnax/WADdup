@@ -25,7 +25,6 @@ public class PickerPanel extends JPanel {
     private final LoadConfigPanel loadConfigPanel;
     private WADPanel wadContainer;
 
-    private final JFrame mainFrame;
     private JPanel panelBtnContainer, panelMidCard;
     private JButton btnPlay, btnSettings;
     private CardLayout cl;
@@ -39,8 +38,7 @@ public class PickerPanel extends JPanel {
 
     private boolean savedNewConfig;
 
-    public PickerPanel(JFrame _mainFrame, Dimension frameSize) {
-        mainFrame = _mainFrame;
+    public PickerPanel(Dimension frameSize) {
         mainFrameSize = frameSize;
 
         saveCardCode = "SAVE";
@@ -59,7 +57,7 @@ public class PickerPanel extends JPanel {
         loadConfigPanel = new LoadConfigPanel(frameSize);
 
         panelBtnContainer = new JPanel();
-        wadContainer = new WADPanel(mainFrame, mainFrameSize, basePath);
+        wadContainer = new WADPanel(mainFrameSize, basePath);
         panelMidCard = new JPanel();
         cl = new CardLayout();
 
@@ -104,7 +102,7 @@ public class PickerPanel extends JPanel {
                     savedNewConfig = true;
                 }
                 else {
-                    JOptionPane.showMessageDialog(mainFrame, "No IWAD selected!", "Error", JOptionPane.WARNING_MESSAGE);
+                    JOptionPane.showMessageDialog(getParent(), "Failed to save config: no IWAD selected", "Error", JOptionPane.WARNING_MESSAGE);
                 }
             }
         });
@@ -130,7 +128,7 @@ public class PickerPanel extends JPanel {
                     launcher.run(wadContainer.getIwadLabel().getIwadPath(), sessionWads);
                 }
                 else {
-                    JOptionPane.showMessageDialog(mainFrame, "You have no IWAD selected", "Error", JOptionPane.WARNING_MESSAGE);
+                    JOptionPane.showMessageDialog(getParent(), "Failed to launch: no IWAD selected", "Error", JOptionPane.WARNING_MESSAGE);
                 }
             }
         });

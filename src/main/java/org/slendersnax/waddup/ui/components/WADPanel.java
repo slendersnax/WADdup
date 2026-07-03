@@ -31,7 +31,6 @@ public class WADPanel extends JPanel implements DropTargetListener {
     private final IWADLabel iwadLabel;
     private final ItemPanel<WADModel> wadListPanel;
 
-    private final JFrame parentFrame;
     private final JPanel midPanel;
     private final VerticalBtnPanel panelBtnContainer;
     private final JButton btn_iwadPicker, btn_pwadPicker, btn_remove, btn_removeAll, btn_moveup, btn_movedown, btn_saveConfig, btn_loadConfig;
@@ -41,8 +40,7 @@ public class WADPanel extends JPanel implements DropTargetListener {
     private final Dimension stdHorizontalFiller;
     private final String basePath;
 
-    public WADPanel(JFrame _parentFrame, Dimension _parentFrameSize, String _basePath) {
-        parentFrame = _parentFrame;
+    public WADPanel(Dimension _parentFrameSize, String _basePath) {
         stdHorizontalFiller = new Dimension(5, 0);
 
         iwadLabel = new IWADLabel();
@@ -125,7 +123,7 @@ public class WADPanel extends JPanel implements DropTargetListener {
     private void addBtnActions() {
         btn_iwadPicker.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                int returnVal = fileChooser.showOpenDialog(parentFrame);
+                int returnVal = fileChooser.showOpenDialog(getParent());
 
                 if (returnVal == JFileChooser.APPROVE_OPTION) {
                     File file = fileChooser.getSelectedFile();
@@ -137,7 +135,7 @@ public class WADPanel extends JPanel implements DropTargetListener {
         btn_pwadPicker.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 fileChooser.setMultiSelectionEnabled(true);
-                int returnVal = fileChooser.showOpenDialog(parentFrame);
+                int returnVal = fileChooser.showOpenDialog(getParent());
 
                 if (returnVal == JFileChooser.APPROVE_OPTION) {
                     File[] selFiles = fileChooser.getSelectedFiles();
@@ -222,13 +220,13 @@ public class WADPanel extends JPanel implements DropTargetListener {
     }
 
     private boolean areValidFileTypes(List<File> files) {
-    String[] validExtensions = {".wad", ".pk3", ".zip", ".deh"}; // define valid file types
-    for (File file : files) {
-        String fileName = file.getName().toLowerCase();
-        boolean isValid = Arrays.stream(validExtensions)
-                                 .anyMatch(fileName::endsWith);
-        if (!isValid) return false;
+        String[] validExtensions = {".wad", ".pk3", ".zip", ".deh"}; // define valid file types
+        for (File file : files) {
+            String fileName = file.getName().toLowerCase();
+            boolean isValid = Arrays.stream(validExtensions)
+                                     .anyMatch(fileName::endsWith);
+            if (!isValid) return false;
+        }
+        return true;
     }
-    return true;
-}
 }
