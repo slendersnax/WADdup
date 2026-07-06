@@ -67,6 +67,14 @@ public class ItemPanel<T> extends JPanel {
         repaint();
     }
 
+    public void addItem(T obj) {
+        itemList.add(obj);
+        listModel.addElement(obj.toString());
+
+        revalidate();
+        repaint();
+    }
+
     public void removeSelectedItems() {
         while (!objJList.isSelectionEmpty()) {
             int nSelectedIndex = objJList.getSelectedIndex();
@@ -123,14 +131,6 @@ public class ItemPanel<T> extends JPanel {
             revalidate();
             repaint();
         }
-    }
-
-    public void addItem(T obj) {
-        itemList.add(obj);
-        listModel.addElement(obj.toString());
-
-        revalidate();
-        repaint();
     }
 
     public ArrayList<T> getSelected() {

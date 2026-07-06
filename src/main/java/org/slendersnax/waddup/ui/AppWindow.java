@@ -23,8 +23,10 @@ public class AppWindow extends JFrame implements ComponentListener, NavigationHa
 
     private final String codeWadPicker, codeSettings;
 
-    public AppWindow() {
+    public AppWindow(PropWrapper propWrapper) {
         super("WADdup");
+
+        this.propWrapper = propWrapper;
 
         // finding out the display resolution of the monitor (or main monitor in the case of multi-monitor setups)
         GraphicsDevice gd = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
@@ -33,7 +35,6 @@ public class AppWindow extends JFrame implements ComponentListener, NavigationHa
 
         // i just like this size
         Dimension mainFrameDimension = new Dimension((int)(width / 2), (int)(height / 1.5));
-        propWrapper = new PropWrapper();
 
         if (propWrapper.getProperty(PropWrapper.FILE_SETTINGS_INDEX, SlenderConstants.SETTINGS_PREF_WIDTH) == null) {
             propWrapper.storeProperty(PropWrapper.FILE_SETTINGS_INDEX, SlenderConstants.SETTINGS_PREF_WIDTH, Integer.toString(mainFrameDimension.width));
@@ -50,8 +51,8 @@ public class AppWindow extends JFrame implements ComponentListener, NavigationHa
         addComponentListener(this);
 
         wrapperPanel = new JPanel();
-        pickerPanel = new PickerPanel(mainFrameDimension);
-        optionsPanel = new OptionsPanel(mainFrameDimension);
+        pickerPanel = new PickerPanel(propWrapper);
+        optionsPanel = new OptionsPanel(propWrapper);
 
         mainCL = new CardLayout();
 
@@ -66,13 +67,13 @@ public class AppWindow extends JFrame implements ComponentListener, NavigationHa
 
         registerNavigation();
 
-        mainCL.show(wrapperPanel, codeWadPicker);
+        showPanel(codeWadPicker);
         setVisible(true);
     }
 
     private void registerNavigation() {
-        pickerPanel.onSettingsRequested(e -> showPanel("SETTINGS"));
-        optionsPanel.onWadPanelRequested(e -> showPanel("WAD_PICKER"));
+        pickerPanel.onSettingsRequested(e -> showPanel(codeSettings));
+        optionsPanel.onWadPanelRequested(e -> showPanel(codeWadPicker));
     }
 
     public void componentHidden(ComponentEvent ce) {};

@@ -22,9 +22,10 @@ import java.io.File;
 import org.slendersnax.waddup.ui.components.VerticalBtnPanel;
 import org.slendersnax.waddup.infrastructure.PropWrapper;
 import org.slendersnax.waddup.infrastructure.SlenderConstants;
+import org.slendersnax.waddup.ui.helpers.NavigationHandler;
 
-public class OptionsPanel extends JPanel {
-    private final PropWrapper settingsHandler;
+public class OptionsPanel extends JPanel implements NavigationHandler {
+    private final PropWrapper propWrapper;
     private final VerticalBtnPanel panCategories;
     private final JPanel innerPanel, panSettings, globalSettings, winSettings, nixSettings;
     private final JCheckBox wineCheck, wineprefixCheck, portableCheck, gamemodeCheck;
@@ -35,8 +36,12 @@ public class OptionsPanel extends JPanel {
 
     private final String sGlobalCardCode, sWinCardCode, sNixCardCode;
     
-    public OptionsPanel(Dimension _mainFrameSize) {
+    public OptionsPanel(PropWrapper propWrapper) {
         setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
+
+        this.propWrapper = propWrapper;
+        Dimension mainFrameSize = new Dimension(Integer.parseInt(propWrapper.getProperty(PropWrapper.FILE_SETTINGS_INDEX, SlenderConstants.SETTINGS_PREF_WIDTH)),
+                                      Integer.parseInt(propWrapper.getProperty(PropWrapper.FILE_SETTINGS_INDEX, SlenderConstants.SETTINGS_PREF_HEIGHT)));
 
         sGlobalCardCode = "GLOBAL";
         sWinCardCode = "WINDOWS";
@@ -44,7 +49,6 @@ public class OptionsPanel extends JPanel {
 
         cl = new CardLayout();
 
-        settingsHandler = new PropWrapper();
         fileChooser = new JFileChooser();
 
         // viewing in details mode by default
@@ -52,7 +56,7 @@ public class OptionsPanel extends JPanel {
         details.actionPerformed(null);
         fileChooser.setFileHidingEnabled(false);
 
-        panCategories = new VerticalBtnPanel(new Dimension((int)(_mainFrameSize.width * 0.20), _mainFrameSize.height));
+        panCategories = new VerticalBtnPanel(new Dimension((int)(mainFrameSize.width * 0.20), mainFrameSize.height));
         panSettings = new JPanel();
         innerPanel = new JPanel();
 
@@ -90,9 +94,9 @@ public class OptionsPanel extends JPanel {
         panSettings.setLayout(cl);
         panSettings.setBorder(BorderFactory.createLineBorder(new Color(100, 100, 100), 1));
 
-        globalSettings.setPreferredSize(new Dimension((int)(_mainFrameSize.width * 0.80), (int)(_mainFrameSize.height * 0.80)));
-        winSettings.setPreferredSize(new Dimension((int)(_mainFrameSize.width * 0.80), (int)(_mainFrameSize.height * 0.80)));
-        nixSettings.setPreferredSize(new Dimension((int)(_mainFrameSize.width * 0.80), (int)(_mainFrameSize.height * 0.80)));
+        globalSettings.setPreferredSize(new Dimension((int)(mainFrameSize.width * 0.80), (int)(mainFrameSize.height * 0.80)));
+        winSettings.setPreferredSize(new Dimension((int)(mainFrameSize.width * 0.80), (int)(mainFrameSize.height * 0.80)));
+        nixSettings.setPreferredSize(new Dimension((int)(mainFrameSize.width * 0.80), (int)(mainFrameSize.height * 0.80)));
 
         globalSettings.setLayout(new BoxLayout(globalSettings, BoxLayout.PAGE_AXIS));
         globalSettings.add(Box.createRigidArea(new Dimension(5, 5)));
@@ -152,20 +156,16 @@ public class OptionsPanel extends JPanel {
         initSettings();
     }
 
-    public void showDefaultCard() {
-        cl.show(panSettings, sGlobalCardCode);
-    }
-
     public void onWadPanelRequested(ActionListener listener) {
         btnWadPanel.addActionListener(listener);
     }
 
     private void initSettings() {
-        String sWadDir = settingsHandler.getProperty(PropWrapper.FILE_SETTINGS_INDEX, SlenderConstants.SETTINGS_WAD_DIRECTORY);
-        String sWinExec = settingsHandler.getProperty(PropWrapper.FILE_SETTINGS_INDEX, SlenderConstants.SETTINGS_WIN_EXE);
-        String sNixExec = settingsHandler.getProperty(PropWrapper.FILE_SETTINGS_INDEX, SlenderConstants.SETTINGS_NIX_WIN_EXE);
-        String sNixWinePrefix = settingsHandler.getProperty(PropWrapper.FILE_SETTINGS_INDEX, SlenderConstants.SETTINGS_WINE_PREFIX);
-        String sPortablePath = settingsHandler.getProperty(PropWrapper.FILE_SETTINGS_INDEX, SlenderConstants.SETTINGS_NIX_PORTABLE_EXE);
+        String sWadDir = propWrapper.getProperty(PropWrapper.FILE_SETTINGS_INDEX, SlenderConstants.SETTINGS_WAD_DIRECTORY);
+        String sWinExec = propWrapper.getProperty(PropWrapper.FILE_SETTINGS_INDEX, SlenderConstants.SETTINGS_WIN_EXE);
+        String sNixExec = propWrapper.getProperty(PropWrapper.FILE_SETTINGS_INDEX, SlenderConstants.SETTINGS_NIX_WIN_EXE);
+        String sNixWinePrefix = propWrapper.getProperty(PropWrapper.FILE_SETTINGS_INDEX, SlenderConstants.SETTINGS_WINE_PREFIX);
+        String sPortablePath = propWrapper.getProperty(PropWrapper.FILE_SETTINGS_INDEX, SlenderConstants.SETTINGS_NIX_PORTABLE_EXE);
 
         if (!sWadDir.isEmpty()) {
             wadDirectory.setText(sWadDir);
@@ -187,28 +187,28 @@ public class OptionsPanel extends JPanel {
             portableExecPath.setText(sPortablePath);
         }
 
-        portableCheck.setSelected(settingsHandler.getProperty(PropWrapper.FILE_SETTINGS_INDEX, SlenderConstants.SETTINGS_NIX_USE_PORTABLE).equals("True"));
-        wineCheck.setSelected(settingsHandler.getProperty(PropWrapper.FILE_SETTINGS_INDEX, SlenderConstants.SETTINGS_NIX_USE_WINE).equals("True"));
-        wineprefixCheck.setSelected(settingsHandler.getProperty(PropWrapper.FILE_SETTINGS_INDEX, SlenderConstants.SETTINGS_NIX_USE_WINE_PREFIX).equals("True"));
-        gamemodeCheck.setSelected(settingsHandler.getProperty(PropWrapper.FILE_SETTINGS_INDEX, SlenderConstants.SETTINGS_NIX_USE_GAMEMODE).equals("True"));
+        portableCheck.setSelected(propWrapper.getProperty(PropWrapper.FILE_SETTINGS_INDEX, SlenderConstants.SETTINGS_NIX_USE_PORTABLE).equals("True"));
+        wineCheck.setSelected(propWrapper.getProperty(PropWrapper.FILE_SETTINGS_INDEX, SlenderConstants.SETTINGS_NIX_USE_WINE).equals("True"));
+        wineprefixCheck.setSelected(propWrapper.getProperty(PropWrapper.FILE_SETTINGS_INDEX, SlenderConstants.SETTINGS_NIX_USE_WINE_PREFIX).equals("True"));
+        gamemodeCheck.setSelected(propWrapper.getProperty(PropWrapper.FILE_SETTINGS_INDEX, SlenderConstants.SETTINGS_NIX_USE_GAMEMODE).equals("True"));
     }
 
     private void addBtnActions() {
         btnGlobalSettings.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                cl.show(panSettings, sGlobalCardCode);
+                showPanel(sGlobalCardCode);
             }
         });
 
         btnWinSettings.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                cl.show(panSettings, sWinCardCode);
+                showPanel(sWinCardCode);
             }
         });
 
         btnNixSettings.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                cl.show(panSettings, sNixCardCode);
+                showPanel(sNixCardCode);
             }
         });
 
@@ -225,25 +225,25 @@ public class OptionsPanel extends JPanel {
                 boolean bUseGamemode = gamemodeCheck.isSelected();
 
                 if (!sWadDir.isEmpty()) {
-                    settingsHandler.storeProperty(PropWrapper.FILE_SETTINGS_INDEX, SlenderConstants.SETTINGS_WAD_DIRECTORY, sWadDir);
+                    propWrapper.storeProperty(PropWrapper.FILE_SETTINGS_INDEX, SlenderConstants.SETTINGS_WAD_DIRECTORY, sWadDir);
                 }
                 if (!sWinExec.isEmpty()) {
-                    settingsHandler.storeProperty(PropWrapper.FILE_SETTINGS_INDEX, SlenderConstants.SETTINGS_WIN_EXE, sWinExec);
+                    propWrapper.storeProperty(PropWrapper.FILE_SETTINGS_INDEX, SlenderConstants.SETTINGS_WIN_EXE, sWinExec);
                 }
                 if (!sNixExec.isEmpty()) {
-                    settingsHandler.storeProperty(PropWrapper.FILE_SETTINGS_INDEX, SlenderConstants.SETTINGS_NIX_WIN_EXE, sNixExec);
+                    propWrapper.storeProperty(PropWrapper.FILE_SETTINGS_INDEX, SlenderConstants.SETTINGS_NIX_WIN_EXE, sNixExec);
                 }
                 if (!sNixWinePrefix.isEmpty()) {
-                    settingsHandler.storeProperty(PropWrapper.FILE_SETTINGS_INDEX, SlenderConstants.SETTINGS_WINE_PREFIX, sNixWinePrefix);
+                    propWrapper.storeProperty(PropWrapper.FILE_SETTINGS_INDEX, SlenderConstants.SETTINGS_WINE_PREFIX, sNixWinePrefix);
                 }
                 if (!sPortablePath.isEmpty()) {
-                    settingsHandler.storeProperty(PropWrapper.FILE_SETTINGS_INDEX, SlenderConstants.SETTINGS_NIX_PORTABLE_EXE, sPortablePath);
+                    propWrapper.storeProperty(PropWrapper.FILE_SETTINGS_INDEX, SlenderConstants.SETTINGS_NIX_PORTABLE_EXE, sPortablePath);
                 }
 
-                settingsHandler.storeProperty(PropWrapper.FILE_SETTINGS_INDEX, SlenderConstants.SETTINGS_NIX_USE_PORTABLE, bUsePortable ? "True" : "False");
-                settingsHandler.storeProperty(PropWrapper.FILE_SETTINGS_INDEX, SlenderConstants.SETTINGS_NIX_USE_WINE, bUseWine ? "True" : "False");
-                settingsHandler.storeProperty(PropWrapper.FILE_SETTINGS_INDEX, SlenderConstants.SETTINGS_NIX_USE_WINE_PREFIX, bUseWinePrefix ? "True" : "False");
-                settingsHandler.storeProperty(PropWrapper.FILE_SETTINGS_INDEX, SlenderConstants.SETTINGS_NIX_USE_GAMEMODE, bUseGamemode ? "True" : "False");
+                propWrapper.storeProperty(PropWrapper.FILE_SETTINGS_INDEX, SlenderConstants.SETTINGS_NIX_USE_PORTABLE, bUsePortable ? "True" : "False");
+                propWrapper.storeProperty(PropWrapper.FILE_SETTINGS_INDEX, SlenderConstants.SETTINGS_NIX_USE_WINE, bUseWine ? "True" : "False");
+                propWrapper.storeProperty(PropWrapper.FILE_SETTINGS_INDEX, SlenderConstants.SETTINGS_NIX_USE_WINE_PREFIX, bUseWinePrefix ? "True" : "False");
+                propWrapper.storeProperty(PropWrapper.FILE_SETTINGS_INDEX, SlenderConstants.SETTINGS_NIX_USE_GAMEMODE, bUseGamemode ? "True" : "False");
             }
         });
 
@@ -311,5 +311,26 @@ public class OptionsPanel extends JPanel {
                 }
             }
         });
+    }
+
+    @Override
+    public void showPanel(String name) {
+        switch(name) {
+            case "GLOBAL":
+                cl.show(panSettings, sGlobalCardCode);
+                break;
+            case "WINDOWS":
+                cl.show(panSettings, sWinCardCode);
+                break;
+            case "LINUX":
+                cl.show(panSettings, sNixCardCode);
+                break;
+            default:
+                break;
+        }
+    }
+
+    public void showDefaultCard() {
+        showPanel(sGlobalCardCode);
     }
 }

@@ -9,6 +9,8 @@ import javax.swing.Box;
 import javax.swing.JOptionPane;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.Dimension;
 import java.awt.Component;
 import java.util.ArrayList;
@@ -85,6 +87,14 @@ public class SaveConfigPanel extends JPanel {
 
     public JButton getBtn_cancelSave() {
         return btn_cancelSave;
+    }
+
+    public void onSaveConfigRequested(ActionListener listener) {
+        btn_saveConfig.addActionListener(listener);
+    }
+
+    public void onCancelSaveRequested(ActionListener listener) {
+        btn_cancelSave.addActionListener(listener);
     }
 
     public void setConfigData(ArrayList<WADModel> _wadList, String _iwadPath) {

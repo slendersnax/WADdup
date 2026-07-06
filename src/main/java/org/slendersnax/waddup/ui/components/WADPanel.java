@@ -78,12 +78,12 @@ public class WADPanel extends JPanel implements DropTargetListener {
         return wadListPanel;
     }
 
-    public JButton getBtn_saveConfig() {
-        return btn_saveConfig;
+    public void onLoadConfigurationsRequested(ActionListener listener) {
+        btn_loadConfig.addActionListener(listener);
     }
 
-    public JButton getBtn_loadConfig() {
-        return btn_loadConfig;
+    public void onSaveCurrentconfigRequested(ActionListener listener) {
+        btn_saveConfig.addActionListener(listener);
     }
 
     public void addComponents() {

@@ -19,8 +19,9 @@ import org.slendersnax.waddup.infrastructure.PropWrapper;
 import org.slendersnax.waddup.infrastructure.SlenderConstants;
 import org.slendersnax.waddup.model.WADModel;
 import org.slendersnax.waddup.ui.components.WADPanel;
+import org.slendersnax.waddup.ui.helpers.NavigationHandler;
 
-public class PickerPanel extends JPanel {
+public class PickerPanel extends JPanel implements NavigationHandler {
     private final SaveConfigPanel saveConfigPanel;
     private final LoadConfigPanel loadConfigPanel;
     private WADPanel wadContainer;
@@ -28,7 +29,7 @@ public class PickerPanel extends JPanel {
     private JPanel panelBtnContainer, panelMidCard;
     private JButton btnPlay, btnSettings;
     private CardLayout cl;
-    private final Dimension mainFrameSize, stdHGapSize, stdVGapSize, stdBtnSize;
+    private final Dimension stdHGapSize, stdVGapSize, stdBtnSize;
 
     private final String basePath;
     private final String saveCardCode, loadCardCode, wadCardCode;
@@ -38,23 +39,24 @@ public class PickerPanel extends JPanel {
 
     private boolean savedNewConfig;
 
-    public PickerPanel(Dimension frameSize) {
-        mainFrameSize = frameSize;
+    public PickerPanel(PropWrapper propWrapper) {
+        this.propWrapper = propWrapper;
 
-        saveCardCode = "SAVE";
-        loadCardCode = "LOAD";
-        wadCardCode = "WAD";
+        Dimension mainFrameSize = new Dimension(Integer.parseInt(propWrapper.getProperty(PropWrapper.FILE_SETTINGS_INDEX, SlenderConstants.SETTINGS_PREF_WIDTH)),
+                                      Integer.parseInt(propWrapper.getProperty(PropWrapper.FILE_SETTINGS_INDEX, SlenderConstants.SETTINGS_PREF_HEIGHT)));
 
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
         setPreferredSize(mainFrameSize);
         setMaximumSize(mainFrameSize);
         setSize(mainFrameSize);
 
-        propWrapper = new PropWrapper();
-
         basePath = propWrapper.getProperty(PropWrapper.FILE_SETTINGS_INDEX, SlenderConstants.SETTINGS_WAD_DIRECTORY);
-        saveConfigPanel = new SaveConfigPanel(frameSize);
-        loadConfigPanel = new LoadConfigPanel(frameSize);
+        saveConfigPanel = new SaveConfigPanel(mainFrameSize);
+        loadConfigPanel = new LoadConfigPanel(mainFrameSize);
+
+        saveCardCode = "SAVE";
+        loadCardCode = "LOAD";
+        wadCardCode = "WAD";
 
         panelBtnContainer = new JPanel();
         wadContainer = new WADPanel(mainFrameSize, basePath);
@@ -78,30 +80,26 @@ public class PickerPanel extends JPanel {
 
         stdHGapSize = new Dimension(5, 0);
         stdVGapSize = new Dimension(0, 5);
-        stdBtnSize = new Dimension((int)(frameSize.width * 0.20), SlenderConstants.STD_BTN_HEIGHT);
+        stdBtnSize = new Dimension((int)(mainFrameSize.width * 0.20), SlenderConstants.STD_BTN_HEIGHT);
 
         savedNewConfig = false;
         loadConfigPanel.loadConfig();
 
-        addComponents();
+        addComponents(mainFrameSize);
         initBtnActions();
 
-        cl.show(panelMidCard, wadCardCode);
+        showPanel(wadCardCode);
     }
 
     public void onSettingsRequested(ActionListener listener) {
         btnSettings.addActionListener(listener);
     }
 
-    public JButton getBtnSettings() {
-        return btnSettings;
-    }
-
     public void initBtnActions() {
-        wadContainer.getBtn_saveConfig().addActionListener(new ActionListener() {
+        wadContainer.onSaveCurrentconfigRequested(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 if (!wadContainer.getIwadLabel().getIwadPath().isEmpty()) {
-                    cl.show(panelMidCard, saveCardCode);
+                    showPanel(saveCardCode);
                     saveConfigPanel.setConfigData(wadContainer.getWadListPanel().getItemList(), wadContainer.getIwadLabel().getIwadPath());
                     savedNewConfig = true;
                 }
@@ -111,7 +109,7 @@ public class PickerPanel extends JPanel {
             }
         });
 
-        wadContainer.getBtn_loadConfig().addActionListener(new ActionListener() {
+        wadContainer.onLoadConfigurationsRequested(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 // we only load the config again if we save a new configuration
                 // still not the MOST efficient, but nice
@@ -120,7 +118,7 @@ public class PickerPanel extends JPanel {
                     savedNewConfig = false;
                 }
 
-                cl.show(panelMidCard, loadCardCode);
+                showPanel(loadCardCode);
             }
         });
 
@@ -137,28 +135,28 @@ public class PickerPanel extends JPanel {
             }
         });
 
-        saveConfigPanel.getBtn_cancelSave().addActionListener(new ActionListener() {
+        saveConfigPanel.onCancelSaveRequested(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                cl.show(panelMidCard, wadCardCode);
+                showPanel(wadCardCode);
             }
         });
 
-        loadConfigPanel.getBtn_cancelLoad().addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                cl.show(panelMidCard, wadCardCode);
-            }
-        });
-
-        saveConfigPanel.getBtn_saveConfig().addActionListener(new ActionListener() {
+        saveConfigPanel.onSaveConfigRequested(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 saveConfigPanel.saveConfig();
-                cl.show(panelMidCard, wadCardCode);
+                showPanel(wadCardCode);
             }
         });
 
-        loadConfigPanel.getBtn_loadConfig().addActionListener(new ActionListener() {
+        loadConfigPanel.onCancelLoadRequested(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                cl.show(panelMidCard, wadCardCode);
+                showPanel(wadCardCode);
+            }
+        });
+
+        loadConfigPanel.onLoadConfigRequested(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                showPanel(wadCardCode);
                 ArrayList<WADModel> selectedConfigWads = loadConfigPanel.getLoadedWads();
 
                 if (!selectedConfigWads.isEmpty()) {
@@ -171,11 +169,7 @@ public class PickerPanel extends JPanel {
         });
     }
 
-    public void showDefaultCard() {
-        cl.show(panelMidCard, wadCardCode);
-    }
-
-    public void addComponents() {
+    public void addComponents(Dimension mainFrameSize) {
         btnSettings.setMaximumSize(stdBtnSize);
         btnSettings.setPreferredSize(stdBtnSize);
         btnPlay.setMaximumSize(stdBtnSize);
@@ -198,5 +192,26 @@ public class PickerPanel extends JPanel {
         add(Box.createRigidArea(stdVGapSize));
         add(panelBtnContainer);
         add(Box.createRigidArea(stdVGapSize));
+    }
+
+    @Override
+    public void showPanel(String name) {
+        switch(name) {
+            case "WAD":
+                cl.show(panelMidCard, wadCardCode);
+                break;
+            case "SAVE":
+                cl.show(panelMidCard, saveCardCode);
+                break;
+            case "LOAD":
+                cl.show(panelMidCard, loadCardCode);
+                break;
+            default:
+                break;
+        }
+    }
+
+    public void showDefaultCard() {
+        showPanel(wadCardCode);
     }
 }

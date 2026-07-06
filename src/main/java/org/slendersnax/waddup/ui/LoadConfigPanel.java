@@ -60,12 +60,12 @@ public class LoadConfigPanel extends JPanel {
         addBtnActions();
     }
 
-    public JButton getBtn_loadConfig() {
-        return btn_loadConfig;
+    public void onLoadConfigRequested(ActionListener listener) {
+        btn_loadConfig.addActionListener(listener);
     }
 
-    public JButton getBtn_cancelLoad() {
-        return btn_cancelLoad;
+    public void onCancelLoadRequested(ActionListener listener) {
+        btn_cancelLoad.addActionListener(listener);
     }
 
     public void addBtnActions() {
