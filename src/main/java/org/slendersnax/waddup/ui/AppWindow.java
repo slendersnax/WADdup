@@ -6,8 +6,6 @@ import java.awt.CardLayout;
 import java.awt.Dimension;
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
 
@@ -65,26 +63,16 @@ public class AppWindow extends JFrame implements ComponentListener, NavigationHa
         wrapperPanel.add(optionsPanel, codeSettings);
 
         add(wrapperPanel);
-        mainCL.show(wrapperPanel, codeWadPicker);
-        initBtnActions();
 
+        registerNavigation();
+
+        mainCL.show(wrapperPanel, codeWadPicker);
         setVisible(true);
     }
 
-    private void initBtnActions() {
-        pickerPanel.getBtnSettings().addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                mainCL.show(wrapperPanel, codeSettings);
-                pickerPanel.showDefaultCard();
-            }
-        });
-
-        optionsPanel.getBtnWadPanel().addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                mainCL.show(wrapperPanel, codeWadPicker);
-                optionsPanel.showDefaultCard();
-            }
-        });
+    private void registerNavigation() {
+        pickerPanel.onSettingsRequested(e -> showPanel("SETTINGS"));
+        optionsPanel.onWadPanelRequested(e -> showPanel("WAD_PICKER"));
     }
 
     public void componentHidden(ComponentEvent ce) {};
@@ -99,8 +87,13 @@ public class AppWindow extends JFrame implements ComponentListener, NavigationHa
     @Override
     public void showPanel(String name) {
         switch(name) {
-            case "test":
-                System.out.println("test");
+            case "SETTINGS":
+                mainCL.show(wrapperPanel, codeSettings);
+                pickerPanel.showDefaultCard();
+                break;
+            case "WAD_PICKER":
+                mainCL.show(wrapperPanel, codeWadPicker);
+                optionsPanel.showDefaultCard();
                 break;
             default:
                 break;

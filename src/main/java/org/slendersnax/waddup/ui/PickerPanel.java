@@ -89,6 +89,10 @@ public class PickerPanel extends JPanel {
         cl.show(panelMidCard, wadCardCode);
     }
 
+    public void onSettingsRequested(ActionListener listener) {
+        btnSettings.addActionListener(listener);
+    }
+
     public JButton getBtnSettings() {
         return btnSettings;
     }

@@ -64,7 +64,7 @@ public class OptionsPanel extends JPanel {
         btnWinSettings = new JButton("Windows");
         btnNixSettings = new JButton("Linux");
         btnSave = new JButton("Save");
-        btnWadPanel = new JButton("Select WADS");
+        btnWadPanel = new JButton("Back to WADs");
 
         // global settings items
         btnSelectWadDir = new JButton("Select WAD Folder");
@@ -156,8 +156,8 @@ public class OptionsPanel extends JPanel {
         cl.show(panSettings, sGlobalCardCode);
     }
 
-    public JButton getBtnWadPanel() {
-        return btnWadPanel;
+    public void onWadPanelRequested(ActionListener listener) {
+        btnWadPanel.addActionListener(listener);
     }
 
     private void initSettings() {
