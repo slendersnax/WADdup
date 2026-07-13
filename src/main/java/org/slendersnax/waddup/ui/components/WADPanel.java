@@ -25,8 +25,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Arrays;
 
+import org.slendersnax.waddup.infrastructure.PropWrapper;
 import org.slendersnax.waddup.model.WADModel;
 import org.slendersnax.waddup.model.WADSession;
+import org.slendersnax.waddup.infrastructure.SlenderConstants;
 
 public class WADPanel extends JPanel implements DropTargetListener {
     private final IWADLabel iwadLabel;
@@ -39,10 +41,15 @@ public class WADPanel extends JPanel implements DropTargetListener {
     private JFileChooser fileChooser;
     private FileNameExtensionFilter wadFilter;
     private final Dimension stdHorizontalFiller;
-    private final String basePath;
-    private final WADSession wadSession;
 
-    public WADPanel(Dimension _parentFrameSize, String _basePath) {
+    private final PropWrapper propWrapper;
+    private final WADSession wadSession;
+    private final WADModel iwad;
+
+    public WADPanel(Dimension _parentFrameSize, PropWrapper propWrapper, WADSession wadSession) {
+        this.propWrapper = propWrapper;
+        this.wadSession = wadSession;
+
         stdHorizontalFiller = new Dimension(5, 0);
 
         iwadLabel = new IWADLabel();
@@ -62,8 +69,7 @@ public class WADPanel extends JPanel implements DropTargetListener {
         move_header = new JLabel("PWAD ops");
         move_header.setHorizontalAlignment(SwingConstants.CENTER);
 
-        basePath = _basePath;
-        wadSession = new WADSession();
+        iwad = new WADModel();
 
         wadFilter = new FileNameExtensionFilter("DOOM mod files (wad, pk3, zip, deh)", "wad", "pk3", "zip", "deh");
 
@@ -85,7 +91,7 @@ public class WADPanel extends JPanel implements DropTargetListener {
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 
         midPanel.setLayout(new BoxLayout(midPanel, BoxLayout.LINE_AXIS));
-        fileChooser = new JFileChooser(new File(basePath));
+        fileChooser = new JFileChooser(new File(propWrapper.getProperty(PropWrapper.FILE_SETTINGS_INDEX, SlenderConstants.SETTINGS_WAD_DIRECTORY)));
 
         // viewing in details mode by default
         Action details = fileChooser.getActionMap().get("viewTypeDetails");
@@ -119,11 +125,17 @@ public class WADPanel extends JPanel implements DropTargetListener {
     // the rest are PWADs
     public void loadSession(ArrayList<WADModel> wadList) {
         iwadLabel.setIWAD(wadList.get(0).sWadTitle);
-        wadSession.setiWAD(new WADModel(wadList.get(0).sWadTitle, wadList.get(0).sWADPath));
+        iwad.setFromData(wadList.get(0).sWadTitle, wadList.get(0).sWADPath);
         wadList.remove(0);
 
         wadListPanel.setItemList(wadList);
-        wadSession.setpWADs(wadList);
+
+        syncSession();
+    }
+
+    private void syncSession() {
+        wadSession.setiWAD(iwad);
+        wadSession.setpWADs(wadListPanel.getItemList());
     }
 
     private void addBtnActions() {
@@ -134,8 +146,10 @@ public class WADPanel extends JPanel implements DropTargetListener {
                 if (returnVal == JFileChooser.APPROVE_OPTION) {
                     File file = fileChooser.getSelectedFile();
                     iwadLabel.setIWAD(file.getName());
-                    wadSession.setiWAD(new WADModel(file));
+                    iwad.setFromFile(file);
                 }
+
+                syncSession();
             }
         });
 
@@ -148,21 +162,20 @@ public class WADPanel extends JPanel implements DropTargetListener {
                     File[] selFiles = fileChooser.getSelectedFiles();
 
                     for (File selFile : selFiles) {
-                        String name = selFile.getName();
-                        wadListPanel.addItem(new WADModel(name, selFile.getAbsolutePath(), name.substring(name.length() - 3)));
+                        wadListPanel.addItem(new WADModel(selFile));
                     }
                 }
 
                 fileChooser.setMultiSelectionEnabled(false);
 
-                wadSession.setpWADs(wadListPanel.getItemList());
+                syncSession();
             }
         });
         btn_remove.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 wadListPanel.removeSelectedItems();
 
-                wadSession.setpWADs(wadListPanel.getItemList());
+                syncSession();
             }
         });
 
@@ -222,11 +235,12 @@ public class WADPanel extends JPanel implements DropTargetListener {
 
                 if (areValidFileTypes(files)) {
                     for (File file : files) {
-                        String name = file.getName();
-                        wadListPanel.addItem(new WADModel(name, file.getAbsolutePath(), name.substring(name.length() - 3)));
+                        wadListPanel.addItem(new WADModel(file));
                     }
                 }
             }
+
+            syncSession();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -241,9 +255,5 @@ public class WADPanel extends JPanel implements DropTargetListener {
             if (!isValid) return false;
         }
         return true;
-    }
-
-    public WADSession getWadSession() {
-        return wadSession;
     }
 }

@@ -99,8 +99,9 @@ public class LoadConfigPanel extends JPanel {
             String selectedWads = propWrapper.getProperty(PropWrapper.FILE_CONFIG_INDEX, selectedConfig.get(0));
             String[] arrSelWads = selectedWads.split(SlenderConstants.CONFIG_ITEM_SEPARATOR);
 
+            // TODO: this looks like it's not good for Windows, maybe should use the native separator somehow?
             for (String arrSelWad : arrSelWads) {
-                loadedWads.add(new WADModel(arrSelWad.substring(arrSelWad.lastIndexOf("/") + 1), arrSelWad, arrSelWad.substring(arrSelWad.length() - 3)));
+                loadedWads.add(new WADModel(arrSelWad.substring(arrSelWad.lastIndexOf("/") + 1), arrSelWad));
             }
         }
 

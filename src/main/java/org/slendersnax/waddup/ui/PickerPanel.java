@@ -13,10 +13,12 @@ import java.awt.event.ActionListener;
 
 import java.util.ArrayList;
 
+import org.slendersnax.waddup.model.WADSession;
+import org.slendersnax.waddup.model.WADModel;
 import org.slendersnax.waddup.service.GZDoomLauncher;
 import org.slendersnax.waddup.infrastructure.PropWrapper;
 import org.slendersnax.waddup.infrastructure.SlenderConstants;
-import org.slendersnax.waddup.model.WADModel;
+import org.slendersnax.waddup.exception.NoIWadSelectedException;
 import org.slendersnax.waddup.ui.components.WADPanel;
 import org.slendersnax.waddup.ui.helpers.NavigationHandler;
 
@@ -30,11 +32,11 @@ public class PickerPanel extends JPanel implements NavigationHandler {
     private CardLayout cl;
     private final Dimension stdHGapSize, stdVGapSize, stdBtnSize;
 
-    private final String basePath;
     private final String saveCardCode, loadCardCode, wadCardCode;
     private final String osname;
     private final GZDoomLauncher launcher;
     private final PropWrapper propWrapper;
+    private final WADSession wadSession;
 
     private boolean savedNewConfig;
 
@@ -49,7 +51,8 @@ public class PickerPanel extends JPanel implements NavigationHandler {
         setMaximumSize(mainFrameSize);
         setSize(mainFrameSize);
 
-        basePath = propWrapper.getProperty(PropWrapper.FILE_SETTINGS_INDEX, SlenderConstants.SETTINGS_WAD_DIRECTORY);
+        wadSession = new WADSession();
+
         saveConfigPanel = new SaveConfigPanel(mainFrameSize);
         loadConfigPanel = new LoadConfigPanel(mainFrameSize);
 
@@ -58,7 +61,7 @@ public class PickerPanel extends JPanel implements NavigationHandler {
         wadCardCode = "WAD";
 
         panelBtnContainer = new JPanel();
-        wadContainer = new WADPanel(mainFrameSize, basePath);
+        wadContainer = new WADPanel(mainFrameSize, propWrapper, wadSession);
         panelMidCard = new JPanel();
         cl = new CardLayout();
 
@@ -97,13 +100,11 @@ public class PickerPanel extends JPanel implements NavigationHandler {
     public void initBtnActions() {
         wadContainer.onSaveCurrentconfigRequested(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                if (wadContainer.getWadSession().getiWAD() != null) {
-                    showPanel(saveCardCode);
-                    saveConfigPanel.setConfigData(wadContainer.getWadSession().getpWADs(), wadContainer.getWadSession().getiWAD().sWADPath);
-                    savedNewConfig = true;
+                try {
+                    saveCurrentConfig();
                 }
-                else {
-                    JOptionPane.showMessageDialog(getParent(), "Failed to save config: no IWAD selected", "Error", JOptionPane.WARNING_MESSAGE);
+                catch (NoIWadSelectedException ex) {
+                    JOptionPane.showMessageDialog(getParent(), ex.getMessage(), "Failed to save config", JOptionPane.WARNING_MESSAGE);
                 }
             }
         });
@@ -123,11 +124,11 @@ public class PickerPanel extends JPanel implements NavigationHandler {
 
         btnPlay.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                if (wadContainer.getWadSession().getiWAD() != null) {
-                    launcher.run(wadContainer.getWadSession());
+                try {
+                    playCurrenSession();
                 }
-                else {
-                    JOptionPane.showMessageDialog(getParent(), "Failed to launch: no IWAD selected", "Error", JOptionPane.WARNING_MESSAGE);
+                catch (NoIWadSelectedException ex) {
+                    JOptionPane.showMessageDialog(getParent(), ex.getMessage(), "Failed to launch", JOptionPane.WARNING_MESSAGE);
                 }
             }
         });
@@ -186,6 +187,25 @@ public class PickerPanel extends JPanel implements NavigationHandler {
         add(Box.createRigidArea(stdVGapSize));
         add(panelBtnContainer);
         add(Box.createRigidArea(stdVGapSize));
+    }
+
+    private void playCurrenSession() throws NoIWadSelectedException {
+        if (wadSession.getiWAD() == null) {
+            throw new NoIWadSelectedException();
+        }
+
+        launcher.run(wadSession);
+    }
+
+    private void saveCurrentConfig() throws NoIWadSelectedException {
+        if (wadSession.getiWAD() == null) {
+            throw new NoIWadSelectedException();
+        }
+
+        saveConfigPanel.setConfigData(wadSession.getpWADs(), wadSession.getiWAD().sWADPath);
+        savedNewConfig = true;
+
+        showPanel(saveCardCode);
     }
 
     @Override
