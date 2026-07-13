@@ -89,7 +89,10 @@ I don't like drag-and-drop that much and I don't really use the other options fr
 - [ ] make it prettier
 - [ ] add tests
 - [x] add build and install script
-- [ ] add drag-and-drop
+- add drag-and-drop
+  - [x] PWADs
+  - [ ] IWAD?
+    - [ ] maybe add another setting? Default IWAD directory? And then it's a dropdown list of IWADs?
 - [ ] setup wizard
 	- [ ] Windows: select exe path
 	- [ ] general: select WAD folder path

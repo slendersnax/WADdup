@@ -1,6 +1,5 @@
 package org.slendersnax.waddup.ui;
 
-import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JButton;
 import javax.swing.JOptionPane;
@@ -98,9 +97,9 @@ public class PickerPanel extends JPanel implements NavigationHandler {
     public void initBtnActions() {
         wadContainer.onSaveCurrentconfigRequested(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                if (!wadContainer.getIwadLabel().getIwadPath().isEmpty()) {
+                if (wadContainer.getWadSession().getiWAD() != null) {
                     showPanel(saveCardCode);
-                    saveConfigPanel.setConfigData(wadContainer.getWadListPanel().getItemList(), wadContainer.getIwadLabel().getIwadPath());
+                    saveConfigPanel.setConfigData(wadContainer.getWadSession().getpWADs(), wadContainer.getWadSession().getiWAD().sWADPath);
                     savedNewConfig = true;
                 }
                 else {
@@ -124,10 +123,8 @@ public class PickerPanel extends JPanel implements NavigationHandler {
 
         btnPlay.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                ArrayList<WADModel> sessionWads = wadContainer.getWadListPanel().getItemList();
-
-                if (!wadContainer.getIwadLabel().getIwadPath().isEmpty()) {
-                    launcher.run(wadContainer.getIwadLabel().getIwadPath(), sessionWads);
+                if (wadContainer.getWadSession().getiWAD() != null) {
+                    launcher.run(wadContainer.getWadSession());
                 }
                 else {
                     JOptionPane.showMessageDialog(getParent(), "Failed to launch: no IWAD selected", "Error", JOptionPane.WARNING_MESSAGE);
@@ -160,10 +157,7 @@ public class PickerPanel extends JPanel implements NavigationHandler {
                 ArrayList<WADModel> selectedConfigWads = loadConfigPanel.getLoadedWads();
 
                 if (!selectedConfigWads.isEmpty()) {
-                    wadContainer.getIwadLabel().setIWADprops(selectedConfigWads.get(0).sWadTitle, selectedConfigWads.get(0).sWADPath);
-                    selectedConfigWads.remove(0);
-
-                    wadContainer.getWadListPanel().setItemList(selectedConfigWads);
+                    wadContainer.loadSession(selectedConfigWads);
                 }
             }
         });

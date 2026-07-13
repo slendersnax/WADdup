@@ -26,7 +26,16 @@ public class WADSession {
         pWADs.add(pWAD);
     }
 
+    public void setpWADs(ArrayList<WADModel> wads) {
+        pWADs = new ArrayList<>(wads);
+    }
+
     public void removePWADByPath(String pWADPath) {
         pWADs.removeIf(pWAD -> pWAD.sWADPath.equals(pWADPath));
+    }
+
+    public void resetSession() {
+        this.iWAD = null;
+        this.pWADs.clear();
     }
 }

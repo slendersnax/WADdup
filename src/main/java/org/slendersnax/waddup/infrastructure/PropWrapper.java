@@ -28,17 +28,7 @@ public class PropWrapper {
         String homedir = System.getProperty("user.home");
         File configdir;
 
-        if (osname.contains("Linux")) {
-            configdir = new File(homedir.concat("/.config/waddup"));
-
-            if(!configdir.exists()) {
-                configdir.mkdirs();
-            }
-
-            configFile = new File(homedir.concat("/.config/waddup/configs.xml"));
-            settingsFile = new File(homedir.concat("/.config/waddup/settings.xml"));
-        }
-        else if (osname.contains("Windows")) {
+        if (osname.contains("Windows")) {
             configdir = new File(homedir.concat("\\AppData\\Local\\waddup"));
 
             if(!configdir.exists()) {
@@ -49,11 +39,17 @@ public class PropWrapper {
             settingsFile = new File(homedir.concat("\\AppData\\Local\\waddup\\settings.xml"));
         }
         else {
-            configFile = new File("configs.xml");
-            settingsFile = new File("settings.xml");
+            configdir = new File(homedir.concat("/.config/waddup"));
+
+            configFile = new File(homedir.concat("/.config/waddup/configs.xml"));
+            settingsFile = new File(homedir.concat("/.config/waddup/settings.xml"));
         }
 
         try {
+            if(!configdir.exists()) {
+                configdir.mkdirs();
+            }
+
             configFile.createNewFile();
             settingsFile.createNewFile();
         } catch (IOException ex) {

@@ -5,31 +5,18 @@ import javax.swing.BorderFactory;
 import java.awt.Component;
 
 public class IWADLabel extends JLabel {
-    private String iwadPath;
-
     public IWADLabel() {
         super("[no IWAD selected]");
-        iwadPath = "";
 
         setBorder(BorderFactory.createEmptyBorder(5, 0, 5, 0));
         setAlignmentX(Component.CENTER_ALIGNMENT);
     }
 
-    public void setIWADprops(String iwadName, String _iwadPath) {
+    public void setIWAD(String iwadName) {
         setText("IWAD: ".concat(iwadName));
-        setIwadPath(_iwadPath);
     }
 
-    public void resetIWADprops() {
+    public void resetIWAD() {
         setText("[no IWAD selected]");
-        setIwadPath("");
-    }
-
-    public String getIwadPath() {
-        return iwadPath;
-    }
-
-    public void setIwadPath(String _iwadPath) {
-        iwadPath = _iwadPath;
     }
 }

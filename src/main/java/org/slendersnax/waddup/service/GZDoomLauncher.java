@@ -3,6 +3,7 @@ package org.slendersnax.waddup.service;
 import org.slendersnax.waddup.infrastructure.PropWrapper;
 import org.slendersnax.waddup.infrastructure.SlenderConstants;
 import org.slendersnax.waddup.model.WADModel;
+import org.slendersnax.waddup.model.WADSession;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -17,7 +18,7 @@ public class GZDoomLauncher {
         settingsHandler = new PropWrapper();
     }
 
-    public void run(String iwadPath, ArrayList<WADModel> pwadList) {
+    public void run(WADSession session) {
         boolean usePortable, useWine, useWinePrefix, useGamemode;
 
         usePortable = settingsHandler.getProperty(PropWrapper.FILE_SETTINGS_INDEX, SlenderConstants.SETTINGS_NIX_USE_PORTABLE).equals("True");
@@ -27,14 +28,14 @@ public class GZDoomLauncher {
 
         if (osname.equals("Linux")) {
             if (!useWine) {
-                runLinuxNative(iwadPath, pwadList, usePortable, useGamemode);
+                runLinuxNative(session.getiWAD().sWADPath, session.getpWADs(), usePortable, useGamemode);
             }
             else {
-                runLinuxWine(iwadPath, pwadList, useWinePrefix, useGamemode);
+                runLinuxWine(session.getiWAD().sWADPath, session.getpWADs(), useWinePrefix, useGamemode);
             }
         }
         else if (osname.equals("Windows")) {
-            runWindows(iwadPath, pwadList);
+            runWindows(session.getiWAD().sWADPath, session.getpWADs());
         }
     }
 

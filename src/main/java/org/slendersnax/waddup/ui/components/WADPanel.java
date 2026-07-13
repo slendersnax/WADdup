@@ -1,6 +1,5 @@
 package org.slendersnax.waddup.ui.components;
 
-import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JButton;
 import javax.swing.JLabel;
@@ -22,10 +21,12 @@ import java.awt.datatransfer.DataFlavor;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Arrays;
 
 import org.slendersnax.waddup.model.WADModel;
+import org.slendersnax.waddup.model.WADSession;
 
 public class WADPanel extends JPanel implements DropTargetListener {
     private final IWADLabel iwadLabel;
@@ -39,6 +40,7 @@ public class WADPanel extends JPanel implements DropTargetListener {
     private FileNameExtensionFilter wadFilter;
     private final Dimension stdHorizontalFiller;
     private final String basePath;
+    private final WADSession wadSession;
 
     public WADPanel(Dimension _parentFrameSize, String _basePath) {
         stdHorizontalFiller = new Dimension(5, 0);
@@ -61,6 +63,7 @@ public class WADPanel extends JPanel implements DropTargetListener {
         move_header.setHorizontalAlignment(SwingConstants.CENTER);
 
         basePath = _basePath;
+        wadSession = new WADSession();
 
         wadFilter = new FileNameExtensionFilter("DOOM mod files (wad, pk3, zip, deh)", "wad", "pk3", "zip", "deh");
 
@@ -68,14 +71,6 @@ public class WADPanel extends JPanel implements DropTargetListener {
 
         addComponents();
         addBtnActions();
-    }
-
-    public IWADLabel getIwadLabel() {
-        return iwadLabel;
-    }
-
-    public ItemPanel<WADModel> getWadListPanel() {
-        return wadListPanel;
     }
 
     public void onLoadConfigurationsRequested(ActionListener listener) {
@@ -120,6 +115,17 @@ public class WADPanel extends JPanel implements DropTargetListener {
         add(midPanel);
     }
 
+    // receives a wadList where the first WAD is the iWAD
+    // the rest are PWADs
+    public void loadSession(ArrayList<WADModel> wadList) {
+        iwadLabel.setIWAD(wadList.get(0).sWadTitle);
+        wadSession.setiWAD(new WADModel(wadList.get(0).sWadTitle, wadList.get(0).sWADPath));
+        wadList.remove(0);
+
+        wadListPanel.setItemList(wadList);
+        wadSession.setpWADs(wadList);
+    }
+
     private void addBtnActions() {
         btn_iwadPicker.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
@@ -127,7 +133,8 @@ public class WADPanel extends JPanel implements DropTargetListener {
 
                 if (returnVal == JFileChooser.APPROVE_OPTION) {
                     File file = fileChooser.getSelectedFile();
-                    iwadLabel.setIWADprops(file.getName(), file.getAbsolutePath());
+                    iwadLabel.setIWAD(file.getName());
+                    wadSession.setiWAD(new WADModel(file));
                 }
             }
         });
@@ -147,18 +154,24 @@ public class WADPanel extends JPanel implements DropTargetListener {
                 }
 
                 fileChooser.setMultiSelectionEnabled(false);
+
+                wadSession.setpWADs(wadListPanel.getItemList());
             }
         });
         btn_remove.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 wadListPanel.removeSelectedItems();
+
+                wadSession.setpWADs(wadListPanel.getItemList());
             }
         });
 
         btn_removeAll.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 wadListPanel.clearItemList();
-                iwadLabel.resetIWADprops();
+                iwadLabel.resetIWAD();
+
+                wadSession.resetSession();
             }
         });
 
@@ -195,8 +208,8 @@ public class WADPanel extends JPanel implements DropTargetListener {
 
     }
 
-    // TODO: add drop support to IWAD separately
     // drag-and-drop support which only accepts listed file types
+    // only for PWADs
     @Override
     public void drop(DropTargetDropEvent dtde) {
         try {
@@ -228,5 +241,9 @@ public class WADPanel extends JPanel implements DropTargetListener {
             if (!isValid) return false;
         }
         return true;
+    }
+
+    public WADSession getWadSession() {
+        return wadSession;
     }
 }
