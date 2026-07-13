@@ -1,6 +1,7 @@
 package org.slendersnax.waddup.model;
 
 import java.util.ArrayList;
+import org.slendersnax.waddup.exception.InvalidSessionException;
 
 public class WADSession {
     private WADModel iWAD;
@@ -37,5 +38,11 @@ public class WADSession {
     public void resetSession() {
         this.iWAD = null;
         this.pWADs.clear();
+    }
+
+    public void validateSession() throws InvalidSessionException {
+        if (this.iWAD == null) {
+            throw new InvalidSessionException("No IWAD selected");
+        }
     }
 }

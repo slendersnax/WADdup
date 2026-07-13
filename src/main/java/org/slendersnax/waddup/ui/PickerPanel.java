@@ -18,7 +18,7 @@ import org.slendersnax.waddup.model.WADModel;
 import org.slendersnax.waddup.service.GZDoomLauncher;
 import org.slendersnax.waddup.infrastructure.PropWrapper;
 import org.slendersnax.waddup.infrastructure.SlenderConstants;
-import org.slendersnax.waddup.exception.NoIWadSelectedException;
+import org.slendersnax.waddup.exception.InvalidSessionException;
 import org.slendersnax.waddup.ui.components.WADPanel;
 import org.slendersnax.waddup.ui.helpers.NavigationHandler;
 
@@ -103,7 +103,7 @@ public class PickerPanel extends JPanel implements NavigationHandler {
                 try {
                     saveCurrentConfig();
                 }
-                catch (NoIWadSelectedException ex) {
+                catch (InvalidSessionException ex) {
                     JOptionPane.showMessageDialog(getParent(), ex.getMessage(), "Failed to save config", JOptionPane.WARNING_MESSAGE);
                 }
             }
@@ -127,7 +127,7 @@ public class PickerPanel extends JPanel implements NavigationHandler {
                 try {
                     playCurrenSession();
                 }
-                catch (NoIWadSelectedException ex) {
+                catch (InvalidSessionException ex) {
                     JOptionPane.showMessageDialog(getParent(), ex.getMessage(), "Failed to launch", JOptionPane.WARNING_MESSAGE);
                 }
             }
@@ -189,18 +189,14 @@ public class PickerPanel extends JPanel implements NavigationHandler {
         add(Box.createRigidArea(stdVGapSize));
     }
 
-    private void playCurrenSession() throws NoIWadSelectedException {
-        if (wadSession.getiWAD() == null) {
-            throw new NoIWadSelectedException();
-        }
+    private void playCurrenSession() throws InvalidSessionException {
+        wadSession.validateSession();
 
         launcher.run(wadSession);
     }
 
-    private void saveCurrentConfig() throws NoIWadSelectedException {
-        if (wadSession.getiWAD() == null) {
-            throw new NoIWadSelectedException();
-        }
+    private void saveCurrentConfig() throws InvalidSessionException {
+        wadSession.validateSession();
 
         saveConfigPanel.setConfigData(wadSession.getpWADs(), wadSession.getiWAD().sWADPath);
         savedNewConfig = true;
