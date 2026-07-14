@@ -33,7 +33,6 @@ public class PickerPanel extends JPanel implements NavigationHandler {
     private final Dimension stdHGapSize, stdVGapSize, stdBtnSize;
 
     private final String saveCardCode, loadCardCode, wadCardCode;
-    private final String osname;
     private final GZDoomLauncher launcher;
     private final PropWrapper propWrapper;
     private final WADSession wadSession;
@@ -68,17 +67,7 @@ public class PickerPanel extends JPanel implements NavigationHandler {
         btnPlay = new JButton("Play");
         btnSettings = new JButton("Settings");
 
-        String propOsname = System.getProperty("os.name");
-        if (propOsname.contains("Linux")) {
-            osname = "Linux";
-        }
-        else if (propOsname.contains("Windows")) {
-            osname = "Windows";
-        }
-        else {
-            osname = "unknown";
-        }
-        launcher = new GZDoomLauncher(osname);
+        launcher = new GZDoomLauncher(propWrapper);
 
         stdHGapSize = new Dimension(5, 0);
         stdVGapSize = new Dimension(0, 5);

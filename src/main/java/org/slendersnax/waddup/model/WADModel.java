@@ -20,13 +20,19 @@ public class WADModel {
     public void setFromData(String _sWadTitle, String _sWADPath) {
         sWadTitle = _sWadTitle;
         sWADPath = _sWADPath;
-        sFileType = _sWadTitle.substring(_sWadTitle.length() - 3);
+        sFileType = getFileType(_sWadTitle);
     }
 
     public void setFromFile(File file) {
         sWadTitle = file.getName();
         sWADPath = file.getAbsolutePath();
-        sFileType = file.getName().substring(file.getName().length() - 3);
+        sFileType = getFileType(file.getName());
+    }
+
+    // small function to only get the file type without the separator or anything
+    // e.g. wad, pk3, deh, ...
+    private String getFileType(String fileName) {
+        return fileName.substring(fileName.lastIndexOf(".") + 1);
     }
 
     public String toString() {

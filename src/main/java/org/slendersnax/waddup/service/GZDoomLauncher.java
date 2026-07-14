@@ -13,9 +13,20 @@ public class GZDoomLauncher {
     private final String osname;
     private final PropWrapper settingsHandler;
 
-    public GZDoomLauncher(String _osname) {
-        osname = _osname;
-        settingsHandler = new PropWrapper();
+    public GZDoomLauncher(PropWrapper propWrapper) {
+        String propOsname = System.getProperty("os.name");
+
+        if (propOsname.contains("Linux")) {
+            osname = "Linux";
+        }
+        else if (propOsname.contains("Windows")) {
+            osname = "Windows";
+        }
+        else {
+            osname = "unknown";
+        }
+
+        settingsHandler = propWrapper;
     }
 
     public void run(WADSession session) {
