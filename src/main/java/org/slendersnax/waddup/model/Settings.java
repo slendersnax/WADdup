@@ -4,6 +4,23 @@ import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
 
 public class Settings {
+    public static final String WAD_DIRECTORY       = "wad_directory";
+    public static final String WIN_EXE             = "windows_executable";
+    public static final String NIX_WIN_EXE         = "linux_exe";
+    public static final String WINE_PREFIX         = "wine_prefix";
+    public static final String NIX_PORTABLE_EXE    = "linux_portable";
+    public static final String NIX_USE_PORTABLE    = "use_portable";
+    public static final String NIX_USE_WINE        = "use_wine";
+    public static final String NIX_USE_WINE_PREFIX = "use_wineprefix";
+    public static final String NIX_USE_GAMEMODE    = "use_gamemode";
+    public static final String PREF_WIDTH          = "preferred_width";
+    public static final String PREF_HEIGHT         = "preferred_height";
+    public static final String FONT_SIZE           = "font_size";
+
+    // the separator used to join and then split the individual file paths
+    // for each config / property in the "config.xml" file
+    public static final String CONFIG_ITEM_SEPARATOR        = ";;";
+
     private String wadDirectory;
 
     private int preferredWidth;

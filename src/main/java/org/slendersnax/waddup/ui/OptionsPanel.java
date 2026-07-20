@@ -10,6 +10,8 @@ import javax.swing.BoxLayout;
 import javax.swing.Box;
 import javax.swing.Action;
 import javax.swing.BorderFactory;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 import java.awt.CardLayout;
 import java.awt.Dimension;
@@ -19,13 +21,16 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 
+import org.slendersnax.waddup.model.Settings;
+import org.slendersnax.waddup.repository.SettingsRepository;
 import org.slendersnax.waddup.ui.components.VerticalBtnPanel;
 import org.slendersnax.waddup.infrastructure.PropWrapper;
 import org.slendersnax.waddup.infrastructure.SlenderConstants;
 import org.slendersnax.waddup.ui.helpers.NavigationHandler;
 
 public class OptionsPanel extends JPanel implements NavigationHandler {
-    private final PropWrapper propWrapper;
+    private final Settings settings;
+    private final SettingsRepository settingsRepository;
     private final VerticalBtnPanel panCategories;
     private final JPanel innerPanel, panSettings, globalSettings, winSettings, nixSettings;
     private final JCheckBox wineCheck, wineprefixCheck, portableCheck, gamemodeCheck;
@@ -36,12 +41,13 @@ public class OptionsPanel extends JPanel implements NavigationHandler {
 
     private final String sGlobalCardCode, sWinCardCode, sNixCardCode;
     
-    public OptionsPanel(PropWrapper propWrapper) {
+    public OptionsPanel(Settings settings, SettingsRepository settingsRepository) {
         setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
 
-        this.propWrapper = propWrapper;
-        Dimension mainFrameSize = new Dimension(Integer.parseInt(propWrapper.getProperty(PropWrapper.FILE_SETTINGS_INDEX, SlenderConstants.SETTINGS_PREF_WIDTH)),
-                                      Integer.parseInt(propWrapper.getProperty(PropWrapper.FILE_SETTINGS_INDEX, SlenderConstants.SETTINGS_PREF_HEIGHT)));
+        this.settings = settings;
+        this.settingsRepository = settingsRepository;
+
+        Dimension mainFrameSize = new Dimension(settings.getPreferredWidth(), settings.getPreferredHeight());
 
         sGlobalCardCode = "GLOBAL";
         sWinCardCode = "WINDOWS";
@@ -161,39 +167,20 @@ public class OptionsPanel extends JPanel implements NavigationHandler {
     }
 
     private void initSettings() {
-        String sWadDir = propWrapper.getProperty(PropWrapper.FILE_SETTINGS_INDEX, SlenderConstants.SETTINGS_WAD_DIRECTORY);
-        String sWinExec = propWrapper.getProperty(PropWrapper.FILE_SETTINGS_INDEX, SlenderConstants.SETTINGS_WIN_EXE);
-        String sNixExec = propWrapper.getProperty(PropWrapper.FILE_SETTINGS_INDEX, SlenderConstants.SETTINGS_NIX_WIN_EXE);
-        String sNixWinePrefix = propWrapper.getProperty(PropWrapper.FILE_SETTINGS_INDEX, SlenderConstants.SETTINGS_WINE_PREFIX);
-        String sPortablePath = propWrapper.getProperty(PropWrapper.FILE_SETTINGS_INDEX, SlenderConstants.SETTINGS_NIX_PORTABLE_EXE);
+        wadDirectory.setText(settings.getWadDirectory());
+        winExec.setText(settings.getWindowsExecutable());
+        nixExec.setText(settings.getWineExecutable());
+        winePrefix.setText(settings.getWinePrefix());
+        portableExecPath.setText(settings.getPortableExecutable());
 
-        if (!sWadDir.isEmpty()) {
-            wadDirectory.setText(sWadDir);
-        }
-
-        if (!sWinExec.isEmpty()) {
-            winExec.setText(sWinExec);
-        }
-
-        if (!sNixExec.isEmpty()) {
-            nixExec.setText(sNixExec);
-        }
-
-        if (!sNixWinePrefix.isEmpty()) {
-            winePrefix.setText(sNixWinePrefix);
-        }
-
-        if (!sPortablePath.isEmpty()) {
-            portableExecPath.setText(sPortablePath);
-        }
-
-        portableCheck.setSelected(propWrapper.getProperty(PropWrapper.FILE_SETTINGS_INDEX, SlenderConstants.SETTINGS_NIX_USE_PORTABLE).equals("True"));
-        wineCheck.setSelected(propWrapper.getProperty(PropWrapper.FILE_SETTINGS_INDEX, SlenderConstants.SETTINGS_NIX_USE_WINE).equals("True"));
-        wineprefixCheck.setSelected(propWrapper.getProperty(PropWrapper.FILE_SETTINGS_INDEX, SlenderConstants.SETTINGS_NIX_USE_WINE_PREFIX).equals("True"));
-        gamemodeCheck.setSelected(propWrapper.getProperty(PropWrapper.FILE_SETTINGS_INDEX, SlenderConstants.SETTINGS_NIX_USE_GAMEMODE).equals("True"));
+        portableCheck.setSelected(settings.isUsePortable());
+        wineCheck.setSelected(settings.isUseWine());
+        wineprefixCheck.setSelected(settings.isUseWinePrefix());
+        gamemodeCheck.setSelected(settings.isUseGamemode());
     }
 
     private void addBtnActions() {
+        // navigation
         btnGlobalSettings.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 showPanel(sGlobalCardCode);
@@ -212,41 +199,14 @@ public class OptionsPanel extends JPanel implements NavigationHandler {
             }
         });
 
+        // saving the settings
         btnSave.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                String sWadDir = wadDirectory.getText();
-                String sWinExec = winExec.getText();
-                String sNixExec = nixExec.getText();
-                String sNixWinePrefix = winePrefix.getText();
-                String sPortablePath = portableExecPath.getText();
-                boolean bUsePortable = portableCheck.isSelected();
-                boolean bUseWine = wineCheck.isSelected();
-                boolean bUseWinePrefix = wineprefixCheck.isSelected();
-                boolean bUseGamemode = gamemodeCheck.isSelected();
-
-                if (!sWadDir.isEmpty()) {
-                    propWrapper.storeProperty(PropWrapper.FILE_SETTINGS_INDEX, SlenderConstants.SETTINGS_WAD_DIRECTORY, sWadDir);
-                }
-                if (!sWinExec.isEmpty()) {
-                    propWrapper.storeProperty(PropWrapper.FILE_SETTINGS_INDEX, SlenderConstants.SETTINGS_WIN_EXE, sWinExec);
-                }
-                if (!sNixExec.isEmpty()) {
-                    propWrapper.storeProperty(PropWrapper.FILE_SETTINGS_INDEX, SlenderConstants.SETTINGS_NIX_WIN_EXE, sNixExec);
-                }
-                if (!sNixWinePrefix.isEmpty()) {
-                    propWrapper.storeProperty(PropWrapper.FILE_SETTINGS_INDEX, SlenderConstants.SETTINGS_WINE_PREFIX, sNixWinePrefix);
-                }
-                if (!sPortablePath.isEmpty()) {
-                    propWrapper.storeProperty(PropWrapper.FILE_SETTINGS_INDEX, SlenderConstants.SETTINGS_NIX_PORTABLE_EXE, sPortablePath);
-                }
-
-                propWrapper.storeProperty(PropWrapper.FILE_SETTINGS_INDEX, SlenderConstants.SETTINGS_NIX_USE_PORTABLE, bUsePortable ? "True" : "False");
-                propWrapper.storeProperty(PropWrapper.FILE_SETTINGS_INDEX, SlenderConstants.SETTINGS_NIX_USE_WINE, bUseWine ? "True" : "False");
-                propWrapper.storeProperty(PropWrapper.FILE_SETTINGS_INDEX, SlenderConstants.SETTINGS_NIX_USE_WINE_PREFIX, bUseWinePrefix ? "True" : "False");
-                propWrapper.storeProperty(PropWrapper.FILE_SETTINGS_INDEX, SlenderConstants.SETTINGS_NIX_USE_GAMEMODE, bUseGamemode ? "True" : "False");
+                settingsRepository.save(settings);
             }
         });
 
+        // choosing files and directories
         btnSelectWadDir.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
@@ -256,6 +216,7 @@ public class OptionsPanel extends JPanel implements NavigationHandler {
                 if (returnVal == JFileChooser.APPROVE_OPTION) {
                     File file = fileChooser.getSelectedFile();
                     wadDirectory.setText(file.getAbsolutePath());
+                    settings.setWadDirectory(file.getAbsolutePath());
                 }
             }
         });
@@ -269,6 +230,7 @@ public class OptionsPanel extends JPanel implements NavigationHandler {
                 if (returnVal == JFileChooser.APPROVE_OPTION) {
                     File file = fileChooser.getSelectedFile();
                     winExec.setText(file.getAbsolutePath());
+                    settings.setWindowsExecutable(file.getAbsolutePath());
                 }
             }
         });
@@ -282,6 +244,7 @@ public class OptionsPanel extends JPanel implements NavigationHandler {
                 if (returnVal == JFileChooser.APPROVE_OPTION) {
                     File file = fileChooser.getSelectedFile();
                     nixExec.setText(file.getAbsolutePath());
+                    settings.setWineExecutable(file.getAbsolutePath());
                 }
             }
         });
@@ -295,6 +258,7 @@ public class OptionsPanel extends JPanel implements NavigationHandler {
                 if (returnVal == JFileChooser.APPROVE_OPTION) {
                     File file = fileChooser.getSelectedFile();
                     portableExecPath.setText(file.getAbsolutePath());
+                    settings.setPortableExecutable(file.getAbsolutePath());
                 }
             }
         });
@@ -308,7 +272,39 @@ public class OptionsPanel extends JPanel implements NavigationHandler {
                 if (returnVal == JFileChooser.APPROVE_OPTION) {
                     File file = fileChooser.getSelectedFile();
                     winePrefix.setText(file.getAbsolutePath());
+                    settings.setWinePrefix(file.getAbsolutePath());
                 }
+            }
+        });
+
+        // checkbox change listeners
+        portableCheck.addChangeListener(new ChangeListener() {
+            @Override
+            public void stateChanged(ChangeEvent changeEvent) {
+                settings.setUsePortable(portableCheck.isSelected());
+            }
+        });
+
+        wineCheck.addChangeListener(new ChangeListener() {
+            @Override
+            public void stateChanged(ChangeEvent changeEvent) {
+                settings.setUsePortable(wineCheck.isSelected());
+            }
+        });
+
+
+        wineprefixCheck.addChangeListener(new ChangeListener() {
+            @Override
+            public void stateChanged(ChangeEvent changeEvent) {
+                settings.setUsePortable(wineprefixCheck.isSelected());
+            }
+        });
+
+
+        gamemodeCheck.addChangeListener(new ChangeListener() {
+            @Override
+            public void stateChanged(ChangeEvent changeEvent) {
+                settings.setUsePortable(portableCheck.isSelected());
             }
         });
     }

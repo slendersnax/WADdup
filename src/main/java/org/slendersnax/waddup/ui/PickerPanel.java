@@ -15,6 +15,7 @@ import java.util.ArrayList;
 
 import org.slendersnax.waddup.model.WADSession;
 import org.slendersnax.waddup.model.WADModel;
+import org.slendersnax.waddup.model.Settings;
 import org.slendersnax.waddup.service.GZDoomLauncher;
 import org.slendersnax.waddup.infrastructure.PropWrapper;
 import org.slendersnax.waddup.infrastructure.SlenderConstants;
@@ -34,23 +35,21 @@ public class PickerPanel extends JPanel implements NavigationHandler {
 
     private final String saveCardCode, loadCardCode, wadCardCode;
     private final GZDoomLauncher launcher;
-    private final PropWrapper propWrapper;
+    private final Settings settings;
     private final WADSession wadSession;
 
     private boolean savedNewConfig;
 
-    public PickerPanel(PropWrapper propWrapper) {
-        this.propWrapper = propWrapper;
+    public PickerPanel(Settings settings, WADSession wadSession) {
+        this.settings = settings;
+        this.wadSession = wadSession;
 
-        Dimension mainFrameSize = new Dimension(Integer.parseInt(propWrapper.getProperty(PropWrapper.FILE_SETTINGS_INDEX, SlenderConstants.SETTINGS_PREF_WIDTH)),
-                                      Integer.parseInt(propWrapper.getProperty(PropWrapper.FILE_SETTINGS_INDEX, SlenderConstants.SETTINGS_PREF_HEIGHT)));
+        Dimension mainFrameSize = new Dimension(settings.getPreferredWidth(), settings.getPreferredHeight());
 
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
         setPreferredSize(mainFrameSize);
         setMaximumSize(mainFrameSize);
         setSize(mainFrameSize);
-
-        wadSession = new WADSession();
 
         saveConfigPanel = new SaveConfigPanel(mainFrameSize);
         loadConfigPanel = new LoadConfigPanel(mainFrameSize);
@@ -60,14 +59,14 @@ public class PickerPanel extends JPanel implements NavigationHandler {
         wadCardCode = "WAD";
 
         panelBtnContainer = new JPanel();
-        wadContainer = new WADPanel(mainFrameSize, propWrapper, wadSession);
+        wadContainer = new WADPanel(settings, wadSession);
         panelMidCard = new JPanel();
         cl = new CardLayout();
 
         btnPlay = new JButton("Play");
         btnSettings = new JButton("Settings");
 
-        launcher = new GZDoomLauncher(propWrapper);
+        launcher = new GZDoomLauncher(settings);
 
         stdHGapSize = new Dimension(5, 0);
         stdVGapSize = new Dimension(0, 5);
@@ -114,7 +113,7 @@ public class PickerPanel extends JPanel implements NavigationHandler {
         btnPlay.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 try {
-                    playCurrenSession();
+                    playCurrentSession();
                 }
                 catch (InvalidSessionException ex) {
                     JOptionPane.showMessageDialog(getParent(), ex.getMessage(), "Failed to launch", JOptionPane.WARNING_MESSAGE);
@@ -178,7 +177,7 @@ public class PickerPanel extends JPanel implements NavigationHandler {
         add(Box.createRigidArea(stdVGapSize));
     }
 
-    private void playCurrenSession() throws InvalidSessionException {
+    private void playCurrentSession() throws InvalidSessionException {
         wadSession.validateSession();
 
         launcher.run(wadSession);

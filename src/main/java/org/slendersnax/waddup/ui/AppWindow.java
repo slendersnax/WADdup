@@ -9,6 +9,7 @@ import java.awt.GraphicsEnvironment;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
 
+import org.slendersnax.waddup.model.ApplicationContext;
 import org.slendersnax.waddup.ui.helpers.NavigationHandler;
 
 import org.slendersnax.waddup.infrastructure.SlenderConstants;
@@ -19,14 +20,14 @@ public class AppWindow extends JFrame implements ComponentListener, NavigationHa
     private final PickerPanel pickerPanel;
     private final OptionsPanel optionsPanel;
     private final CardLayout mainCL;
-    private final PropWrapper propWrapper;
+    private final ApplicationContext applicationContext;
 
     private final String codeWadPicker, codeSettings;
 
-    public AppWindow(PropWrapper propWrapper) {
+    public AppWindow(ApplicationContext applicationContext) {
         super("WADdup");
 
-        this.propWrapper = propWrapper;
+        this.applicationContext = applicationContext;
 
         // finding out the display resolution of the monitor (or main monitor in the case of multi-monitor setups)
         GraphicsDevice gd = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
@@ -36,13 +37,13 @@ public class AppWindow extends JFrame implements ComponentListener, NavigationHa
         // i just like this size
         Dimension mainFrameDimension = new Dimension((int)(width / 2), (int)(height / 1.5));
 
-        if (propWrapper.getProperty(PropWrapper.FILE_SETTINGS_INDEX, SlenderConstants.SETTINGS_PREF_WIDTH) == null) {
-            propWrapper.storeProperty(PropWrapper.FILE_SETTINGS_INDEX, SlenderConstants.SETTINGS_PREF_WIDTH, Integer.toString(mainFrameDimension.width));
-            propWrapper.storeProperty(PropWrapper.FILE_SETTINGS_INDEX, SlenderConstants.SETTINGS_PREF_HEIGHT, Integer.toString(mainFrameDimension.height));
+        if (applicationContext.getPropWrapper().getProperty(PropWrapper.FILE_SETTINGS_INDEX, SlenderConstants.SETTINGS_PREF_WIDTH) == null) {
+            applicationContext.getPropWrapper().storeProperty(PropWrapper.FILE_SETTINGS_INDEX, SlenderConstants.SETTINGS_PREF_WIDTH, Integer.toString(mainFrameDimension.width));
+            applicationContext.getPropWrapper().storeProperty(PropWrapper.FILE_SETTINGS_INDEX, SlenderConstants.SETTINGS_PREF_HEIGHT, Integer.toString(mainFrameDimension.height));
         }
         else {
-            mainFrameDimension.width = Integer.parseInt(propWrapper.getProperty(PropWrapper.FILE_SETTINGS_INDEX, SlenderConstants.SETTINGS_PREF_WIDTH));
-            mainFrameDimension.height = Integer.parseInt(propWrapper.getProperty(PropWrapper.FILE_SETTINGS_INDEX, SlenderConstants.SETTINGS_PREF_HEIGHT));
+            mainFrameDimension.width = Integer.parseInt(applicationContext.getPropWrapper().getProperty(PropWrapper.FILE_SETTINGS_INDEX, SlenderConstants.SETTINGS_PREF_WIDTH));
+            mainFrameDimension.height = Integer.parseInt(applicationContext.getPropWrapper().getProperty(PropWrapper.FILE_SETTINGS_INDEX, SlenderConstants.SETTINGS_PREF_HEIGHT));
         }
 
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -51,8 +52,8 @@ public class AppWindow extends JFrame implements ComponentListener, NavigationHa
         addComponentListener(this);
 
         wrapperPanel = new JPanel();
-        pickerPanel = new PickerPanel(propWrapper);
-        optionsPanel = new OptionsPanel(propWrapper);
+        pickerPanel = new PickerPanel(applicationContext.getSettings(), applicationContext.getWadSession());
+        optionsPanel = new OptionsPanel(applicationContext.getSettings(), applicationContext.getSettingsRepository());
 
         mainCL = new CardLayout();
 
@@ -81,8 +82,8 @@ public class AppWindow extends JFrame implements ComponentListener, NavigationHa
     public void componentMoved(ComponentEvent ce) {};
 
     public void componentResized(ComponentEvent ce) {
-        propWrapper.storeProperty(PropWrapper.FILE_SETTINGS_INDEX, SlenderConstants.SETTINGS_PREF_WIDTH, Integer.toString(this.getWidth()));
-        propWrapper.storeProperty(PropWrapper.FILE_SETTINGS_INDEX, SlenderConstants.SETTINGS_PREF_HEIGHT, Integer.toString(this.getHeight()));
+        applicationContext.getPropWrapper().storeProperty(PropWrapper.FILE_SETTINGS_INDEX, SlenderConstants.SETTINGS_PREF_WIDTH, Integer.toString(this.getWidth()));
+        applicationContext.getPropWrapper().storeProperty(PropWrapper.FILE_SETTINGS_INDEX, SlenderConstants.SETTINGS_PREF_HEIGHT, Integer.toString(this.getHeight()));
     };
 
     @Override

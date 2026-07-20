@@ -25,10 +25,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Arrays;
 
-import org.slendersnax.waddup.infrastructure.PropWrapper;
 import org.slendersnax.waddup.model.WADModel;
 import org.slendersnax.waddup.model.WADSession;
-import org.slendersnax.waddup.infrastructure.SlenderConstants;
+import org.slendersnax.waddup.model.Settings;
 
 public class WADPanel extends JPanel implements DropTargetListener {
     private final IWADLabel iwadLabel;
@@ -42,19 +41,21 @@ public class WADPanel extends JPanel implements DropTargetListener {
     private FileNameExtensionFilter wadFilter;
     private final Dimension stdHorizontalFiller;
 
-    private final PropWrapper propWrapper;
+    private final Settings settings;
     private final WADSession wadSession;
     private final WADModel iwad;
 
-    public WADPanel(Dimension _parentFrameSize, PropWrapper propWrapper, WADSession wadSession) {
-        this.propWrapper = propWrapper;
+    public WADPanel(Settings settings, WADSession wadSession) {
+        this.settings = settings;
         this.wadSession = wadSession;
+
+        Dimension mainFrameSize = new Dimension(settings.getPreferredWidth(), settings.getPreferredHeight());
 
         stdHorizontalFiller = new Dimension(5, 0);
 
         iwadLabel = new IWADLabel();
-        wadListPanel = new ItemPanel<WADModel>(new Dimension((int)(_parentFrameSize.width * 0.80), (int)(_parentFrameSize.height * 0.80)), true);
-        panelBtnContainer = new VerticalBtnPanel(new Dimension((int)(_parentFrameSize.width * 0.20), (int)(_parentFrameSize.height * 0.80)));
+        wadListPanel = new ItemPanel<WADModel>(new Dimension((int)(mainFrameSize.width * 0.80), (int)(mainFrameSize.height * 0.80)), true);
+        panelBtnContainer = new VerticalBtnPanel(new Dimension((int)(mainFrameSize.width * 0.20), (int)(mainFrameSize.height * 0.80)));
         midPanel = new JPanel();
 
         btn_iwadPicker = new JButton("Pick IWAD");
@@ -91,7 +92,7 @@ public class WADPanel extends JPanel implements DropTargetListener {
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 
         midPanel.setLayout(new BoxLayout(midPanel, BoxLayout.LINE_AXIS));
-        fileChooser = new JFileChooser(new File(propWrapper.getProperty(PropWrapper.FILE_SETTINGS_INDEX, SlenderConstants.SETTINGS_WAD_DIRECTORY)));
+        fileChooser = new JFileChooser(new File(settings.getWadDirectory()));
 
         // viewing in details mode by default
         Action details = fileChooser.getActionMap().get("viewTypeDetails");

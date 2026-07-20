@@ -1,7 +1,7 @@
 package org.slendersnax.waddup.service;
 
-import org.slendersnax.waddup.infrastructure.PropWrapper;
-import org.slendersnax.waddup.infrastructure.SlenderConstants;
+import org.slendersnax.waddup.infrastructure.Platform;
+import org.slendersnax.waddup.model.Settings;
 import org.slendersnax.waddup.model.WADModel;
 import org.slendersnax.waddup.model.WADSession;
 
@@ -10,43 +10,32 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class GZDoomLauncher {
-    private final String osname;
-    private final PropWrapper settingsHandler;
+    private final Settings settings;
 
-    public GZDoomLauncher(PropWrapper propWrapper) {
-        String propOsname = System.getProperty("os.name");
-
-        if (propOsname.contains("Linux")) {
-            osname = "Linux";
-        }
-        else if (propOsname.contains("Windows")) {
-            osname = "Windows";
-        }
-        else {
-            osname = "unknown";
-        }
-
-        settingsHandler = propWrapper;
+    public GZDoomLauncher(Settings settings) {
+        this.settings = settings;
     }
 
     public void run(WADSession session) {
-        boolean usePortable, useWine, useWinePrefix, useGamemode;
+        switch (Platform.getOperatingSystem()) {
+            case WINDOWS:
+                runWindows(session.getiWAD().sWADPath, session.getpWADs());
+                break;
 
-        usePortable = settingsHandler.getProperty(PropWrapper.FILE_SETTINGS_INDEX, SlenderConstants.SETTINGS_NIX_USE_PORTABLE).equals("True");
-        useWine = settingsHandler.getProperty(PropWrapper.FILE_SETTINGS_INDEX, SlenderConstants.SETTINGS_NIX_USE_WINE).equals("True");
-        useWinePrefix = settingsHandler.getProperty(PropWrapper.FILE_SETTINGS_INDEX, SlenderConstants.SETTINGS_NIX_USE_WINE_PREFIX).equals("True");
-        useGamemode = settingsHandler.getProperty(PropWrapper.FILE_SETTINGS_INDEX, SlenderConstants.SETTINGS_NIX_USE_GAMEMODE).equals("True");
+            case LINUX:
+                if (!settings.isUseWine()) {
+                    runLinuxNative(session.getiWAD().sWADPath, session.getpWADs(), settings.isUsePortable(), settings.isUseGamemode());
+                }
+                else {
+                    runLinuxWine(session.getiWAD().sWADPath, session.getpWADs(), settings.isUseWinePrefix(), settings.isUseGamemode());
+                }
+                break;
 
-        if (osname.equals("Linux")) {
-            if (!useWine) {
-                runLinuxNative(session.getiWAD().sWADPath, session.getpWADs(), usePortable, useGamemode);
-            }
-            else {
-                runLinuxWine(session.getiWAD().sWADPath, session.getpWADs(), useWinePrefix, useGamemode);
-            }
-        }
-        else if (osname.equals("Windows")) {
-            runWindows(session.getiWAD().sWADPath, session.getpWADs());
+            case MACOS:
+                break;
+
+            default:
+                break;
         }
     }
 
@@ -58,7 +47,7 @@ public class GZDoomLauncher {
         }
 
         if (usePortable) {
-            cmdBuilder.add(settingsHandler.getProperty(PropWrapper.FILE_SETTINGS_INDEX, SlenderConstants.SETTINGS_NIX_PORTABLE_EXE));
+            cmdBuilder.add(settings.getPortableExecutable());
         }
         else {
             cmdBuilder.add("gzdoom");
@@ -97,7 +86,7 @@ public class GZDoomLauncher {
         }
 
         cmdBuilder.add("wine");
-        cmdBuilder.add(settingsHandler.getProperty(PropWrapper.FILE_SETTINGS_INDEX, SlenderConstants.SETTINGS_NIX_WIN_EXE));
+        cmdBuilder.add(settings.getWineExecutable());
 
         cmdBuilder.add("-iwad");
         cmdBuilder.add(iwadPath);
@@ -117,7 +106,7 @@ public class GZDoomLauncher {
         ProcessBuilder pb = new ProcessBuilder(cmdBuilder);
 
         if (useWinePrefix) {
-            pb.environment().put("WINEPREFIX", settingsHandler.getProperty(PropWrapper.FILE_SETTINGS_INDEX, SlenderConstants.SETTINGS_WINE_PREFIX));
+            pb.environment().put("WINEPREFIX", settings.getWinePrefix());
         }
 
         Process process;
@@ -131,7 +120,7 @@ public class GZDoomLauncher {
 
     public void runWindows(String iwadPath, ArrayList<WADModel> pwadList) {
         List<String> cmdBuilder = new ArrayList<String>();
-        cmdBuilder.add(settingsHandler.getProperty(PropWrapper.FILE_SETTINGS_INDEX, SlenderConstants.SETTINGS_WIN_EXE));
+        cmdBuilder.add(settings.getWindowsExecutable());
 
         cmdBuilder.add("-iwad");
         cmdBuilder.add(iwadPath);

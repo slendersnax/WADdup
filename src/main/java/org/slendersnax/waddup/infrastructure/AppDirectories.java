@@ -4,7 +4,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 public final class AppDirectories {
-    private static final String APP_NAME = "WADdup";
+    private static final String APP_NAME = "waddup";
 
     private AppDirectories() {}
 
