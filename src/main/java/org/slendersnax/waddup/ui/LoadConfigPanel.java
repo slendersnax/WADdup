@@ -10,6 +10,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 
+import org.slendersnax.waddup.exception.InvalidConfigException;
 import org.slendersnax.waddup.exception.NoSelectionException;
 import org.slendersnax.waddup.model.WADModel;
 import org.slendersnax.waddup.model.Config;
@@ -30,7 +31,7 @@ public class LoadConfigPanel extends JPanel {
     public LoadConfigPanel(Dimension frameSize, ConfigRepository configRepository, ArrayList<Config> configs, WADSession wadSession) {
         this.wadSession = wadSession;
 
-        panelConfigs = new ItemPanel<Config>(new Dimension((int)(frameSize.width * 0.85), frameSize.height), configs, () -> configRepository.save(configs), false);
+        panelConfigs = new ItemPanel<Config>(new Dimension((int)(frameSize.width * 0.85), frameSize.height), configs, () -> configRepository.save(configs), true);
         panelBtnContainer = new VerticalBtnPanel(new Dimension((int)(frameSize.width * 0.20), frameSize.height));
         panelInnerContainer = new JPanel();
 
@@ -81,9 +82,13 @@ public class LoadConfigPanel extends JPanel {
         });
     }
 
-    public void loadSelectedConfig() throws NoSelectionException {
+    public void loadSelectedConfig() throws NoSelectionException, InvalidConfigException {
         try {
             ArrayList<Config> selectedConfig = panelConfigs.getSelected();
+
+            if (selectedConfig.size() > 1) {
+                throw new InvalidConfigException("More than one config selected");
+            }
 
             wadSession.resetSession();
 

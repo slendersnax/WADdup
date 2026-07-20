@@ -13,6 +13,7 @@ import java.awt.event.ActionListener;
 
 import java.util.ArrayList;
 
+import org.slendersnax.waddup.exception.InvalidConfigException;
 import org.slendersnax.waddup.exception.NoSelectionException;
 import org.slendersnax.waddup.model.WADSession;
 import org.slendersnax.waddup.model.Settings;
@@ -139,7 +140,7 @@ public class PickerPanel extends JPanel implements NavigationHandler {
                     wadContainer.refreshItemPanel();
                     showPanel(wadCardCode);
                 }
-                catch(NoSelectionException ex) {
+                catch (NoSelectionException | InvalidConfigException ex) {
                     JOptionPane.showMessageDialog(getParent(), ex.getMessage(), "Error", JOptionPane.WARNING_MESSAGE);
                 }
             }
