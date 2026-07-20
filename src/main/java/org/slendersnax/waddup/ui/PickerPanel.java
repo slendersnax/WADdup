@@ -13,11 +13,12 @@ import java.awt.event.ActionListener;
 
 import java.util.ArrayList;
 
+import org.slendersnax.waddup.exception.NoSelectionException;
 import org.slendersnax.waddup.model.WADSession;
-import org.slendersnax.waddup.model.WADModel;
 import org.slendersnax.waddup.model.Settings;
+import org.slendersnax.waddup.model.Config;
+import org.slendersnax.waddup.repository.ConfigRepository;
 import org.slendersnax.waddup.service.GZDoomLauncher;
-import org.slendersnax.waddup.infrastructure.PropWrapper;
 import org.slendersnax.waddup.infrastructure.SlenderConstants;
 import org.slendersnax.waddup.exception.InvalidSessionException;
 import org.slendersnax.waddup.ui.components.WADPanel;
@@ -26,23 +27,23 @@ import org.slendersnax.waddup.ui.helpers.NavigationHandler;
 public class PickerPanel extends JPanel implements NavigationHandler {
     private final SaveConfigPanel saveConfigPanel;
     private final LoadConfigPanel loadConfigPanel;
-    private WADPanel wadContainer;
+    private final WADPanel wadContainer;
 
-    private JPanel panelBtnContainer, panelMidCard;
-    private JButton btnPlay, btnSettings;
-    private CardLayout cl;
+    private final JPanel panelBtnContainer, panelMidCard;
+    private final JButton btnPlay, btnSettings;
+    private final CardLayout cl;
     private final Dimension stdHGapSize, stdVGapSize, stdBtnSize;
 
     private final String saveCardCode, loadCardCode, wadCardCode;
     private final GZDoomLauncher launcher;
     private final Settings settings;
     private final WADSession wadSession;
+    private final ArrayList<Config> configs;
 
-    private boolean savedNewConfig;
-
-    public PickerPanel(Settings settings, WADSession wadSession) {
+    public PickerPanel(Settings settings, WADSession wadSession, ConfigRepository configRepository) {
         this.settings = settings;
         this.wadSession = wadSession;
+        this.configs = new ArrayList<>(configRepository.load());
 
         Dimension mainFrameSize = new Dimension(settings.getPreferredWidth(), settings.getPreferredHeight());
 
@@ -51,8 +52,8 @@ public class PickerPanel extends JPanel implements NavigationHandler {
         setMaximumSize(mainFrameSize);
         setSize(mainFrameSize);
 
-        saveConfigPanel = new SaveConfigPanel(mainFrameSize);
-        loadConfigPanel = new LoadConfigPanel(mainFrameSize);
+        saveConfigPanel = new SaveConfigPanel(mainFrameSize, configRepository, configs, wadSession);
+        loadConfigPanel = new LoadConfigPanel(mainFrameSize, configRepository, configs, wadSession);
 
         saveCardCode = "SAVE";
         loadCardCode = "LOAD";
@@ -71,9 +72,6 @@ public class PickerPanel extends JPanel implements NavigationHandler {
         stdHGapSize = new Dimension(5, 0);
         stdVGapSize = new Dimension(0, 5);
         stdBtnSize = new Dimension((int)(mainFrameSize.width * 0.20), SlenderConstants.STD_BTN_HEIGHT);
-
-        savedNewConfig = false;
-        loadConfigPanel.loadConfig();
 
         addComponents(mainFrameSize);
         initBtnActions();
@@ -99,13 +97,6 @@ public class PickerPanel extends JPanel implements NavigationHandler {
 
         wadContainer.onLoadConfigurationsRequested(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                // we only load the config again if we save a new configuration
-                // still not the MOST efficient, but nice
-                if (savedNewConfig) {
-                    loadConfigPanel.loadConfig();
-                    savedNewConfig = false;
-                }
-
                 showPanel(loadCardCode);
             }
         });
@@ -130,6 +121,7 @@ public class PickerPanel extends JPanel implements NavigationHandler {
         saveConfigPanel.onSaveConfigRequested(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 saveConfigPanel.saveConfig();
+                loadConfigPanel.refreshItemPanel();
                 showPanel(wadCardCode);
             }
         });
@@ -142,11 +134,13 @@ public class PickerPanel extends JPanel implements NavigationHandler {
 
         loadConfigPanel.onLoadConfigRequested(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                showPanel(wadCardCode);
-                ArrayList<WADModel> selectedConfigWads = loadConfigPanel.getLoadedWads();
-
-                if (!selectedConfigWads.isEmpty()) {
-                    wadContainer.loadSession(selectedConfigWads);
+                try {
+                    loadConfigPanel.loadSelectedConfig();
+                    wadContainer.refreshItemPanel();
+                    showPanel(wadCardCode);
+                }
+                catch(NoSelectionException ex) {
+                    JOptionPane.showMessageDialog(getParent(), ex.getMessage(), "Error", JOptionPane.WARNING_MESSAGE);
                 }
             }
         });
@@ -186,8 +180,7 @@ public class PickerPanel extends JPanel implements NavigationHandler {
     private void saveCurrentConfig() throws InvalidSessionException {
         wadSession.validateSession();
 
-        saveConfigPanel.setConfigData(wadSession.getpWADs(), wadSession.getiWAD().sWADPath);
-        savedNewConfig = true;
+        saveConfigPanel.resetConfigUI();
 
         showPanel(saveCardCode);
     }

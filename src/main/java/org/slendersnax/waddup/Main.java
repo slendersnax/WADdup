@@ -1,7 +1,6 @@
 package org.slendersnax.waddup;
 
 import org.slendersnax.waddup.exception.RepositoryException;
-import org.slendersnax.waddup.infrastructure.PropWrapper;
 import org.slendersnax.waddup.model.ApplicationContext;
 import org.slendersnax.waddup.ui.AppWindow;
 

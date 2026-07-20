@@ -10,10 +10,9 @@ import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
 
 import org.slendersnax.waddup.model.ApplicationContext;
+import org.slendersnax.waddup.model.Settings;
+import org.slendersnax.waddup.repository.SettingsRepository;
 import org.slendersnax.waddup.ui.helpers.NavigationHandler;
-
-import org.slendersnax.waddup.infrastructure.SlenderConstants;
-import org.slendersnax.waddup.infrastructure.PropWrapper;
 
 public class AppWindow extends JFrame implements ComponentListener, NavigationHandler {
     private final JPanel wrapperPanel;
@@ -21,6 +20,8 @@ public class AppWindow extends JFrame implements ComponentListener, NavigationHa
     private final OptionsPanel optionsPanel;
     private final CardLayout mainCL;
     private final ApplicationContext applicationContext;
+    private final Settings settings;
+    private final SettingsRepository settingsRepository;
 
     private final String codeWadPicker, codeSettings;
 
@@ -28,23 +29,15 @@ public class AppWindow extends JFrame implements ComponentListener, NavigationHa
         super("WADdup");
 
         this.applicationContext = applicationContext;
+        this.settings = this.applicationContext.getSettings();
+        this.settingsRepository = this.applicationContext.getSettingsRepository();
 
         // finding out the display resolution of the monitor (or main monitor in the case of multi-monitor setups)
         GraphicsDevice gd = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
         int width = gd.getDisplayMode().getWidth();
         int height = gd.getDisplayMode().getHeight();
 
-        // i just like this size
-        Dimension mainFrameDimension = new Dimension((int)(width / 2), (int)(height / 1.5));
-
-        if (applicationContext.getPropWrapper().getProperty(PropWrapper.FILE_SETTINGS_INDEX, SlenderConstants.SETTINGS_PREF_WIDTH) == null) {
-            applicationContext.getPropWrapper().storeProperty(PropWrapper.FILE_SETTINGS_INDEX, SlenderConstants.SETTINGS_PREF_WIDTH, Integer.toString(mainFrameDimension.width));
-            applicationContext.getPropWrapper().storeProperty(PropWrapper.FILE_SETTINGS_INDEX, SlenderConstants.SETTINGS_PREF_HEIGHT, Integer.toString(mainFrameDimension.height));
-        }
-        else {
-            mainFrameDimension.width = Integer.parseInt(applicationContext.getPropWrapper().getProperty(PropWrapper.FILE_SETTINGS_INDEX, SlenderConstants.SETTINGS_PREF_WIDTH));
-            mainFrameDimension.height = Integer.parseInt(applicationContext.getPropWrapper().getProperty(PropWrapper.FILE_SETTINGS_INDEX, SlenderConstants.SETTINGS_PREF_HEIGHT));
-        }
+        Dimension mainFrameDimension = new Dimension(settings.getPreferredWidth(), settings.getPreferredHeight());
 
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setSize(mainFrameDimension);
@@ -52,7 +45,7 @@ public class AppWindow extends JFrame implements ComponentListener, NavigationHa
         addComponentListener(this);
 
         wrapperPanel = new JPanel();
-        pickerPanel = new PickerPanel(applicationContext.getSettings(), applicationContext.getWadSession());
+        pickerPanel = new PickerPanel(applicationContext.getSettings(), applicationContext.getWadSession(), applicationContext.getConfigRepository());
         optionsPanel = new OptionsPanel(applicationContext.getSettings(), applicationContext.getSettingsRepository());
 
         mainCL = new CardLayout();
@@ -82,8 +75,10 @@ public class AppWindow extends JFrame implements ComponentListener, NavigationHa
     public void componentMoved(ComponentEvent ce) {};
 
     public void componentResized(ComponentEvent ce) {
-        applicationContext.getPropWrapper().storeProperty(PropWrapper.FILE_SETTINGS_INDEX, SlenderConstants.SETTINGS_PREF_WIDTH, Integer.toString(this.getWidth()));
-        applicationContext.getPropWrapper().storeProperty(PropWrapper.FILE_SETTINGS_INDEX, SlenderConstants.SETTINGS_PREF_HEIGHT, Integer.toString(this.getHeight()));
+        settings.setPreferredWidth(this.getWidth());
+        settings.setPreferredHeight(this.getHeight());
+
+        settingsRepository.save(settings);
     };
 
     @Override

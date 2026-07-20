@@ -9,15 +9,15 @@ import javax.swing.Box;
 import javax.swing.JOptionPane;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
-import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.Dimension;
 import java.awt.Component;
 import java.util.ArrayList;
 
-import org.slendersnax.waddup.infrastructure.PropWrapper;
-import org.slendersnax.waddup.infrastructure.SlenderConstants;
 import org.slendersnax.waddup.model.WADModel;
+import org.slendersnax.waddup.model.Config;
+import org.slendersnax.waddup.model.WADSession;
+import org.slendersnax.waddup.repository.ConfigRepository;
 
 public class SaveConfigPanel extends JPanel {
     private JPanel saveBtnsPanel;
@@ -27,10 +27,14 @@ public class SaveConfigPanel extends JPanel {
 
     private ArrayList<WADModel> wadList;
     private String iwadPath;
-    private final PropWrapper propHandler;
+    private final ConfigRepository configRepository;
+    private final ArrayList<Config> configs;
+    private final WADSession wadSession;
 
-    public SaveConfigPanel(Dimension size) {
-        propHandler = new PropWrapper();
+    public SaveConfigPanel(Dimension size, ConfigRepository configRepository, ArrayList<Config> configs, WADSession wadSession) {
+        this.configRepository = configRepository;
+        this.configs = configs;
+        this.wadSession = wadSession;
 
         saveBtnsPanel = new JPanel();
         nameInstr = new JLabel("Enter the name of the config:");
@@ -81,14 +85,6 @@ public class SaveConfigPanel extends JPanel {
         });
     }
 
-    public JButton getBtn_saveConfig() {
-        return btn_saveConfig;
-    }
-
-    public JButton getBtn_cancelSave() {
-        return btn_cancelSave;
-    }
-
     public void onSaveConfigRequested(ActionListener listener) {
         btn_saveConfig.addActionListener(listener);
     }
@@ -97,35 +93,33 @@ public class SaveConfigPanel extends JPanel {
         btn_cancelSave.addActionListener(listener);
     }
 
-    public void setConfigData(ArrayList<WADModel> _wadList, String _iwadPath) {
+    public void resetConfigUI() {
         nameInput.setText("");
         btn_saveConfig.setEnabled(false);
-
-        wadList = _wadList;
-        iwadPath = _iwadPath;
     }
 
     public void saveConfig() {
         // check if this config name already exists
         // if so, ask the user if they want to overwrite existing config
-        if (propHandler.getProperty(PropWrapper.FILE_CONFIG_INDEX, nameInput.getText()) != null) {
+        Config matchConfig = configs.stream()
+                    .filter(config -> config.getName().equals(nameInput.getText()))
+                    .findFirst()
+                    .orElse(null);
 
-            int reply = JOptionPane.showConfirmDialog(null, "A configuration with this name already exists. Do you want to overwrite it?", "Name conflict", JOptionPane.YES_NO_OPTION);
+        // found config with this name
+        if (matchConfig != null) {
+            int reply = JOptionPane.showConfirmDialog(getParent(), "A configuration with this name already exists. Do you want to overwrite it?", "Name conflict", JOptionPane.YES_NO_OPTION);
 
             if (reply == JOptionPane.NO_OPTION) {
                 return;
             }
+
+            matchConfig.setWadSession(wadSession);
+        }
+        else {
+            configs.add(new Config(nameInput.getText(), new WADSession(wadSession)));
         }
 
-        ArrayList<String> wadPaths = new ArrayList<String>();
-
-        for (WADModel wad : wadList) {
-            wadPaths.add(wad.sWADPath);
-        }
-
-        wadPaths.add(0, iwadPath);
-        String joinedWadPaths = String.join(SlenderConstants.CONFIG_ITEM_SEPARATOR, wadPaths);
-
-        propHandler.storeProperty(PropWrapper.FILE_CONFIG_INDEX, nameInput.getText(), joinedWadPaths);
+        configRepository.save(configs);
     }
 }

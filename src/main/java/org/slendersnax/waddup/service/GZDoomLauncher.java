@@ -19,15 +19,15 @@ public class GZDoomLauncher {
     public void run(WADSession session) {
         switch (Platform.getOperatingSystem()) {
             case WINDOWS:
-                runWindows(session.getiWAD().sWADPath, session.getpWADs());
+                runWindows(session.getiWAD().getWADPath(), session.getpWADs());
                 break;
 
             case LINUX:
                 if (!settings.isUseWine()) {
-                    runLinuxNative(session.getiWAD().sWADPath, session.getpWADs(), settings.isUsePortable(), settings.isUseGamemode());
+                    runLinuxNative(session.getiWAD().getWADPath(), session.getpWADs(), settings.isUsePortable(), settings.isUseGamemode());
                 }
                 else {
-                    runLinuxWine(session.getiWAD().sWADPath, session.getpWADs(), settings.isUseWinePrefix(), settings.isUseGamemode());
+                    runLinuxWine(session.getiWAD().getWADPath(), session.getpWADs(), settings.isUseWinePrefix(), settings.isUseGamemode());
                 }
                 break;
 
@@ -58,13 +58,13 @@ public class GZDoomLauncher {
 
         if (!pwadList.isEmpty()) {
             for (WADModel sessionWad : pwadList) {
-                if (sessionWad.sFileType.equals("deh")) {
+                if (sessionWad.getFileType().equals("deh")) {
                     cmdBuilder.add("-deh");
                 }
                 else {
                     cmdBuilder.add("-file");
                 }
-                cmdBuilder.add(sessionWad.sWADPath);
+                cmdBuilder.add(sessionWad.getWADPath());
             }
         }
 
@@ -93,13 +93,13 @@ public class GZDoomLauncher {
 
         if (!pwadList.isEmpty()) {
             for (WADModel sessionWad : pwadList) {
-                if (sessionWad.sFileType.equals("deh")) {
+                if (sessionWad.getFileType().equals("deh")) {
                     cmdBuilder.add("-deh");
                 }
                 else {
                     cmdBuilder.add("-file");
                 }
-                cmdBuilder.add(sessionWad.sWADPath);
+                cmdBuilder.add(sessionWad.getWADPath());
             }
         }
 
@@ -127,13 +127,13 @@ public class GZDoomLauncher {
 
         if (!pwadList.isEmpty()) {
             for (WADModel sessionWad : pwadList) {
-                if (sessionWad.sFileType.equals("deh")) {
+                if (sessionWad.getFileType().equals("deh")) {
                     cmdBuilder.add("-deh");
                 }
                 else {
                     cmdBuilder.add("-file");
                 }
-                cmdBuilder.add(sessionWad.sWADPath);
+                cmdBuilder.add(sessionWad.getWADPath());
             }
         }
 

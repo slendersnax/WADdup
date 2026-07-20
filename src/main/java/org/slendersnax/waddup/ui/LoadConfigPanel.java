@@ -9,25 +9,28 @@ import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
-import java.util.Enumeration;
 
-import org.slendersnax.waddup.infrastructure.PropWrapper;
-import org.slendersnax.waddup.infrastructure.SlenderConstants;
+import org.slendersnax.waddup.exception.NoSelectionException;
 import org.slendersnax.waddup.model.WADModel;
+import org.slendersnax.waddup.model.Config;
+import org.slendersnax.waddup.model.WADSession;
+import org.slendersnax.waddup.repository.ConfigRepository;
 import org.slendersnax.waddup.ui.components.ItemPanel;
 import org.slendersnax.waddup.ui.components.VerticalBtnPanel;
 
 public class LoadConfigPanel extends JPanel {
 
     private final VerticalBtnPanel panelBtnContainer;
-    private final ItemPanel<String> panelConfigs;
+    private final ItemPanel<Config> panelConfigs;
     private final JPanel panelInnerContainer;
     private final JButton btn_loadConfig, btn_cancelLoad, btn_removeConfig;
     private final JLabel lbl_loadTitle;
-    private final PropWrapper propWrapper;
+    private final WADSession wadSession;
 
-    public LoadConfigPanel(Dimension frameSize) {
-        panelConfigs = new ItemPanel<String>(new Dimension((int)(frameSize.width * 0.85), frameSize.height), false);
+    public LoadConfigPanel(Dimension frameSize, ConfigRepository configRepository, ArrayList<Config> configs, WADSession wadSession) {
+        this.wadSession = wadSession;
+
+        panelConfigs = new ItemPanel<Config>(new Dimension((int)(frameSize.width * 0.85), frameSize.height), configs, () -> configRepository.save(configs), false);
         panelBtnContainer = new VerticalBtnPanel(new Dimension((int)(frameSize.width * 0.20), frameSize.height));
         panelInnerContainer = new JPanel();
 
@@ -35,8 +38,6 @@ public class LoadConfigPanel extends JPanel {
         btn_loadConfig = new JButton("load");
         btn_removeConfig = new JButton("remove");
         btn_cancelLoad = new JButton("cancel");
-
-        propWrapper = new PropWrapper();
 
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
         panelInnerContainer.setLayout(new BoxLayout(panelInnerContainer, BoxLayout.LINE_AXIS));
@@ -60,6 +61,10 @@ public class LoadConfigPanel extends JPanel {
         addBtnActions();
     }
 
+    public void refreshItemPanel() {
+        panelConfigs.rebuildItems();
+    }
+
     public void onLoadConfigRequested(ActionListener listener) {
         btn_loadConfig.addActionListener(listener);
     }
@@ -71,40 +76,25 @@ public class LoadConfigPanel extends JPanel {
     public void addBtnActions() {
         btn_removeConfig.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                ArrayList<String> selectedObject = panelConfigs.getSelected();
-
-                // only one config selection allowed
-                propWrapper.removeProperty(PropWrapper.FILE_CONFIG_INDEX, selectedObject.get(0));
                 panelConfigs.removeSelectedItems();
             }
         });
     }
-    // TODO: optimise the loadconfig process a bit
-    // currently we're clearing and reloading all the configs everytime "load config" is pressed
-    // not a super high priority
-    public void loadConfig() {
-        Enumeration<Object> propKeys = propWrapper.getKeys(PropWrapper.FILE_CONFIG_INDEX);
-        panelConfigs.clearItemList();
 
-        while(propKeys.hasMoreElements()) {
-            panelConfigs.addItem(propKeys.nextElement().toString());
-        }
-    }
-    public ArrayList<WADModel> getLoadedWads() {
-        ArrayList<WADModel> loadedWads = new ArrayList<WADModel>();
+    public void loadSelectedConfig() throws NoSelectionException {
+        try {
+            ArrayList<Config> selectedConfig = panelConfigs.getSelected();
 
-        ArrayList<String> selectedConfig = panelConfigs.getSelected();
+            wadSession.resetSession();
 
-        if (!selectedConfig.isEmpty()) {
-            String selectedWads = propWrapper.getProperty(PropWrapper.FILE_CONFIG_INDEX, selectedConfig.get(0));
-            String[] arrSelWads = selectedWads.split(SlenderConstants.CONFIG_ITEM_SEPARATOR);
+            wadSession.setiWAD(selectedConfig.get(0).getWadSession().getiWAD());
 
-            // TODO: this looks like it's not good for Windows, maybe should use the native separator somehow?
-            for (String arrSelWad : arrSelWads) {
-                loadedWads.add(new WADModel(arrSelWad.substring(arrSelWad.lastIndexOf("/") + 1), arrSelWad));
+            for (WADModel wadModel : selectedConfig.get(0).getWadSession().getpWADs()) {
+                wadSession.getpWADs().add(new WADModel(wadModel));
             }
         }
-
-        return loadedWads;
+        catch(NoSelectionException ex) {
+            throw ex;
+        }
     }
 }

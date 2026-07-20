@@ -43,6 +43,7 @@ public class Settings {
 
         wadDirectory = "";
 
+        // i just like this size
         preferredWidth = gd.getDisplayMode().getWidth() / 2;
         preferredHeight = (int) (gd.getDisplayMode().getHeight() / 1.5);
 

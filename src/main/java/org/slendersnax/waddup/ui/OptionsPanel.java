@@ -24,8 +24,6 @@ import java.io.File;
 import org.slendersnax.waddup.model.Settings;
 import org.slendersnax.waddup.repository.SettingsRepository;
 import org.slendersnax.waddup.ui.components.VerticalBtnPanel;
-import org.slendersnax.waddup.infrastructure.PropWrapper;
-import org.slendersnax.waddup.infrastructure.SlenderConstants;
 import org.slendersnax.waddup.ui.helpers.NavigationHandler;
 
 public class OptionsPanel extends JPanel implements NavigationHandler {

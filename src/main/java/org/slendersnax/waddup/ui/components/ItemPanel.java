@@ -1,5 +1,7 @@
 package org.slendersnax.waddup.ui.components;
 
+import org.slendersnax.waddup.exception.NoSelectionException;
+
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -14,15 +16,17 @@ public class ItemPanel<T> extends JPanel {
     private final ArrayList<T> itemList;
     private final JList<String> objJList;
     private final DefaultListModel<String> listModel;
+    private final Runnable itemRemoved;
 
-    public ItemPanel(Dimension size, boolean enableMultiSelection) {
+    public ItemPanel(Dimension size, ArrayList<T> itemList, Runnable itemRemoved, boolean enableMultiSelection) {
+        this.itemList = itemList;
+        this.itemRemoved = itemRemoved;
+
         setSize(size);
         setMaximumSize(size);
         setPreferredSize(size);
 
         setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
-
-        itemList = new ArrayList<T>();
 
         listModel = new DefaultListModel<String>();
         objJList = new JList<String>();
@@ -44,35 +48,38 @@ public class ItemPanel<T> extends JPanel {
         containerScroller.setPreferredSize(size);
 
         add(containerScroller);
+
+        rebuildItems();
     }
 
-    public ArrayList<T> getItemList() {
-        return itemList;
+    public void refreshUI() {
+        revalidate();
+        repaint();
     }
 
-    public void setItemList(ArrayList<T> _itemList) {
-        itemList.clear();
+    // called when itemList is modified in external files
+    public void rebuildItems() {
         listModel.clear();
 
-        for (T obj : _itemList) {
-            addItem(obj);
+        for (T obj : this.itemList) {
+            listModel.addElement(obj.toString());
         }
+
+        refreshUI();
     }
 
     public void clearItemList() {
         itemList.clear();
         listModel.clear();
 
-        revalidate();
-        repaint();
+        refreshUI();
     }
 
     public void addItem(T obj) {
         itemList.add(obj);
         listModel.addElement(obj.toString());
 
-        revalidate();
-        repaint();
+        refreshUI();
     }
 
     public void removeSelectedItems() {
@@ -82,8 +89,8 @@ public class ItemPanel<T> extends JPanel {
             itemList.remove(nSelectedIndex);
             listModel.remove(nSelectedIndex);
 
-            revalidate();
-            repaint();
+            itemRemoved.run();
+            refreshUI();
         }
     }
 
@@ -106,8 +113,7 @@ public class ItemPanel<T> extends JPanel {
             // so when multiple are selected, only the last one stays selected after moving
             objJList.setSelectedIndices(selectedIndices);
 
-            revalidate();
-            repaint();
+            refreshUI();
         }
     }
 
@@ -128,14 +134,17 @@ public class ItemPanel<T> extends JPanel {
 
             objJList.setSelectedIndices(selectedIndices);
 
-            revalidate();
-            repaint();
+            refreshUI();
         }
     }
 
-    public ArrayList<T> getSelected() {
+    public ArrayList<T> getSelected() throws NoSelectionException {
         ArrayList<T> selectedObjects = new ArrayList<T>();
         int[] selectedIndices = objJList.getSelectedIndices();
+
+        if (selectedIndices.length == 0) {
+            throw new NoSelectionException("No config selected");
+        }
 
         for(int index : selectedIndices) {
             selectedObjects.add(itemList.get(index));

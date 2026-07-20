@@ -43,7 +43,6 @@ public class WADPanel extends JPanel implements DropTargetListener {
 
     private final Settings settings;
     private final WADSession wadSession;
-    private final WADModel iwad;
 
     public WADPanel(Settings settings, WADSession wadSession) {
         this.settings = settings;
@@ -54,7 +53,7 @@ public class WADPanel extends JPanel implements DropTargetListener {
         stdHorizontalFiller = new Dimension(5, 0);
 
         iwadLabel = new IWADLabel();
-        wadListPanel = new ItemPanel<WADModel>(new Dimension((int)(mainFrameSize.width * 0.80), (int)(mainFrameSize.height * 0.80)), true);
+        wadListPanel = new ItemPanel<WADModel>(new Dimension((int)(mainFrameSize.width * 0.80), (int)(mainFrameSize.height * 0.80)), wadSession.getpWADs(), () -> {}, true);
         panelBtnContainer = new VerticalBtnPanel(new Dimension((int)(mainFrameSize.width * 0.20), (int)(mainFrameSize.height * 0.80)));
         midPanel = new JPanel();
 
@@ -69,8 +68,6 @@ public class WADPanel extends JPanel implements DropTargetListener {
 
         move_header = new JLabel("PWAD ops");
         move_header.setHorizontalAlignment(SwingConstants.CENTER);
-
-        iwad = new WADModel();
 
         wadFilter = new FileNameExtensionFilter("DOOM mod files (wad, pk3, zip, deh)", "wad", "pk3", "zip", "deh");
 
@@ -122,21 +119,9 @@ public class WADPanel extends JPanel implements DropTargetListener {
         add(midPanel);
     }
 
-    // receives a wadList where the first WAD is the iWAD
-    // the rest are PWADs
-    public void loadSession(ArrayList<WADModel> wadList) {
-        iwadLabel.setIWAD(wadList.get(0).sWadTitle);
-        iwad.setFromData(wadList.get(0).sWadTitle, wadList.get(0).sWADPath);
-        wadList.remove(0);
-
-        wadListPanel.setItemList(wadList);
-
-        syncSession();
-    }
-
-    private void syncSession() {
-        wadSession.setiWAD(iwad);
-        wadSession.setpWADs(wadListPanel.getItemList());
+    public void refreshItemPanel() {
+        iwadLabel.setIWAD(wadSession.getiWAD().getWadName());
+        wadListPanel.rebuildItems();
     }
 
     private void addBtnActions() {
@@ -147,10 +132,8 @@ public class WADPanel extends JPanel implements DropTargetListener {
                 if (returnVal == JFileChooser.APPROVE_OPTION) {
                     File file = fileChooser.getSelectedFile();
                     iwadLabel.setIWAD(file.getName());
-                    iwad.setFromFile(file);
+                    wadSession.setiWAD(new WADModel(file));
                 }
-
-                syncSession();
             }
         });
 
@@ -168,15 +151,11 @@ public class WADPanel extends JPanel implements DropTargetListener {
                 }
 
                 fileChooser.setMultiSelectionEnabled(false);
-
-                syncSession();
             }
         });
         btn_remove.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 wadListPanel.removeSelectedItems();
-
-                syncSession();
             }
         });
 
@@ -240,8 +219,6 @@ public class WADPanel extends JPanel implements DropTargetListener {
                     }
                 }
             }
-
-            syncSession();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -251,10 +228,13 @@ public class WADPanel extends JPanel implements DropTargetListener {
         String[] validExtensions = {".wad", ".pk3", ".zip", ".deh"}; // define valid file types
         for (File file : files) {
             String fileName = file.getName().toLowerCase();
-            boolean isValid = Arrays.stream(validExtensions)
-                                     .anyMatch(fileName::endsWith);
-            if (!isValid) return false;
+            boolean isValid = Arrays.stream(validExtensions).anyMatch(fileName::endsWith);
+
+            if (!isValid) {
+                return false;
+            }
         }
+
         return true;
     }
 }
